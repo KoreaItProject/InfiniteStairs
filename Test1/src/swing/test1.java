@@ -120,14 +120,9 @@ public class test1 extends JFrame {
         ImageIcon block = new ImageIcon("Test1/src/img/block.png");
         imgch = block.getImage().getScaledInstance(blockW, blockH, Image.SCALE_SMOOTH);
         ImageIcon blockIcon = new ImageIcon(imgch);
-
-   
-        
-        // 패널에 모두 추가
         backPanel.add(charlbl);
         for (int i = 0; i < blockArr.length; i++) {
-
-            blockArr[i] = (new JLabel(blockIcon));
+            blockArr[i] = new JLabel(blockIcon);
             backPanel.add(blockArr[i]);
             blockArr[i].setBounds(blockX, blockY, blockW, blockH);
             int n = 0;
