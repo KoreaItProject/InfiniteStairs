@@ -28,7 +28,7 @@ public class test1 extends JFrame {
         JLabel[] blockArr = new JLabel[500];
         int result[] = new int[500];
 
-        ImageIcon background = new ImageIcon("InfiniteStairs/Test1/src/img/backg.png");
+        ImageIcon background = new ImageIcon("Test1/src/img/backg.png");
         imgch = background.getImage().getScaledInstance(FramW, 5000, Image.SCALE_SMOOTH);
         ImageIcon backgroundIcon = new ImageIcon(imgch);
 
@@ -43,27 +43,31 @@ public class test1 extends JFrame {
         // 버튼 생성
         // JButton btn = new JButton("b1");
         /////// 캐릭터 이미지 생성//////////
-        ImageIcon char1img = new ImageIcon("InfiniteStairs/Test1/src/img/char1.png");
+        ImageIcon char1img = new ImageIcon("Test1/src/img/char1.png ");
         imgch = char1img.getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH);
         ImageIcon char1Icon = new ImageIcon(imgch);
 
-        ImageIcon char2img = new ImageIcon("InfiniteStairs/Test1/src/img/char2.png");
+        ImageIcon char2img = new ImageIcon("Test1/src/img/char2.png");
         imgch = char2img.getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH);
         ImageIcon char2Icon = new ImageIcon(imgch);
 
-        ImageIcon char3img = new ImageIcon("InfiniteStairs/Test1/src/img/char3.png");
+        ImageIcon char3img = new ImageIcon("Test1/src/img/char3.png");
         imgch = char3img.getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH);
         ImageIcon char3Icon = new ImageIcon(imgch);
 
-        ImageIcon char4img = new ImageIcon("InfiniteStairs/Test1/src/img/char4.png");
+        ImageIcon char4img = new ImageIcon("Test1/src/img/char4.png");
         imgch = char4img.getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH);
         ImageIcon char4Icon = new ImageIcon(imgch);
 
-        ImageIcon[] charArr = { char1Icon, char2Icon, char3Icon, char4Icon };
+
+        ImageIcon[] charArr = new ImageIcon[12];
+        for(int i=0;i<charArr.length;i++){
+            charArr[i]=new ImageIcon((new ImageIcon("Test1/src/img/snowChar/snowChar"+i+".png")).getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH));
+        }
         // 이미지 레이블 생성
 
         // 아이스 배경
-        ImageIcon iceBackimg = new ImageIcon("InfiniteStairs/Test1/src/img/iceback.png");
+        ImageIcon iceBackimg = new ImageIcon("Test1/src/img/iceback.png");
         imgch = iceBackimg.getImage().getScaledInstance(FramW, FramH, Image.SCALE_SMOOTH);
         ImageIcon iceBackIcon = new ImageIcon(imgch);
         JLabel iceBackbl = new JLabel(iceBackIcon);
@@ -72,17 +76,17 @@ public class test1 extends JFrame {
         iceBackbl.setVisible(false);
 
         // 블록아이콘
-        ImageIcon block = new ImageIcon("InfiniteStairs/Test1/src/img/block.png");
+        ImageIcon block = new ImageIcon("Test1/src/img/block.png");
         imgch = block.getImage().getScaledInstance(blockW, blockH, Image.SCALE_SMOOTH);
         ImageIcon blockIcon = new ImageIcon(imgch);
 
         // 스킬 아이콘
-        ImageIcon blackEye = new ImageIcon("InfiniteStairs/Test1/src/img/blackEye.png");
+        ImageIcon blackEye = new ImageIcon("Test1/src/img/blackEye.png");
         imgch = blackEye.getImage().getScaledInstance(FramW, FramH, Image.SCALE_SMOOTH);
         ImageIcon blackEyeIcon = new ImageIcon(imgch);
 
         JLabel backlbl = new JLabel(backgroundIcon);
-        JLabel charlbl = new JLabel(char3Icon);
+        JLabel charlbl = new JLabel(charArr[0]);
 
         // step 레이블
         JLabel stepsJL = new JLabel("steps: ");
@@ -156,14 +160,10 @@ public class test1 extends JFrame {
                         case KeyEvent.VK_LEFT:
                             new MoveBackGround(backlbl).start();
                             moveX *= -1;
-                            if (moveX > 0) {
-                                charlbl.setIcon(char1Icon);
-
-                            } else {
-                                charlbl.setIcon(char3Icon);
-                            }
-
+                            
                             new MoveBlockGround(blockArr, moveX, moveY).start();
+                            new CharAni(charlbl, moveX, charArr).start();
+
                             if (result[keyCount] == 0 && moveX > 0 || result[keyCount] == 1 && moveX < 0) {
                                 System.out.println("게임오버");
                                 new test1();
@@ -179,6 +179,7 @@ public class test1 extends JFrame {
 
                             new MoveBackGround(backlbl).start();
                             new MoveBlockGround(blockArr, moveX, moveY).start();
+                            new CharAni(charlbl, moveX, charArr).start();
 
                             if (result[keyCount] == 1 && moveX < 0 || result[keyCount] == 0 && moveX > 0) {
                                 System.out.println("게임오버");
@@ -237,6 +238,40 @@ public class test1 extends JFrame {
 
         new test1();
 
+    }
+}
+class CharAni extends Thread{
+    JLabel charlbl;
+    ImageIcon [] charArr;
+    int moveX;
+    CharAni(JLabel charlbl, int moveX,ImageIcon []charArr){
+
+        this.charArr=charArr;
+        this.charlbl=charlbl;
+        this.moveX=moveX;
+    }
+
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        int start=0,end=charArr.length/2;
+        if(moveX>0){
+            start=6;   
+            end=charArr.length;
+        }
+        for(int i=start;i<end;i++){
+            charlbl.setIcon(charArr[i]);
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        charlbl.setIcon(charArr[0+start]);
+
+
+        super.run();
     }
 }
 
