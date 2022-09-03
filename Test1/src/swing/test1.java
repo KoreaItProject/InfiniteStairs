@@ -11,12 +11,13 @@ public class test1 extends JFrame {
     int FramW = 1000, FramH = 900, blockW = 100, blockH = 50, blockX = 450, blockY = 500,
             charW = 200, charH = 200, charX = 400, charY = 310, startBackH = -4140;
 
-    int moveX = -110, moveY = 50;
+    static int moveX = -110, moveY = 50;
     Image imgch;
     int keyCount = 0, gauge = 100;
     int hp=7;
     static int stop = 0;
     boolean gameRunning=true;
+
 
     public test1() {
 
@@ -171,7 +172,7 @@ public class test1 extends JFrame {
 
                                 }else{
                                     stop=1;
-                                    new charDown(charlbl, moveX, charDown, charArr).start();
+                                    new charDown(charlbl, charDown, charArr).start();
                                     if(gauge<100&&gauge>0)
                                         gaugeUp(gaugeBar, gauge-=6);
                                     for(int i=0;i<hplbl.length;i++){
@@ -189,7 +190,7 @@ public class test1 extends JFrame {
                                 moveX *= -1;
 
                                 new MoveBlockGround(blockArr, moveX, moveY).start();
-                                new CharAni(charlbl, moveX, charArr).start();
+                                new CharAni(charlbl, charArr).start();
                                     if(gauge<100){
                                         gaugeUp(gaugeBar, gauge += 3);
                                     }
@@ -212,7 +213,7 @@ public class test1 extends JFrame {
                                     
                                 }else{
                                     stop=1;
-                                    new charDown(charlbl, moveX, charDown, charArr).start();
+                                    new charDown(charlbl, charDown, charArr).start();
                                     if(gauge<100&&gauge>0)
                                          gaugeUp(gaugeBar, gauge-=6);
 
@@ -228,7 +229,7 @@ public class test1 extends JFrame {
                             }else{
                                 new MoveBackGround(backlbl).start();
                                 new MoveBlockGround(blockArr, moveX, moveY).start();
-                                new CharAni(charlbl, moveX, charArr).start();
+                                new CharAni(charlbl, charArr).start();
                                 if(gauge<100){
                                     gaugeUp(gaugeBar, gauge += 3);
                                 }
@@ -312,30 +313,38 @@ public class test1 extends JFrame {
 class CharAni extends Thread{
     JLabel charlbl;
     ImageIcon [] charArr;
-    int moveX;
-    CharAni(JLabel charlbl, int moveX,ImageIcon []charArr){
+    CharAni(JLabel charlbl,ImageIcon []charArr){
 
         this.charArr=charArr;
         this.charlbl=charlbl;
-        this.moveX=moveX;
     }
 
     @Override
     public void run() {
         // TODO Auto-generated method stub
+
         int start=0,end=charArr.length/2;
-        if(moveX>0){
+        int move=test1.moveX;
+        if(test1.moveX>0){
             start=charArr.length/2;   
             end=charArr.length;
         }
         for(int i=start;i<end;i++){
+            if(test1.moveX!=move){
+                break;
+            }
+            if(move==test1.moveX)
             charlbl.setIcon(charArr[i]);
             try {
-                Thread.sleep(60);
+
+                Thread.sleep(70);
+
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+        
+            
         }
         charlbl.setIcon(charArr[0+start]);
 
@@ -347,34 +356,36 @@ class CharAni extends Thread{
 class charDown extends Thread{
     JLabel charlbl;
     ImageIcon [] charArr,charDown;
-    int moveX;
-    charDown(JLabel charlbl, int moveX,ImageIcon [] charDown,ImageIcon [] charArr){
+    
+    charDown(JLabel charlbl,ImageIcon [] charDown,ImageIcon [] charArr){
 
         this.charArr=charArr;
         this.charDown=charDown;
         this.charlbl=charlbl;
-        this.moveX=moveX;
     }
 
     @Override
     public void run() {
+
         // TODO Auto-generated method stub
         int start=0,end=charDown.length/2;
-        if(moveX>0){
+        if(test1.moveX>0){
             start=charDown.length/2;   
             end=charDown.length;
         }
         for(int i=start;i<end;i++){
             charlbl.setIcon(charDown[i]);
             try {
-                Thread.sleep(70);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+
         }
         charlbl.setIcon(charArr[0+start]);
         test1.stop=0;
+
 
 
         super.run();
@@ -438,9 +449,9 @@ class MoveBackGround extends Thread {
     @Override
     public void run() {
         try {
-            for (int i = 0; i < 15; i++) {
+            for (int i = 0; i < 7; i++) {
                 backlbl.setLocation(0, backlbl.getLocation().y + 1);
-                Thread.sleep(15);
+                Thread.sleep(30);
             }
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
