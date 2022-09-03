@@ -241,9 +241,9 @@ public class test1 extends JFrame {
                             if (gauge >= 100) {
                                 gaugeUp(gaugeBar, gauge = 0);
                                 System.out.println("스킬사용");
-                                skillBlackEye(blackEyelbl);
-                                //skillIce(iceBackbl);
-                               // stop = 1;
+                                //skillBlackEye(blackEyelbl);
+                                skillIce(iceBackbl);
+                               stop = 1;
 
                             } else {
                                 System.out.println("게이지 부족" + gauge);
@@ -423,7 +423,7 @@ class SkillIce extends Thread {
 
         try {
             iceBackbl.setVisible(true);
-            Thread.sleep(3000);
+            Thread.sleep(1500);
             iceBackbl.setVisible(false);
             test1.stop = 0;
         } catch (InterruptedException e) {
