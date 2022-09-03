@@ -14,6 +14,7 @@ public class test1 extends JFrame {
     int moveX = -110, moveY = 50;
     Image imgch;
     int keyCount = 0, gauge = 100;
+    int hp=3;
     static int stop = 0;
 
     public test1() {
@@ -65,30 +66,27 @@ public class test1 extends JFrame {
             charArr[i]=new ImageIcon((new ImageIcon("Test1/src/img/snowChar/snowChar"+i+".png")).getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH));
         }
         // 이미지 레이블 생성
+        
 
-        // 아이스 배경
-        ImageIcon iceBackimg = new ImageIcon("Test1/src/img/iceback.png");
-        imgch = iceBackimg.getImage().getScaledInstance(FramW, FramH, Image.SCALE_SMOOTH);
-        ImageIcon iceBackIcon = new ImageIcon(imgch);
-        JLabel iceBackbl = new JLabel(iceBackIcon);
-        iceBackbl.setBounds(0, 0, FramW, FramH);
-        backPanel.add(iceBackbl);
-        iceBackbl.setVisible(false);
 
-        // 블록아이콘
-        ImageIcon block = new ImageIcon("Test1/src/img/block.png");
-        imgch = block.getImage().getScaledInstance(blockW, blockH, Image.SCALE_SMOOTH);
-        ImageIcon blockIcon = new ImageIcon(imgch);
+        //hp아이콘
+        ImageIcon hpimg = new ImageIcon("Test1/src/img/hp.png");
+        imgch = hpimg.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        ImageIcon hpIcon = new ImageIcon(imgch);
+        JLabel []hplbl=new JLabel[hp];
+        for(int i=0;i<hp;i++){
+            hplbl[i]=new JLabel(hpIcon);
+            hplbl[i].setBounds(10+40*i,10,50,50);
+            backPanel.add(hplbl[i]);
+        }
+       
 
-        // 스킬 아이콘
-        ImageIcon blackEye = new ImageIcon("Test1/src/img/blackEye.png");
-        imgch = blackEye.getImage().getScaledInstance(FramW, FramH, Image.SCALE_SMOOTH);
-        ImageIcon blackEyeIcon = new ImageIcon(imgch);
 
-        JLabel backlbl = new JLabel(backgroundIcon);
-        JLabel charlbl = new JLabel(charArr[0]);
-
-        // step 레이블
+        // 게이지바
+        JProgressBar gaugeBar = new JProgressBar();
+        gaugeBar.setValue(gauge);
+        backPanel.add(gaugeBar);
+         // step 레이블
         JLabel stepsJL = new JLabel("steps: ");
         JLabel stepsJL2 = new JLabel(keyCount + "");
 
@@ -102,22 +100,41 @@ public class test1 extends JFrame {
         stepsJL2.setFont(font);
 
         // step 위치값
-        stepsJL.setBounds(30, -450, 1000, 1000);
-        stepsJL2.setBounds(100, -450, 1000, 1000);
+        stepsJL.setBounds(30, -430, 1000, 1000);
+        stepsJL2.setBounds(100, -430, 1000, 1000);
 
         backPanel.add(stepsJL);
         backPanel.add(stepsJL2);
-        // 게이지바
-        JProgressBar gaugeBar = new JProgressBar();
-        gaugeBar.setValue(gauge);
-        backPanel.add(gaugeBar);
 
-        // 스킬레이블
+        // 아이스 배경
+        ImageIcon iceBackimg = new ImageIcon("Test1/src/img/iceback.png");
+        imgch = iceBackimg.getImage().getScaledInstance(FramW, FramH, Image.SCALE_SMOOTH);
+        ImageIcon iceBackIcon = new ImageIcon(imgch);
+        JLabel iceBackbl = new JLabel(iceBackIcon);
+        iceBackbl.setBounds(0, 0, FramW, FramH);
+        backPanel.add(iceBackbl);
+        iceBackbl.setVisible(false);
+
+        // 스킬 아이콘
+        ImageIcon blackEye = new ImageIcon("Test1/src/img/blackEye.png");
+        imgch = blackEye.getImage().getScaledInstance(FramW, FramH, Image.SCALE_SMOOTH);
+        ImageIcon blackEyeIcon = new ImageIcon(imgch);
+        JLabel backlbl = new JLabel(backgroundIcon);
+        JLabel charlbl = new JLabel(charArr[0]);
         JLabel blackEyelbl = new JLabel(blackEyeIcon);
         blackEyelbl.setBounds(0, 0, FramW, 900);
         blackEyelbl.setVisible(false);
         backPanel.add(blackEyelbl);
 
+        
+
+        // 블록아이콘
+        ImageIcon block = new ImageIcon("Test1/src/img/block.png");
+        imgch = block.getImage().getScaledInstance(blockW, blockH, Image.SCALE_SMOOTH);
+        ImageIcon blockIcon = new ImageIcon(imgch);
+
+   
+        
         // 패널에 모두 추가
         backPanel.add(charlbl);
         for (int i = 0; i < blockArr.length; i++) {
@@ -158,49 +175,82 @@ public class test1 extends JFrame {
                 if (stop == 0) {
                     switch (e.getKeyCode()) {
                         case KeyEvent.VK_LEFT:
-                            new MoveBackGround(backlbl).start();
-                            moveX *= -1;
-                            
-                            new MoveBlockGround(blockArr, moveX, moveY).start();
-                            new CharAni(charlbl, moveX, charArr).start();
+                  
 
-                            if (result[keyCount] == 0 && moveX > 0 || result[keyCount] == 1 && moveX < 0) {
-                                System.out.println("게임오버");
-                                new test1();
-                                dispose();
+                            if (result[keyCount] == 0 && moveX < 0 || result[keyCount] == 1 && moveX > 0) {
+                                hp-=1;
+                                if(hp<=0){
+                                    System.out.println("게임오버");
+                                    new test1();
+                                    dispose();
+
+                                }else{
+                                    for(int i=0;i<hplbl.length;i++){
+                                        hplbl[i].setVisible(false);
+
+                                    }
+                                    for(int i=0;i<hp;i++){
+                                        hplbl[i].setVisible(true);
+                                    }
+                                }
+
+                              
+                            }else{
+                                new MoveBackGround(backlbl).start();    
+                                moveX *= -1;
+
+                                new MoveBlockGround(blockArr, moveX, moveY).start();
+                                new CharAni(charlbl, moveX, charArr).start();
+                                gaugeUp(gaugeBar, gauge += 5);
+                                keyCount++;
+                                stepsJL2.setText(keyCount + "");
                             }
 
-                            gaugeUp(gaugeBar, gauge += 5);
-                            keyCount++;
-                            stepsJL2.setText(keyCount + "");
+                           
                             break;
 
                         case KeyEvent.VK_RIGHT:
 
-                            new MoveBackGround(backlbl).start();
-                            new MoveBlockGround(blockArr, moveX, moveY).start();
-                            new CharAni(charlbl, moveX, charArr).start();
+                           
 
                             if (result[keyCount] == 1 && moveX < 0 || result[keyCount] == 0 && moveX > 0) {
-                                System.out.println("게임오버");
-                                new test1();
-                                dispose();
+                                hp-=1;
+                                if(hp<=0){
+                                    System.out.println("게임오버");
+                                    new test1();
+                                    dispose();
 
-                            }
+                                }else{
+                                    for(int i=0;i<hplbl.length;i++){
+                                        hplbl[i].setVisible(false);
 
-                            gaugeUp(gaugeBar, gauge += 5);
+                                    }
+                                    for(int i=0;i<hp;i++){
+                                        hplbl[i].setVisible(true);
+                                    }
+                                }
+
+                            }else{
+                                new MoveBackGround(backlbl).start();
+                                new MoveBlockGround(blockArr, moveX, moveY).start();
+                                new CharAni(charlbl, moveX, charArr).start();
+                                gaugeUp(gaugeBar, gauge += 5);
                             keyCount++;
                             stepsJL2.setText(keyCount + "");
+                            
+
+                            }
                             break;
+                            
 
                         case KeyEvent.VK_SPACE:
 
                             if (gauge >= 100) {
                                 gaugeUp(gaugeBar, gauge = 0);
                                 System.out.println("스킬사용");
-                                // skillBlackEye(blackEyelbl);
-                                skillIce(iceBackbl);
-                                stop = 1;
+                                skillBlackEye(blackEyelbl);
+                                //skillIce(iceBackbl);
+                               // stop = 1;
 
                             } else {
                                 System.out.println("게이지 부족" + gauge);
