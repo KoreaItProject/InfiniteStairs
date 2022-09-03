@@ -16,6 +16,7 @@ public class test1 extends JFrame {
     int keyCount = 0, gauge = 100;
     int hp=7;
     static int stop = 0;
+    boolean gameRunning=true;
 
     public test1() {
 
@@ -35,32 +36,14 @@ public class test1 extends JFrame {
 
         // 레이블을 넣기 위한 패널 생성
 
-        JPanel backPanel = new JPanel() {
-        };
+        JPanel backPanel = new JPanel() ;
 
         // 패널 레이아웃 설정 레이아웃을 설정해야지 버튼의 위치 크기를 조절할 수 있다.(기본 레이아웃은 불가)
         backPanel.setLayout(null);
 
-        // 버튼 생성
-        // JButton btn = new JButton("b1");
-        /////// 캐릭터 이미지 생성//////////
-        ImageIcon char1img = new ImageIcon("Test1/src/img/char1.png ");
-        imgch = char1img.getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH);
-        ImageIcon char1Icon = new ImageIcon(imgch);
+    
 
-        ImageIcon char2img = new ImageIcon("Test1/src/img/char2.png");
-        imgch = char2img.getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH);
-        ImageIcon char2Icon = new ImageIcon(imgch);
-
-        ImageIcon char3img = new ImageIcon("Test1/src/img/char3.png");
-        imgch = char3img.getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH);
-        ImageIcon char3Icon = new ImageIcon(imgch);
-
-        ImageIcon char4img = new ImageIcon("Test1/src/img/char4.png");
-        imgch = char4img.getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH);
-        ImageIcon char4Icon = new ImageIcon(imgch);
-
-
+        //캐릭터
         ImageIcon[] charArr = new ImageIcon[12];
         for(int i=0;i<charArr.length;i++){
             charArr[i]=new ImageIcon((new ImageIcon("Test1/src/img/snowChar/snowChar"+i+".png")).getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH));
@@ -85,10 +68,11 @@ public class test1 extends JFrame {
        
 
 
-        // 게이지바
+        // 게이지바5
         JProgressBar gaugeBar = new JProgressBar();
         gaugeBar.setValue(gauge);
         backPanel.add(gaugeBar);
+        gaugeBar.setBounds(-1, 835, 985, 40);
          // step 레이블
         JLabel stepsJL = new JLabel("steps: ");
         JLabel stepsJL2 = new JLabel(keyCount + "");
@@ -165,7 +149,7 @@ public class test1 extends JFrame {
         backPanel.add(backlbl);
 
         // 초기 위치
-        gaugeBar.setBounds(20, 800, 500, 40);
+
         charlbl.setBounds(charX, charY, charW, charW);
         backlbl.setBounds(0, startBackH, FramW, 5000);
         // 컨테이너에 패널 추가
@@ -183,14 +167,13 @@ public class test1 extends JFrame {
                             if (result[keyCount] == 0 && moveX < 0 || result[keyCount] == 1 && moveX > 0) {
                                 hp-=1;
                                 if(hp<=0){
-                                    System.out.println("게임오버");
-                                    new test1();
-                                    dispose();
+                                    gameRunning=false;
 
                                 }else{
                                     stop=1;
                                     new charDown(charlbl, moveX, charDown, charArr).start();
-
+                                    if(gauge<100&&gauge>0)
+                                        gaugeUp(gaugeBar, gauge-=6);
                                     for(int i=0;i<hplbl.length;i++){
                                         hplbl[i].setVisible(false);
 
@@ -207,7 +190,10 @@ public class test1 extends JFrame {
 
                                 new MoveBlockGround(blockArr, moveX, moveY).start();
                                 new CharAni(charlbl, moveX, charArr).start();
-                                gaugeUp(gaugeBar, gauge += 5);
+                                    if(gauge<100){
+                                        gaugeUp(gaugeBar, gauge += 3);
+                                    }
+                                
                                 keyCount++;
                                 stepsJL2.setText(keyCount + "");
                             }
@@ -222,13 +208,13 @@ public class test1 extends JFrame {
                             if (result[keyCount] == 1 && moveX < 0 || result[keyCount] == 0 && moveX > 0) {
                                 hp-=1;
                                 if(hp<=0){
-                                    System.out.println("게임오버");
-                                    new test1();
-                                    dispose();
-
+                                    gameRunning=false;
+                                    
                                 }else{
                                     stop=1;
                                     new charDown(charlbl, moveX, charDown, charArr).start();
+                                    if(gauge<100&&gauge>0)
+                                         gaugeUp(gaugeBar, gauge-=6);
 
                                     for(int i=0;i<hplbl.length;i++){
                                         hplbl[i].setVisible(false);
@@ -243,9 +229,11 @@ public class test1 extends JFrame {
                                 new MoveBackGround(backlbl).start();
                                 new MoveBlockGround(blockArr, moveX, moveY).start();
                                 new CharAni(charlbl, moveX, charArr).start();
-                                gaugeUp(gaugeBar, gauge += 5);
-                            keyCount++;
-                            stepsJL2.setText(keyCount + "");
+                                if(gauge<100){
+                                    gaugeUp(gaugeBar, gauge += 3);
+                                }
+                                keyCount++;
+                                stepsJL2.setText(keyCount + "");
                             
 
                             }
@@ -273,14 +261,35 @@ public class test1 extends JFrame {
 
         });
 
+        //게이지 내려줌
+
+        try {
+            while(gameRunning){
+                Thread.sleep(250);
+                if(gauge<100&&gauge>0){
+                    gaugeUp(gaugeBar, --gauge);
+                    System.out.println(123);
+                }
+            }
+            if(gameRunning==false){
+                System.out.println("게임오버");
+                new test1();
+                dispose();
+
+            }
+        } catch (InterruptedException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+    
+
     }
 
     // 게이지 채워주는 함수
     public void gaugeUp(JProgressBar gaugeBar, int gauge) {
-
         gaugeBar.setValue(gauge);
     }
-
+   
     // 시야가려주는 스킬
     public void skillBlackEye(JLabel blackEyelbl) {
 
@@ -299,6 +308,7 @@ public class test1 extends JFrame {
 
     }
 }
+//캐릭터 애니메이션
 class CharAni extends Thread{
     JLabel charlbl;
     ImageIcon [] charArr;
@@ -315,13 +325,13 @@ class CharAni extends Thread{
         // TODO Auto-generated method stub
         int start=0,end=charArr.length/2;
         if(moveX>0){
-            start=6;   
+            start=charArr.length/2;   
             end=charArr.length;
         }
         for(int i=start;i<end;i++){
             charlbl.setIcon(charArr[i]);
             try {
-                Thread.sleep(50);
+                Thread.sleep(60);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -333,6 +343,7 @@ class CharAni extends Thread{
         super.run();
     }
 }
+//틀렸을때 애니메이션
 class charDown extends Thread{
     JLabel charlbl;
     ImageIcon [] charArr,charDown;
@@ -350,7 +361,7 @@ class charDown extends Thread{
         // TODO Auto-generated method stub
         int start=0,end=charDown.length/2;
         if(moveX>0){
-            start=6;   
+            start=charDown.length/2;   
             end=charDown.length;
         }
         for(int i=start;i<end;i++){
