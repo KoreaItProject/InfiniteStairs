@@ -14,8 +14,7 @@ public class test1 extends JFrame {
     int moveX = -110, moveY = 50;
     Image imgch;
     int keyCount = 0, gauge = 100;
-
-
+    static int stop = 0;
 
     public test1() {
 
@@ -29,7 +28,7 @@ public class test1 extends JFrame {
         JLabel[] blockArr = new JLabel[500];
         int result[] = new int[500];
 
-        ImageIcon background = new ImageIcon("Test1/src/img/backg.png");
+        ImageIcon background = new ImageIcon("InfiniteStairs/Test1/src/img/backg.png");
         imgch = background.getImage().getScaledInstance(FramW, 5000, Image.SCALE_SMOOTH);
         ImageIcon backgroundIcon = new ImageIcon(imgch);
 
@@ -44,41 +43,46 @@ public class test1 extends JFrame {
         // 버튼 생성
         // JButton btn = new JButton("b1");
         /////// 캐릭터 이미지 생성//////////
-        ImageIcon char1img = new ImageIcon("Test1/src/img/char1.png");
+        ImageIcon char1img = new ImageIcon("InfiniteStairs/Test1/src/img/char1.png");
         imgch = char1img.getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH);
         ImageIcon char1Icon = new ImageIcon(imgch);
 
-        ImageIcon char2img = new ImageIcon("Test1/src/img/char2.png");
+        ImageIcon char2img = new ImageIcon("InfiniteStairs/Test1/src/img/char2.png");
         imgch = char2img.getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH);
         ImageIcon char2Icon = new ImageIcon(imgch);
 
-        ImageIcon char3img = new ImageIcon("Test1/src/img/char3.png");
+        ImageIcon char3img = new ImageIcon("InfiniteStairs/Test1/src/img/char3.png");
         imgch = char3img.getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH);
         ImageIcon char3Icon = new ImageIcon(imgch);
 
-        ImageIcon char4img = new ImageIcon("Test1/src/img/char4.png");
+        ImageIcon char4img = new ImageIcon("InfiniteStairs/Test1/src/img/char4.png");
         imgch = char4img.getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH);
         ImageIcon char4Icon = new ImageIcon(imgch);
 
         ImageIcon[] charArr = { char1Icon, char2Icon, char3Icon, char4Icon };
         // 이미지 레이블 생성
 
-        //블록아이콘
-        ImageIcon block = new ImageIcon("Test1/src/img/block.png");
+        // 아이스 배경
+        ImageIcon iceBackimg = new ImageIcon("InfiniteStairs/Test1/src/img/iceback.png");
+        imgch = iceBackimg.getImage().getScaledInstance(FramW, FramH, Image.SCALE_SMOOTH);
+        ImageIcon iceBackIcon = new ImageIcon(imgch);
+        JLabel iceBackbl = new JLabel(iceBackIcon);
+        iceBackbl.setBounds(0, 0, FramW, FramH);
+        backPanel.add(iceBackbl);
+        iceBackbl.setVisible(false);
+
+        // 블록아이콘
+        ImageIcon block = new ImageIcon("InfiniteStairs/Test1/src/img/block.png");
         imgch = block.getImage().getScaledInstance(blockW, blockH, Image.SCALE_SMOOTH);
         ImageIcon blockIcon = new ImageIcon(imgch);
 
-
-        //스킬 아이콘
-        ImageIcon blackEye = new ImageIcon("Test1/src/img/blackEye.png");
+        // 스킬 아이콘
+        ImageIcon blackEye = new ImageIcon("InfiniteStairs/Test1/src/img/blackEye.png");
         imgch = blackEye.getImage().getScaledInstance(FramW, FramH, Image.SCALE_SMOOTH);
         ImageIcon blackEyeIcon = new ImageIcon(imgch);
 
-
-
         JLabel backlbl = new JLabel(backgroundIcon);
         JLabel charlbl = new JLabel(char3Icon);
-
 
         // step 레이블
         JLabel stepsJL = new JLabel("steps: ");
@@ -99,18 +103,18 @@ public class test1 extends JFrame {
 
         backPanel.add(stepsJL);
         backPanel.add(stepsJL2);
-        //게이지바
+        // 게이지바
         JProgressBar gaugeBar = new JProgressBar();
         gaugeBar.setValue(gauge);
         backPanel.add(gaugeBar);
 
-        //스킬레이블
-        JLabel blackEyelbl= new JLabel(blackEyeIcon);
+        // 스킬레이블
+        JLabel blackEyelbl = new JLabel(blackEyeIcon);
         blackEyelbl.setBounds(0, 0, FramW, 900);
         blackEyelbl.setVisible(false);
         backPanel.add(blackEyelbl);
 
-    // 패널에 모두 추가
+        // 패널에 모두 추가
         backPanel.add(charlbl);
         for (int i = 0; i < blockArr.length; i++) {
 
@@ -145,87 +149,90 @@ public class test1 extends JFrame {
         setVisible(true);
 
         addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {     
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_LEFT:
-                        new MoveBackGround(backlbl).start();
-                        moveX *= -1;
-                        if (moveX > 0) {
-                            charlbl.setIcon(char1Icon);
+            public void keyReleased(KeyEvent e) {
 
-                        } else {
-                            charlbl.setIcon(char3Icon);
-                        }
-                        
-                        new MoveBlockGround(blockArr,moveX,moveY).start();
-                        if (result[keyCount] == 0 && moveX > 0 || result[keyCount] == 1 && moveX < 0) {
-                            System.out.println("게임오버");
-                            new test1();
-                            dispose();
-                        }
+                if (stop == 0) {
+                    switch (e.getKeyCode()) {
+                        case KeyEvent.VK_LEFT:
+                            new MoveBackGround(backlbl).start();
+                            moveX *= -1;
+                            if (moveX > 0) {
+                                charlbl.setIcon(char1Icon);
 
+                            } else {
+                                charlbl.setIcon(char3Icon);
+                            }
 
-                        gaugeUp(gaugeBar, gauge += 5);
-                        keyCount++;
-                        stepsJL2.setText(keyCount + "");
-                        break;
+                            new MoveBlockGround(blockArr, moveX, moveY).start();
+                            if (result[keyCount] == 0 && moveX > 0 || result[keyCount] == 1 && moveX < 0) {
+                                System.out.println("게임오버");
+                                new test1();
+                                dispose();
+                            }
 
-                    case KeyEvent.VK_RIGHT:
+                            gaugeUp(gaugeBar, gauge += 5);
+                            keyCount++;
+                            stepsJL2.setText(keyCount + "");
+                            break;
 
-                    new MoveBackGround(backlbl).start();
-                    new MoveBlockGround(blockArr,moveX,moveY).start();
-                        
-                        if (result[keyCount] == 1 && moveX < 0 || result[keyCount] == 0 && moveX > 0) {
-                            System.out.println("게임오버");
-                            new test1();
-                            dispose();
+                        case KeyEvent.VK_RIGHT:
 
-                        }
+                            new MoveBackGround(backlbl).start();
+                            new MoveBlockGround(blockArr, moveX, moveY).start();
 
+                            if (result[keyCount] == 1 && moveX < 0 || result[keyCount] == 0 && moveX > 0) {
+                                System.out.println("게임오버");
+                                new test1();
+                                dispose();
 
-                        gaugeUp(gaugeBar, gauge += 5);
-                        keyCount++;
-                        stepsJL2.setText(keyCount + "");
-                        break;
+                            }
 
-                    case KeyEvent.VK_SPACE:
+                            gaugeUp(gaugeBar, gauge += 5);
+                            keyCount++;
+                            stepsJL2.setText(keyCount + "");
+                            break;
 
-                        if (gauge >= 100) {
-                            gaugeUp(gaugeBar, gauge = 0);
-                            System.out.println("스킬사용");
-                            skillBlackEye(blackEyelbl);
+                        case KeyEvent.VK_SPACE:
 
-                        } else {
-                            System.out.println("게이지 부족" + gauge);
-                        }
-                                           
-                      
-                    break;
-                }
-  
+                            if (gauge >= 100) {
+                                gaugeUp(gaugeBar, gauge = 0);
+                                System.out.println("스킬사용");
+                                // skillBlackEye(blackEyelbl);
+                                skillIce(iceBackbl);
+                                stop = 1;
+
+                            } else {
+                                System.out.println("게이지 부족" + gauge);
+                            }
+
+                            break;
+                    } // switch
+                } // if
 
             }
-            
+
         });
-       
-        
 
     }
-    public void ani2(JLabel charlbl, Icon[] charArr) {
 
-    }
- 
     // 게이지 채워주는 함수
     public void gaugeUp(JProgressBar gaugeBar, int gauge) {
 
-            gaugeBar.setValue(gauge);
+        gaugeBar.setValue(gauge);
     }
-    //시야가려주는 스킬
-    public void skillBlackEye(JLabel blackEyelbl){
+
+    // 시야가려주는 스킬
+    public void skillBlackEye(JLabel blackEyelbl) {
 
         new SkillBlackEye(blackEyelbl).start();
-      
+
     }
+
+    // 얼음 스킬
+    public void skillIce(JLabel iceBackbl) {
+        new SkillIce(iceBackbl).start();
+    }
+
     public static void main(String[] args) {
 
         new test1();
@@ -240,34 +247,59 @@ class SkillBlackEye extends Thread {
         this.blackEyelbl = blackEyelbl;
 
     }
+
     @Override
     public void run() {
-       
-        try { 
+
+        try {
             blackEyelbl.setVisible(true);
-            Thread.sleep(5000); 
+            Thread.sleep(5000);
             blackEyelbl.setVisible(false);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-       
+
     }
 }
 
-class MoveBackGround extends Thread{
-    JLabel backlbl;
+// ice 스킬 쓰레드
+class SkillIce extends Thread {
+    JLabel iceBackbl;
 
-    MoveBackGround(JLabel backlbl){
-        this.backlbl=backlbl;
+    SkillIce(JLabel iceBackbl) {
+        this.iceBackbl = iceBackbl;
     }
 
     @Override
-    public void run(){
-        try { 
-            for(int i=0;i<15;i++){
+    public void run() {
+
+        try {
+            iceBackbl.setVisible(true);
+            Thread.sleep(3000);
+            iceBackbl.setVisible(false);
+            test1.stop = 0;
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+} // SkillIce
+
+class MoveBackGround extends Thread {
+    JLabel backlbl;
+
+    MoveBackGround(JLabel backlbl) {
+        this.backlbl = backlbl;
+    }
+
+    @Override
+    public void run() {
+        try {
+            for (int i = 0; i < 15; i++) {
                 backlbl.setLocation(0, backlbl.getLocation().y + 1);
-                Thread.sleep(15); 
+                Thread.sleep(15);
             }
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
@@ -275,25 +307,25 @@ class MoveBackGround extends Thread{
         }
     }
 }
-class MoveBlockGround extends Thread{
+
+class MoveBlockGround extends Thread {
     JLabel[] blockArr;
-    int moveX,moveY;
+    int moveX, moveY;
 
-
-    MoveBlockGround(JLabel[] blockArr,int moveX,int moveY){
-        this.blockArr=blockArr;
-        this.moveX=moveX;
-        this.moveY=moveY;
+    MoveBlockGround(JLabel[] blockArr, int moveX, int moveY) {
+        this.blockArr = blockArr;
+        this.moveX = moveX;
+        this.moveY = moveY;
     }
 
     @Override
-    public void run(){
-        try { 
-            for(int k=0;k<10;k++){
+    public void run() {
+        try {
+            for (int k = 0; k < 10; k++) {
                 Thread.sleep(10);
                 for (int i = 0; i < blockArr.length; i++) {
-                    blockArr[i].setLocation(blockArr[i].getLocation().x - moveX/10,
-                            blockArr[i].getLocation().y + moveY/10);
+                    blockArr[i].setLocation(blockArr[i].getLocation().x - moveX / 10,
+                            blockArr[i].getLocation().y + moveY / 10);
 
                 }
             }
@@ -304,28 +336,27 @@ class MoveBlockGround extends Thread{
     }
 }
 // class MyThreadTest extends Thread {
-//     JLabel charlbl = null;
-//     Icon[] charArr = null;
-//     MyThreadTest(JLabel charlbl, Icon[] charArr) {
-//         this.charlbl = charlbl;
-//         this.charArr = charArr;
-//     }
-//     @Override
-//     public void run() {
-//         for (int j = 0; j < 10; j++) {
-            
-//             for (int i = 0; i < charArr.length; i++) {
-//                 System.out.println(i);
-//                 try {
-//                     charlbl.setIcon(charArr[i]);
-//                     Thread.sleep(100);
-
-//                 } catch (InterruptedException e1) {
-//                     System.out.println("IE. Exception.");
-//                     e1.printStackTrace();
-//                 }
-//             }
-//         }
-//     }
+// JLabel charlbl = null;
+// Icon[] charArr = null;
+// MyThreadTest(JLabel charlbl, Icon[] charArr) {
+// this.charlbl = charlbl;
+// this.charArr = charArr;
 // }
+// @Override
+// public void run() {
+// for (int j = 0; j < 10; j++) {
 
+// for (int i = 0; i < charArr.length; i++) {
+// System.out.println(i);
+// try {
+// charlbl.setIcon(charArr[i]);
+// Thread.sleep(100);
+
+// } catch (InterruptedException e1) {
+// System.out.println("IE. Exception.");
+// e1.printStackTrace();
+// }
+// }
+// }
+// }
+// }
