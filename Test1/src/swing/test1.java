@@ -14,7 +14,7 @@ public class test1 extends JFrame {
     int moveX = -110, moveY = 50;
     Image imgch;
     int keyCount = 0, gauge = 100;
-    int hp=3;
+    int hp=7;
     static int stop = 0;
 
     public test1() {
@@ -66,7 +66,10 @@ public class test1 extends JFrame {
             charArr[i]=new ImageIcon((new ImageIcon("Test1/src/img/snowChar/snowChar"+i+".png")).getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH));
         }
         // 이미지 레이블 생성
-        
+        ImageIcon[] charDown = new ImageIcon[12];
+        for(int i=0;i<charArr.length;i++){
+            charDown[i]=new ImageIcon((new ImageIcon("Test1/src/img/snowChar/snowChar"+(i+24)+".png")).getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH));
+        }
 
 
         //hp아이콘
@@ -185,6 +188,9 @@ public class test1 extends JFrame {
                                     dispose();
 
                                 }else{
+                                    stop=1;
+                                    new charDown(charlbl, moveX, charDown, charArr).start();
+
                                     for(int i=0;i<hplbl.length;i++){
                                         hplbl[i].setVisible(false);
 
@@ -221,6 +227,9 @@ public class test1 extends JFrame {
                                     dispose();
 
                                 }else{
+                                    stop=1;
+                                    new charDown(charlbl, moveX, charDown, charArr).start();
+
                                     for(int i=0;i<hplbl.length;i++){
                                         hplbl[i].setVisible(false);
 
@@ -319,6 +328,42 @@ class CharAni extends Thread{
             }
         }
         charlbl.setIcon(charArr[0+start]);
+
+
+        super.run();
+    }
+}
+class charDown extends Thread{
+    JLabel charlbl;
+    ImageIcon [] charArr,charDown;
+    int moveX;
+    charDown(JLabel charlbl, int moveX,ImageIcon [] charDown,ImageIcon [] charArr){
+
+        this.charArr=charArr;
+        this.charDown=charDown;
+        this.charlbl=charlbl;
+        this.moveX=moveX;
+    }
+
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        int start=0,end=charDown.length/2;
+        if(moveX>0){
+            start=6;   
+            end=charDown.length;
+        }
+        for(int i=start;i<end;i++){
+            charlbl.setIcon(charDown[i]);
+            try {
+                Thread.sleep(70);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        charlbl.setIcon(charArr[0+start]);
+        test1.stop=0;
 
 
         super.run();
