@@ -94,7 +94,7 @@ public class test extends JFrame{
     
     public static void main(String[] args) {
  
-        test  t = new test();
+        new test();
  
     }
 }

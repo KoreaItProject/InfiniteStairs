@@ -1,8 +1,8 @@
 package swing.Move;
 
-import javax.swing.ImageIcon;
+
 import javax.swing.JLabel;
-import swing.GameStartFrame;
+
 
 
 public class MoveBackGround extends Thread {

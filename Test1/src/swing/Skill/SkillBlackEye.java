@@ -1,8 +1,8 @@
 package swing.Skill;
 
-import javax.swing.ImageIcon;
+
 import javax.swing.JLabel;
-import swing.GameStartFrame;
+
 
 
 public class SkillBlackEye extends Thread {
