@@ -22,8 +22,6 @@ public class GameStartFrame extends JFrame {
     boolean gameRunning=true;
     int blockCount;
 
-    CharAni charAni;
-    CharDown charDown;
 
 
 
@@ -39,15 +37,11 @@ public class GameStartFrame extends JFrame {
       
        
 
-        ImageIcon background = new ImageIcon(imgPath+"backg.png");
-        imgch = background.getImage().getScaledInstance(FramW, 5000, Image.SCALE_SMOOTH);
-        ImageIcon backgroundIcon = new ImageIcon(imgch);
+        ImageIcon backgroundIcon = imgMk("backg.png",FramW,5000);
 
         // 레이블을 넣기 위한 패널 생성
 
         JPanel backPanel = new JPanel() ;
-
-        // 패널 레이아웃 설정 레이아웃을 설정해야지 버튼의 위치 크기를 조절할 수 있다.(기본 레이아웃은 불가)
         backPanel.setLayout(null);
 
     
@@ -55,20 +49,18 @@ public class GameStartFrame extends JFrame {
         //캐릭터
         ImageIcon[] charArr = new ImageIcon[12];
         for(int i=0;i<charArr.length;i++){
-            charArr[i]=new ImageIcon((new ImageIcon(imgPath+"snowChar/snowChar"+i+".png")).getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH));
+            charArr[i]=imgMk("snowChar/snowChar"+i+".png", charW, charH);
         }
         // 이미지 레이블 생성
         ImageIcon[] charDown = new ImageIcon[12];
         for(int i=0;i<charArr.length;i++){
-            charDown[i]=new ImageIcon((new ImageIcon(imgPath+"snowChar/snowChar"+(i+24)+".png")).getImage().getScaledInstance(charW, charH, Image.SCALE_SMOOTH));
+            charDown[i]=imgMk("snowChar/snowChar"+(i+24)+".png", charW, charH);
         }
         
 
 
         //hp아이콘
-        ImageIcon hpimg = new ImageIcon(imgPath+"hp.png");
-        imgch = hpimg.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        ImageIcon hpIcon = new ImageIcon(imgch);
+        ImageIcon hpIcon =imgMk("hp.png", 50,50);
         JLabel []hplbl=new JLabel[hp];
         for(int i=0;i<hp;i++){
             hplbl[i]=new JLabel(hpIcon);
@@ -83,39 +75,31 @@ public class GameStartFrame extends JFrame {
         gaugeBar.setValue(gauge);
         backPanel.add(gaugeBar);
         gaugeBar.setBounds(-1, 835, 985, 40);
-         // step 레이블
+
+         // step 
         JLabel stepsJL = new JLabel("steps: ");
         JLabel stepsJL2 = new JLabel(keyCount + "");
-
-        // step 사이즈 및 폰트
         int size = stepsJL.getFont().getSize();
         stepsJL.setForeground(Color.BLUE);
         stepsJL2.setForeground(Color.BLUE);
-
         Font font = new Font("Gothic", Font.BOLD, size + 10);
         stepsJL.setFont(font);
         stepsJL2.setFont(font);
-
         // step 위치값
         stepsJL.setBounds(30, -430, 1000, 1000);
         stepsJL2.setBounds(100, -430, 1000, 1000);
-
         backPanel.add(stepsJL);
         backPanel.add(stepsJL2);
 
         // 아이스 배경
-        ImageIcon iceBackimg = new ImageIcon(imgPath+"iceback.png");
-        imgch = iceBackimg.getImage().getScaledInstance(FramW, FramH, Image.SCALE_SMOOTH);
-        ImageIcon iceBackIcon = new ImageIcon(imgch);
+        ImageIcon iceBackIcon = imgMk("iceback.png",FramW,FramH);
         JLabel iceBackbl = new JLabel(iceBackIcon);
         iceBackbl.setBounds(0, 0, FramW, FramH);
         backPanel.add(iceBackbl);
         iceBackbl.setVisible(false);
 
         // 스킬 아이콘
-        ImageIcon blackEye = new ImageIcon(imgPath+"blackEye.png");
-        imgch = blackEye.getImage().getScaledInstance(FramW, FramH, Image.SCALE_SMOOTH);
-        ImageIcon blackEyeIcon = new ImageIcon(imgch);
+        ImageIcon blackEyeIcon = imgMk("blackEye.png",FramW,FramH);
         JLabel backlbl = new JLabel(backgroundIcon);
         JLabel charlbl = new JLabel(charArr[0]);
         JLabel blackEyelbl = new JLabel(blackEyeIcon);
@@ -128,9 +112,7 @@ public class GameStartFrame extends JFrame {
         // 블록아이콘
         JLabel[] blockArr = new JLabel[blockCount];
         int result[] = new int[blockCount];
-        ImageIcon block = new ImageIcon(imgPath+"block.png");
-        imgch = block.getImage().getScaledInstance(blockW, blockH, Image.SCALE_SMOOTH);
-        ImageIcon blockIcon = new ImageIcon(imgch);
+        ImageIcon blockIcon = imgMk("block.png",blockW,blockH);
         backPanel.add(charlbl);
         for (int i = 0; i < blockArr.length; i++) {
             blockArr[i] = new JLabel(blockIcon);
@@ -163,6 +145,7 @@ public class GameStartFrame extends JFrame {
         add(backPanel);
         setVisible(true);
 
+        //키이벤트
         addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
 
@@ -170,79 +153,24 @@ public class GameStartFrame extends JFrame {
                     switch (e.getKeyCode()) {
                         case KeyEvent.VK_LEFT:
                   
-
-                            if (result[keyCount] == 0 && moveX < 0 || result[keyCount] == 1 && moveX > 0) {
-                                hp-=1;
-                                if(hp<=0){
-                                    gameRunning=false;
-
-                                }else{
-                                    
-                                    new CharDown(charlbl, charDown, charArr).start();
-                                    if(gauge<100&&gauge>0)
-                                        gaugeUp(gaugeBar, gauge-=6);
-                                    for(int i=0;i<hplbl.length;i++){
-                                        hplbl[i].setVisible(false);
-
-                                    }
-                                    for(int i=0;i<hp;i++){
-                                        hplbl[i].setVisible(true);
-                                    }
-                                }
-
-                              
+                            if (result[keyCount] == 0 && moveX < 0 || result[keyCount] == 1 && moveX > 0) {//틀렸을때
+                                down(charlbl, charDown, charArr, gaugeBar, hplbl);//틀렸다함수
+                           
                             }else{
-                                new MoveBackGround(backlbl).start();    
                                 moveX *= -1;
-
-                                new MoveBlock(blockArr, moveX, moveY).start();
-
-                                new CharAni(charlbl, charArr).start();
-                                    if(gauge<100){
-                                        gaugeUp(gaugeBar, gauge += 3);
-                                    }
-                                
-                                keyCount++;
-                                stepsJL2.setText(keyCount + "");
+                                moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2);
                             }
 
-                           
                             break;
 
                         case KeyEvent.VK_RIGHT:
 
-                           
-
-                            if (result[keyCount] == 1 && moveX < 0 || result[keyCount] == 0 && moveX > 0) {
-                                hp-=1;
-                                if(hp<=0){
-                                    gameRunning=false;
-                                    
-                                }else{
-
-                                    new CharDown(charlbl, charDown, charArr).start();
-                                    if(gauge<100&&gauge>0)
-                                         gaugeUp(gaugeBar, gauge-=6);
-
-                                    for(int i=0;i<hplbl.length;i++){
-                                        hplbl[i].setVisible(false);
-
-                                    }
-                                    for(int i=0;i<hp;i++){
-                                        hplbl[i].setVisible(true);
-                                    }
-                                }
-
+                            if (result[keyCount] == 1 && moveX < 0 || result[keyCount] == 0 && moveX > 0) {//틀렸을때
+               
+                                down(charlbl, charDown, charArr, gaugeBar, hplbl);//틀렸다함수
                             }else{
-                                new MoveBackGround(backlbl).start();
-                                new MoveBlock(blockArr, moveX, moveY).start();
-                                new CharAni(charlbl, charArr).start();
-                                if(gauge<100){
-                                    gaugeUp(gaugeBar, gauge += 3);
-                                }
-                                keyCount++;
-                                stepsJL2.setText(keyCount + "");
-                            
+                                
+                                moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2);
 
                             }
                             break;
@@ -252,10 +180,8 @@ public class GameStartFrame extends JFrame {
 
                             if (gauge >= 100) {
                                 gaugeUp(gaugeBar, gauge = 0);
-
-                                //new SkillBlackEye(blackEyelbl).start();;
-                                new SkillIce(iceBackbl).start();
-                               
+                                new SkillBlackEye(blackEyelbl).start();;
+                               //new SkillIce(iceBackbl).start();
                             } else {
 
                             }
@@ -289,7 +215,7 @@ public class GameStartFrame extends JFrame {
             e1.printStackTrace();
         }
     
-
+  
     }
     //setting을 가져옴
     public void getSetting(){
@@ -305,34 +231,40 @@ public class GameStartFrame extends JFrame {
    
 
 
+    //이미지 생성쓰
+    public ImageIcon imgMk(String path,int w,int h){
 
+        return new ImageIcon(new ImageIcon(imgPath+path).getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH));
+    }
 
+    //틀렸을때 함수
+    public void down(JLabel charlbl,ImageIcon[] charDown,ImageIcon [] charArr,JProgressBar gaugeBar,JLabel [] hplbl){
+        hp--;
+        if(hp<=0){
+            gameRunning=false;//죽음
+        }else{
+            new CharDown(charlbl, charDown, charArr).start();
+            if(gauge<100&&gauge>0)
+                 gaugeUp(gaugeBar, gauge-=6);
+    
+            for(int i=0;i<hplbl.length;i++){
+                hplbl[i].setVisible(false);
+    
+            }
+            for(int i=0;i<hp;i++){
+                hplbl[i].setVisible(true);
+            }
+        }
+    }
+    //캐릭터 움직이는 함수
+    public void moving(JLabel backlbl,JLabel[] blockArr,JLabel charlbl, ImageIcon[] charArr,JProgressBar gaugeBar,JLabel stepsJL2){
+        new MoveBackGround(backlbl).start();
+        new MoveBlock(blockArr, moveX, moveY).start();
+        new CharAni(charlbl, charArr).start();
+        if(gauge<100){
+            gaugeUp(gaugeBar, gauge += 3);
+        }
+        keyCount++;
+        stepsJL2.setText(keyCount + "");
+    }
 }
-
-
-
-// class MyThreadTest extends Thread {
-// JLabel charlbl = null;
-// Icon[] charArr = null;
-// MyThreadTest(JLabel charlbl, Icon[] charArr) {
-// this.charlbl = charlbl;
-// this.charArr = charArr;
-// }
-// @Override
-// public void run() {
-// for (int j = 0; j < 10; j++) {
-
-// for (int i = 0; i < charArr.length; i++) {
-// System.out.println(i);
-// try {
-// charlbl.setIcon(charArr[i]);
-// Thread.sleep(100);
-
-// } catch (InterruptedException e1) {
-// System.out.println("IE. Exception.");
-// e1.printStackTrace();
-// }
-// }
-// }
-// }
-// }
