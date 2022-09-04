@@ -5,6 +5,8 @@ import javax.swing.*;
 import swing.Char.*;
 import swing.Move.*;
 import swing.Skill.*;
+import swing.Sub.StartCount;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -22,6 +24,7 @@ public class GameStartFrame extends JFrame {
     boolean gameRunning=true;
     int blockCount;
 
+    int gameStartCountW = 1000, gameStartCountH = 400;
 
 
 
@@ -33,16 +36,45 @@ public class GameStartFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
-
-      
-       
-
-        ImageIcon backgroundIcon = imgMk("backg.png",FramW,5000);
-
         // 레이블을 넣기 위한 패널 생성
 
         JPanel backPanel = new JPanel() ;
         backPanel.setLayout(null);
+        //배경
+        ImageIcon backgroundIcon = imgMk("backg.png",FramW,5000);
+
+
+      //3-2-1-go
+        ImageIcon[] ImgArr3 = new ImageIcon[10];
+        ImageIcon[] ImgArr2 = new ImageIcon[10];
+        ImageIcon[] ImgArr1 = new ImageIcon[10];
+        ImageIcon[] ImgArrGo = new ImageIcon[10];
+        for (int i = 0; i < ImgArr1.length; i++) {
+            ImgArr3[i] = imgMk("count/3-0.png", gameStartCountW - 100 * i, gameStartCountH - 40 * i);
+            ImgArr2[i] = imgMk("count/2.png", gameStartCountW - 100 * i, gameStartCountH - 40 * i);
+            ImgArr1[i] =  imgMk("count/1.png", gameStartCountW - 100 * i, gameStartCountH - 40 * i);
+            ImgArrGo[i] =  imgMk("count/go.png", gameStartCountW - 100 * i, gameStartCountH - 40 * i);
+        }
+        JLabel jl3 = new JLabel(ImgArr3[0]);
+        JLabel jl2 = new JLabel(ImgArr2[0]);
+        JLabel jl1 = new JLabel(ImgArr1[0]);
+        JLabel jlGo = new JLabel(ImgArrGo[0]);
+        jl3.setBounds(0, 0, gameStartCountW, gameStartCountH);
+        jl2.setBounds(0, 0, gameStartCountW, gameStartCountH);
+        jl1.setBounds(0, 0, gameStartCountW, gameStartCountH);
+        jlGo.setBounds(0, 0, gameStartCountW, gameStartCountH);
+
+        backPanel.add(jl3);
+        backPanel.add(jl2);
+        backPanel.add(jl1);
+        backPanel.add(jlGo);
+
+        jl2.setVisible(false);
+        jl1.setVisible(false);
+        jlGo.setVisible(false);
+   
+
+       
 
     
 
@@ -90,15 +122,15 @@ public class GameStartFrame extends JFrame {
         stepsJL2.setBounds(100, -430, 1000, 1000);
         backPanel.add(stepsJL);
         backPanel.add(stepsJL2);
-
-        // 아이스 배경
+ 
+        // 스킬 아이스
         ImageIcon iceBackIcon = imgMk("iceback.png",FramW,FramH);
         JLabel iceBackbl = new JLabel(iceBackIcon);
         iceBackbl.setBounds(0, 0, FramW, FramH);
         backPanel.add(iceBackbl);
         iceBackbl.setVisible(false);
 
-        // 스킬 아이콘
+        // 스킬 블랙아이
         ImageIcon blackEyeIcon = imgMk("blackEye.png",FramW,FramH);
         JLabel backlbl = new JLabel(backgroundIcon);
         JLabel charlbl = new JLabel(charArr[0]);
@@ -194,8 +226,9 @@ public class GameStartFrame extends JFrame {
 
         });
 
+        //카운트 스타트
+        countGo(jl3, ImgArr3, ImgArr2, ImgArr1, ImgArrGo);
         //게이지 내려줌
-
         try {
             while(gameRunning){
                 Thread.sleep(250);
@@ -211,7 +244,7 @@ public class GameStartFrame extends JFrame {
 
             }
         } catch (InterruptedException e1) {
-            // TODO Auto-generated catch block
+
             e1.printStackTrace();
         }
     
@@ -224,6 +257,13 @@ public class GameStartFrame extends JFrame {
         blockCount=settings.getBlockCount();
         hp=settings.getHp();
     }
+        // 시작 카운트
+    public void countGo(JLabel jl3, ImageIcon[] ImgArr3, ImageIcon[] ImgArr2,
+        ImageIcon[] ImgArr1,
+        ImageIcon[] ImgArrGo) {
+        new StartCount(jl3, ImgArr3, ImgArr2, ImgArr1, ImgArrGo).start();
+    }
+
     // 게이지 채워주는 함수
     public void gaugeUp(JProgressBar gaugeBar, int gauge) {
         gaugeBar.setValue(gauge);
