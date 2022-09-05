@@ -5,6 +5,7 @@ public class Setting {
     private int blockCount=300; //생성할 블록 갯수
     private int hp=10; //hp
     private int gameTime= 120;//게임 진행시간
+    
     private String charName[]={"snowChar","ghostChar","miraChar"};
     private int charW[] = {180,130,100}, charH[] = {180,130,100} ,charX[] = {410,430,460}, charY[] = {330,375,410};
 

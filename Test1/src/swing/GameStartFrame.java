@@ -30,10 +30,10 @@ public class GameStartFrame extends JFrame {
 
    
 
-    public GameStartFrame() {
+    public GameStartFrame(int charIdx) {
         super("J프레임 테스트"); // 프레임의 타이틀   
 
-        getSetting(0);
+        getSetting(charIdx);
 
 
         setSize(FramW, FramH); // 컨테이너 크기 지정
@@ -274,7 +274,7 @@ public class GameStartFrame extends JFrame {
                     timerCount.stop();
                     gameRunning=true;
                     dispose();
-                    new GameStartFrame();
+                    new GameStartFrame(charIdx);
                     
                
                  }
