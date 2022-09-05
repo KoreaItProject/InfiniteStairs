@@ -6,6 +6,7 @@ import swing.Char.*;
 import swing.Move.*;
 import swing.Skill.*;
 import swing.Sub.StartCount;
+import swing.Sub.TimerCount;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -19,9 +20,9 @@ public class GameStartFrame extends JFrame {
 
     public static int moveX = -110, moveY = 50 ,stop = 0;
     Image imgch;
-    int keyCount = 0, gauge = 100;
+    int keyCount = 0, gauge = 100,combo=0;
     int hp;
-    boolean gameRunning=true;
+    public static boolean gameRunning=true;
     int blockCount;
 
     int gameStartCountW = 1000, gameStartCountH = 400;
@@ -109,20 +110,40 @@ public class GameStartFrame extends JFrame {
         gaugeBar.setBounds(-1, 835, 985, 40);
 
          // step 
-        JLabel stepsJL = new JLabel("steps: ");
+        JLabel stepsJL = new JLabel("step : ");
         JLabel stepsJL2 = new JLabel(keyCount + "");
         int size = stepsJL.getFont().getSize();
         stepsJL.setForeground(Color.BLUE);
         stepsJL2.setForeground(Color.BLUE);
-        Font font = new Font("Gothic", Font.BOLD, size + 10);
+        Font font = new Font("Gothic", Font.BOLD, size + 12);
         stepsJL.setFont(font);
         stepsJL2.setFont(font);
-        // step 위치값
         stepsJL.setBounds(30, -430, 1000, 1000);
         stepsJL2.setBounds(100, -430, 1000, 1000);
         backPanel.add(stepsJL);
         backPanel.add(stepsJL2);
+
+         // combo
+         JLabel comboJL = new JLabel("combo : ");
+         JLabel comboJL2 = new JLabel(keyCount + "");
+         comboJL.setForeground(Color.BLUE);
+         comboJL2.setForeground(Color.BLUE);
+         comboJL.setFont(font);
+         comboJL2.setFont(font);
+         comboJL.setBounds(30, -390, 1000, 1000);
+         comboJL2.setBounds(130, -390, 1000, 1000);
+         backPanel.add(comboJL);
+         backPanel.add(comboJL2);
+
+         //time
+         JLabel timelbl = new JLabel("5분 30초");
+         timelbl.setForeground(Color.BLUE);
+         timelbl.setFont(new Font("Gothic", Font.BOLD, size + 20));
+         timelbl.setBounds(840, -470, 1000, 1000);
+         backPanel.add(timelbl);
+
  
+
         // 스킬 아이스
         ImageIcon iceBackIcon = imgMk("iceback.png",FramW,FramH);
         JLabel iceBackbl = new JLabel(iceBackIcon);
@@ -186,11 +207,11 @@ public class GameStartFrame extends JFrame {
                         case KeyEvent.VK_LEFT:
                   
                             if (result[keyCount] == 0 && moveX < 0 || result[keyCount] == 1 && moveX > 0) {//틀렸을때
-                                down(charlbl, charDown, charArr, gaugeBar, hplbl);//틀렸다함수
+                                down(charlbl, charDown, charArr, gaugeBar, hplbl,comboJL2);//틀렸다함수
                            
                             }else{
                                 moveX *= -1;
-                                moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2);
+                                moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2,comboJL2);
                             }
 
                             break;
@@ -199,10 +220,10 @@ public class GameStartFrame extends JFrame {
 
                             if (result[keyCount] == 1 && moveX < 0 || result[keyCount] == 0 && moveX > 0) {//틀렸을때
                
-                                down(charlbl, charDown, charArr, gaugeBar, hplbl);//틀렸다함수
+                                down(charlbl, charDown, charArr, gaugeBar, hplbl,comboJL2);//틀렸다함수
                             }else{
                                 
-                                moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2);
+                                moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2,comboJL2);
 
                             }
                             break;
@@ -228,21 +249,38 @@ public class GameStartFrame extends JFrame {
 
         //카운트 스타트
         countGo(jl3, ImgArr3, ImgArr2, ImgArr1, ImgArrGo);
-        //게이지 내려줌
+        
+        //프레임 메인쓰레드
         try {
-            while(gameRunning){
-                Thread.sleep(250);
-                if(gauge<100&&gauge>0){
-                    gaugeUp(gaugeBar, --gauge);
-
-
+            TimerCount timerCount=new TimerCount();
+            timelbl.setText(timerCount.getTime()); 
+            Thread.sleep(3100);
+            timerCount.start();
+            
+    
+              
+          
+             
+                
+                while(gameRunning){    
+                     timelbl.setText(timerCount.getTime());
+                    Thread.sleep(250);
+                    if(gauge<100&&gauge>0){
+                        gaugeUp(gaugeBar, --gauge);
+    
+    
+                    }
                 }
-            }
-            if(gameRunning==false){
-                new GameStartFrame();
-                dispose();
-
-            }
+                if(gameRunning==false){
+                    timerCount.stop();
+                    gameRunning=true;
+                    dispose();
+                    new GameStartFrame();
+                    
+               
+                 }
+         
+           
         } catch (InterruptedException e1) {
 
             e1.printStackTrace();
@@ -278,8 +316,10 @@ public class GameStartFrame extends JFrame {
     }
 
     //틀렸을때 함수
-    public void down(JLabel charlbl,ImageIcon[] charDown,ImageIcon [] charArr,JProgressBar gaugeBar,JLabel [] hplbl){
+    public void down(JLabel charlbl,ImageIcon[] charDown,ImageIcon [] charArr,JProgressBar gaugeBar,JLabel [] hplbl,JLabel comboJL2){
         hp--;
+        combo=0;
+        comboJL2.setText(combo + "");
         if(hp<=0){
             gameRunning=false;//죽음
         }else{
@@ -297,7 +337,7 @@ public class GameStartFrame extends JFrame {
         }
     }
     //캐릭터 움직이는 함수
-    public void moving(JLabel backlbl,JLabel[] blockArr,JLabel charlbl, ImageIcon[] charArr,JProgressBar gaugeBar,JLabel stepsJL2){
+    public void moving(JLabel backlbl,JLabel[] blockArr,JLabel charlbl, ImageIcon[] charArr,JProgressBar gaugeBar,JLabel stepsJL2,JLabel comboJL2){
         new MoveBackGround(backlbl).start();
         new MoveBlock(blockArr, moveX, moveY).start();
         new CharAni(charlbl, charArr).start();
@@ -305,6 +345,8 @@ public class GameStartFrame extends JFrame {
             gaugeUp(gaugeBar, gauge += 3);
         }
         keyCount++;
+        combo++;
         stepsJL2.setText(keyCount + "");
+        comboJL2.setText(combo + "");
     }
 }
