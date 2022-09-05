@@ -16,7 +16,7 @@ public class GameStartFrame extends JFrame {
 
     String imgPath;
     int FramW = 1000, FramH = 900, blockW = 100, blockH = 50, blockX = 450, blockY = 500,
-            charW = 200, charH = 200, charX = 400, charY = 310, startBackH = -4140;
+            charW , charH , charX , charY , startBackH = -4140;
 
     public static int moveX = -110, moveY = 50 ,stop = 0;
     Image imgch;
@@ -24,14 +24,17 @@ public class GameStartFrame extends JFrame {
     int hp;
     public static boolean gameRunning=true;
     int blockCount;
+    String charName;
 
     int gameStartCountW = 1000, gameStartCountH = 400;
 
-
+   
 
     public GameStartFrame() {
         super("J프레임 테스트"); // 프레임의 타이틀   
-        getSetting();
+
+        getSetting(0);
+
 
         setSize(FramW, FramH); // 컨테이너 크기 지정
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -82,12 +85,12 @@ public class GameStartFrame extends JFrame {
         //캐릭터
         ImageIcon[] charArr = new ImageIcon[12];
         for(int i=0;i<charArr.length;i++){
-            charArr[i]=imgMk("snowChar/snowChar"+i+".png", charW, charH);
+            charArr[i]=imgMk(charName+"/"+charName+i+".png", charW, charH);
         }
         // 이미지 레이블 생성
         ImageIcon[] charDown = new ImageIcon[12];
         for(int i=0;i<charArr.length;i++){
-            charDown[i]=imgMk("snowChar/snowChar"+(i+24)+".png", charW, charH);
+            charDown[i]=imgMk(charName+"/"+charName+(i+24)+".png", charW, charH);
         }
         
 
@@ -152,11 +155,11 @@ public class GameStartFrame extends JFrame {
         iceBackbl.setVisible(false);
 
         // 스킬 블랙아이
-        ImageIcon blackEyeIcon = imgMk("blackEye.png",FramW,FramH);
+        ImageIcon blackEyeIcon = imgMk("blackEye3.png",FramW,FramH);
         JLabel backlbl = new JLabel(backgroundIcon);
         JLabel charlbl = new JLabel(charArr[0]);
         JLabel blackEyelbl = new JLabel(blackEyeIcon);
-        blackEyelbl.setBounds(0, 0, FramW, 900);
+        blackEyelbl.setBounds(0, 0, FramW, FramH);
         blackEyelbl.setVisible(false);
         backPanel.add(blackEyelbl);
 
@@ -258,10 +261,6 @@ public class GameStartFrame extends JFrame {
             timerCount.start();
             
     
-              
-          
-             
-                
                 while(gameRunning){    
                      timelbl.setText(timerCount.getTime());
                     Thread.sleep(250);
@@ -289,11 +288,16 @@ public class GameStartFrame extends JFrame {
   
     }
     //setting을 가져옴
-    public void getSetting(){
+    public void getSetting(int charIdx){
         Setting settings=new Setting();  
         imgPath= settings.getImgPath();
         blockCount=settings.getBlockCount();
         hp=settings.getHp();
+        charW = settings.getCharW()[charIdx];
+        charH = settings.getCharH()[charIdx];
+        charX = settings.getCharX()[charIdx];
+        charY = settings.getCharY()[charIdx];
+        charName=settings.getCharName()[charIdx];
     }
         // 시작 카운트
     public void countGo(JLabel jl3, ImageIcon[] ImgArr3, ImageIcon[] ImgArr2,
