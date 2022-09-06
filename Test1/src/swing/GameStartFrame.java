@@ -5,33 +5,50 @@ import javax.swing.*;
 import swing.Char.*;
 import swing.Move.*;
 import swing.Skill.*;
+import swing.Sub.GaugeDown;
 import swing.Sub.StartCount;
 import swing.Sub.TimerCount;
+import java.io.*;
+import java.net.*;
+import java.io.*;
 
 import java.awt.*;
 import java.awt.event.*;
 
 
-public class GameStartFrame extends JFrame {
+public class GameStartFrame extends JFrame implements Runnable
+{
 
+	String nick="aa";
     String imgPath;
     int FramW = 1000, FramH = 900, blockW = 100, blockH = 50, blockX = 450, blockY = 500,
             charW , charH , charX , charY , startBackH = -4140;
-
+    int skillIdx=1;
     public static int moveX = -110, moveY = 50 ,stop = 0;
     Image imgch;
-    int keyCount = 0, gauge = 100,combo=0;
+    int keyCount = 0 ,combo=0;
     int hp;
     public static boolean gameRunning=true;
     int blockCount;
     String charName;
-
     int gameStartCountW = 1000, gameStartCountH = 400;
-
-   
+    public static int gauge = 0;
+   JProgressBar gaugeBar;
+   public JLabel iceBackbl , blackEyelbl;
+    
+    
+   //상대
+   	String otherNick="bb";
+    int otherKeyCount=0,otherMoveX=-110;
+    private Socket socket;
+    private ObjectInputStream reader=null;
+    private ObjectOutputStream writer=null;   
+    public JLabel[] blockArr;
+    public JLabel otherChar;
+    public int otherSkill=0;
 
     public GameStartFrame(int charIdx) {
-        super("J프레임 테스트"); // 프레임의 타이틀   
+        super("J프레임 테스트"); // 프레임의 타이틀  
 
         getSetting(charIdx);
 
@@ -80,7 +97,7 @@ public class GameStartFrame extends JFrame {
 
        
 
-    
+   
 
         //캐릭터
         ImageIcon[] charArr = new ImageIcon[12];
@@ -92,7 +109,7 @@ public class GameStartFrame extends JFrame {
         for(int i=0;i<charArr.length;i++){
             charDown[i]=imgMk(charName+"/"+charName+(i+24)+".png", charW, charH);
         }
-        
+       
 
 
         //hp아이콘
@@ -107,12 +124,12 @@ public class GameStartFrame extends JFrame {
 
 
         // 게이지바5
-        JProgressBar gaugeBar = new JProgressBar();
+        gaugeBar = new JProgressBar();
         gaugeBar.setValue(gauge);
         backPanel.add(gaugeBar);
         gaugeBar.setBounds(-1, 835, 985, 40);
 
-         // step 
+         // step
         JLabel stepsJL = new JLabel("step : ");
         JLabel stepsJL2 = new JLabel(keyCount + "");
         int size = stepsJL.getFont().getSize();
@@ -149,7 +166,7 @@ public class GameStartFrame extends JFrame {
 
         // 스킬 아이스
         ImageIcon iceBackIcon = imgMk("iceback.png",FramW,FramH);
-        JLabel iceBackbl = new JLabel(iceBackIcon);
+        iceBackbl = new JLabel(iceBackIcon);
         iceBackbl.setBounds(0, 0, FramW, FramH);
         backPanel.add(iceBackbl);
         iceBackbl.setVisible(false);
@@ -157,19 +174,21 @@ public class GameStartFrame extends JFrame {
         // 스킬 블랙아이
         ImageIcon blackEyeIcon = imgMk("blackEye3.png",FramW,FramH);
         JLabel backlbl = new JLabel(backgroundIcon);
-        JLabel charlbl = new JLabel(charArr[0]);
-        JLabel blackEyelbl = new JLabel(blackEyeIcon);
+        blackEyelbl = new JLabel(blackEyeIcon);
         blackEyelbl.setBounds(0, 0, FramW, FramH);
         blackEyelbl.setVisible(false);
         backPanel.add(blackEyelbl);
 
-        
+        JLabel charlbl = new JLabel(charArr[0]);
+        backPanel.add(charlbl);
+        otherChar = new JLabel(charArr[0]);
+        backPanel.add(otherChar);
 
         // 블록아이콘
-        JLabel[] blockArr = new JLabel[blockCount];
+        blockArr = new JLabel[blockCount];
         int result[] = new int[blockCount];
         ImageIcon blockIcon = imgMk("block.png",blockW,blockH);
-        backPanel.add(charlbl);
+        
         for (int i = 0; i < blockArr.length; i++) {
             blockArr[i] = new JLabel(blockIcon);
             backPanel.add(blockArr[i]);
@@ -196,11 +215,13 @@ public class GameStartFrame extends JFrame {
         // 초기 위치
 
         charlbl.setBounds(charX, charY, charW, charW);
+        otherChar.setBounds(charX, charY, charW, charW);
         backlbl.setBounds(0, startBackH, FramW, 5000);
         // 컨테이너에 패널 추가
         add(backPanel);
         setVisible(true);
 
+        service();
         //키이벤트
         addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
@@ -208,13 +229,14 @@ public class GameStartFrame extends JFrame {
                 if (stop == 0) {
                     switch (e.getKeyCode()) {
                         case KeyEvent.VK_LEFT:
-                  
+                 
                             if (result[keyCount] == 0 && moveX < 0 || result[keyCount] == 1 && moveX > 0) {//틀렸을때
                                 down(charlbl, charDown, charArr, gaugeBar, hplbl,comboJL2);//틀렸다함수
                            
                             }else{
                                 moveX *= -1;
                                 moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2,comboJL2);
+                                send(0);
                             }
 
                             break;
@@ -225,18 +247,19 @@ public class GameStartFrame extends JFrame {
                
                                 down(charlbl, charDown, charArr, gaugeBar, hplbl,comboJL2);//틀렸다함수
                             }else{
-                                
+                               
                                 moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2,comboJL2);
-
+                                send(0);
                             }
                             break;
-                            
+                           
 
                         case KeyEvent.VK_SPACE:
 
                             if (gauge >= 100) {
                                 gaugeUp(gaugeBar, gauge = 0);
-                                new SkillBlackEye(blackEyelbl).start();;
+                                send(skillIdx);
+                                
                                //new SkillIce(iceBackbl).start();
                             } else {
 
@@ -253,29 +276,45 @@ public class GameStartFrame extends JFrame {
         //카운트 스타트
         countGo(jl3, ImgArr3, ImgArr2, ImgArr1, ImgArrGo);
         
+        //창닫을 경우
+        this.addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e){ 
+				//System.exit(0);
+				try{
+					//InfoDTO dto = new InfoDTO(nickName,Info.EXIT);
+					InfoDTO dto = new InfoDTO();
+					dto.setCommand(Info.EXIT);
+					writer.writeObject(dto);  //역슬러쉬가 필요가 없음
+					writer.flush();
+				}catch(IOException io){
+					io.printStackTrace();
+				}
+			}
+		});
+        
         //프레임 메인쓰레드
         try {
+        
             TimerCount timerCount=new TimerCount();
-            timelbl.setText(timerCount.getTime()); 
+            timelbl.setText(timerCount.getTime());
             Thread.sleep(3100);
             timerCount.start();
-            
-    
+        	new GaugeDown().start();
+   
                 while(gameRunning){    
+                	otherMove(otherKeyCount);
                      timelbl.setText(timerCount.getTime());
-                    Thread.sleep(250);
-                    if(gauge<100&&gauge>0){
-                        gaugeUp(gaugeBar, --gauge);
-    
-    
-                    }
+                    Thread.sleep(50);
+                    gaugeUp(gaugeBar, gauge);
+   
+                    
                 }
                 if(gameRunning==false){
                     timerCount.stop();
                     gameRunning=true;
                     dispose();
                     new GameStartFrame(charIdx);
-                    
+                   
                
                  }
          
@@ -284,9 +323,10 @@ public class GameStartFrame extends JFrame {
 
             e1.printStackTrace();
         }
-    
-  
+       
+ 
     }
+    
     //setting을 가져옴
     public void getSetting(int charIdx){
         Setting settings=new Setting();  
@@ -306,11 +346,8 @@ public class GameStartFrame extends JFrame {
         new StartCount(jl3, ImgArr3, ImgArr2, ImgArr1, ImgArrGo).start();
     }
 
-    // 게이지 채워주는 함수
-    public void gaugeUp(JProgressBar gaugeBar, int gauge) {
-        gaugeBar.setValue(gauge);
-    }
    
+    
 
 
     //이미지 생성쓰
@@ -330,10 +367,10 @@ public class GameStartFrame extends JFrame {
             new CharDown(charlbl, charDown, charArr).start();
             if(gauge<100&&gauge>0)
                  gaugeUp(gaugeBar, gauge-=6);
-    
+   
             for(int i=0;i<hplbl.length;i++){
                 hplbl[i].setVisible(false);
-    
+   
             }
             for(int i=0;i<hp;i++){
                 hplbl[i].setVisible(true);
@@ -353,4 +390,122 @@ public class GameStartFrame extends JFrame {
         stepsJL2.setText(keyCount + "");
         comboJL2.setText(combo + "");
     }
+    
+    
+    
+    ////소켓보내기
+    public void send(int skillIdx) {
+    	
+        try{
+            //서버로 보냄
+            String msg="";
+            InfoDTO dto = new InfoDTO();
+            dto.setStep(keyCount);
+            if(msg.equals("exit")){
+                dto.setCommand(Info.EXIT);
+            } else {
+                dto.setCommand(Info.SEND);
+                dto.setNickName(nick);
+                dto.setMoveX(moveX);
+                dto.setStep(keyCount);
+                dto.setSkill(skillIdx);
+            }
+            writer.writeObject(dto);
+            writer.flush();
+            dto.setSkill(0);
+        }catch(IOException io){
+            io.printStackTrace();
+        }
+       
+    }
+    
+    //서버 연결부
+    public void service(){
+        try{
+            socket = new Socket("58.224.48.139",9500);
+            reader= new ObjectInputStream(socket.getInputStream());
+            writer = new ObjectOutputStream(socket.getOutputStream());
+            System.out.println("전송 준비 완료!");
+           
+        } catch(UnknownHostException e ){
+            System.out.println("서버를 찾을 수 없습니다.");
+            e.printStackTrace();
+            System.exit(0);
+        } catch(IOException e){
+            System.out.println("서버와 연결이 안되었습니다.");
+            e.printStackTrace();
+            System.exit(0);
+        }
+        
+        
+        try{
+        	//연결시 서버에 보내는 코드
+            InfoDTO dto = new InfoDTO();
+            dto.setNickName(nick);
+            dto.setStep(keyCount);
+            dto.setMoveX(moveX);
+            dto.setCommand(Info.JOIN);
+            writer.writeObject(dto);  //역슬러쉬가 필요가 없음
+            writer.flush();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+       
+        //스레드 생성
+       
+        Thread t = new Thread(this);
+        t.start();
+
+    }
+    ////서버로부터 데이터 받기
+    @Override
+    public void run(){
+        
+        InfoDTO dto= null;
+        while(true){
+            try{
+                dto = (InfoDTO) reader.readObject();
+                if(dto.getCommand()==Info.EXIT){  //서버로부터 내 자신의 exit를 받으면 종료됨
+                    reader.close();
+                    writer.close();
+                    socket.close();
+                    System.exit(0);
+                } else if(dto.getCommand()==Info.SEND){
+   
+					 if(dto.getNickName()!=null&&dto.getNickName().equals(otherNick)) {
+						 otherKeyCount=dto.getStep(); 
+						 otherMoveX=dto.getMoveX();
+						
+						 if(dto.getSkill()==1) {
+							 new SkillIce(iceBackbl).start();
+						 }else if(dto.getSkill()==2) {
+							 new SkillBlackEye(blackEyelbl).start();
+						 }else if(dto.getSkill()==3) {
+							 new SkillIce(iceBackbl).start();
+						 }
+					 }
+	
+                }
+            }catch(IOException e){
+                e.printStackTrace();
+            }catch(ClassNotFoundException e){
+            	
+            	
+            	
+            	
+                e.printStackTrace();
+            }  
+        }
+    }
+    public void otherMove(int step) {
+    	otherChar.setLocation(blockArr[step].getLocation().x-20,blockArr[step].getLocation().y-130);
+
+    	
+    }
+    // 게이지 채워주는 함수
+    public void gaugeUp(JProgressBar gaugeBar, int gauge) {
+        gaugeBar.setValue(gauge);
+    }
+   
 }
+
