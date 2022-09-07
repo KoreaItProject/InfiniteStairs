@@ -19,7 +19,7 @@ import java.awt.event.*;
 public class GameStartFrame extends JFrame implements Runnable
 {
 
-	String nick="aa";
+	String nick="bb";
     String imgPath;
     int FramW = 1000, FramH = 900, blockW = 100, blockH = 50, blockX = 450, blockY = 500,
             charW , charH , charX , charY , startBackH = -4140;
@@ -37,10 +37,12 @@ public class GameStartFrame extends JFrame implements Runnable
    public JLabel iceBackbl , blackEyelbl;
    int result[];
    public JLabel[] blockArr;
+   public int charIdx;
+   public int gaugeUpNum=2;
     
     
    //상대
-   	String otherNick="bb";
+   	String otherNick="aa";
     int otherKeyCount=0,otherMoveX=-110;
     private Socket socket;
     private ObjectInputStream reader=null;
@@ -50,10 +52,13 @@ public class GameStartFrame extends JFrame implements Runnable
     public String otherCharName;
     int otherCharW , otherCharH ,  otherCharX ,  otherCharY;
     public ImageIcon[] otherCharArr,otherCharDown;
+    public int otherCharIdx;
 
 
     public GameStartFrame(int charIdx,int otherCharIdx) {
         super("J프레임 테스트"); // 프레임의 타이틀  
+        this.charIdx=charIdx;
+        this.otherCharIdx=otherCharIdx;
         service();
 
         getSetting(charIdx,otherCharIdx);
@@ -264,7 +269,7 @@ public class GameStartFrame extends JFrame implements Runnable
 
                             if (gauge >= 100) {
                                 gaugeUp(gaugeBar, gauge = 0);
-                                send(skillIdx);
+                                send(charIdx+1);
                                 
                                //new SkillIce(iceBackbl).start();
                             } else {
@@ -310,7 +315,7 @@ public class GameStartFrame extends JFrame implements Runnable
                 while(gameRunning){    
                 	otherMove(otherKeyCount);
                      timelbl.setText(timerCount.getTime());
-                    Thread.sleep(50);
+                    Thread.sleep(100);
                     gaugeUp(gaugeBar, gauge);
    
                     
@@ -327,8 +332,7 @@ public class GameStartFrame extends JFrame implements Runnable
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-                   dispose();
-                    new GameStartFrame(charIdx,otherCharIdx);
+
                    
                
                  }
@@ -404,11 +408,10 @@ public class GameStartFrame extends JFrame implements Runnable
         new MoveBlock(blockArr, moveX, moveY).start();
         new CharAni(charlbl, charArr,moveX).start();
         if(gauge<100){
-            gaugeUp(gaugeBar, gauge += 3);
+            gaugeUp(gaugeBar, gauge += ((gaugeUpNum+(combo*0.04))<=5?(gaugeUpNum+(combo*0.04)):5) );
         }
         keyCount++;
         combo++;
-        stepsJL2.setText(keyCount + "");
         comboJL2.setText(combo + "");
     }
     
@@ -419,7 +422,6 @@ public class GameStartFrame extends JFrame implements Runnable
     	
         try{
             //서버로 보냄
-        	System.out.println("send");
             String msg="";
             InfoDTO dto = new InfoDTO();
             dto.setStep(keyCount);
@@ -493,7 +495,8 @@ public class GameStartFrame extends JFrame implements Runnable
                     reader.close();
                     writer.close();
                     socket.close();
-                    System.exit(0);
+                    dispose();
+                    new GameStartFrame(charIdx,otherCharIdx);
                 } else if(dto.getCommand()==Info.SEND){
    
 					 if(dto.getNickName()!=null&&dto.getNickName().equals(otherNick)) {
@@ -504,16 +507,10 @@ public class GameStartFrame extends JFrame implements Runnable
 							 new SkillIce(iceBackbl).start();
 						 }else if(dto.getSkill()==2) {
 							 new SkillBlackEye(blackEyelbl).start();
-						 }else if(dto.getSkill()==3) {
-							 new SkillIce(iceBackbl).start();
 						 }
 					 }
                 }else if(dto.getCommand()==Info.JOIN){
-					 System.out.println(123);
 					 result=dto.getResult();
-					 for(int i=0;i<result.length;i++) {
-						 System.out.println(result[i]);
-					 }
 				 }
 
             }catch(IOException e){

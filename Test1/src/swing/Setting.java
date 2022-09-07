@@ -1,10 +1,10 @@
 package swing;
 
 public class Setting {
-    private String imgPath="Test1/src/img/"; //img까지 경로
-    private int blockCount=300; //생성할 블록 갯수
+    private String imgPath="src/img/"; //img까지 경로
+    private int blockCount=250; //생성할 블록 갯수
     private int hp=10; //hp
-    private int gameTime= 120;//게임 진행시간
+    private int gameTime= 100;//게임 진행시간
     
     private String charName[]={"snowChar","ghostChar","miraChar"};
     private int charW[] = {180,130,100}, charH[] = {180,130,100} ,charX[] = {410,430,460}, charY[] = {330,375,410};

@@ -15,9 +15,9 @@ public class MoveBackGround extends Thread {
     @Override
     public void run() {
         try {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 16; i++) {
                 backlbl.setLocation(0, backlbl.getLocation().y + 1);
-                Thread.sleep(30);
+                Thread.sleep(25);
             }
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block

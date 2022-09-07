@@ -65,15 +65,15 @@ public class GameSelectFrame extends JFrame implements ActionListener {
         r.setBounds(150, 10, 100, 100);
         r.setVisible(false);
         gameCharSelectPanel.add(r);
-
+        
         s = new ImageIcon[3];
         gif = new Icon[3];
-        Setting setting = new Setting();
-        s[0] = new ImageIcon(new ImageIcon(setting.getImgPath()+"character/char0.gif").getImage().getScaledInstance(gifSize,
+        Setting settings=new Setting();
+        s[0] = new ImageIcon(new ImageIcon(settings.getImgPath()+"character/char0.gif").getImage().getScaledInstance(gifSize,
                 gifSize, 0));
-        s[1] = new ImageIcon(new ImageIcon(setting.getImgPath()+"character/char1.gif").getImage().getScaledInstance(gifSize,
+        s[1] = new ImageIcon(new ImageIcon(settings.getImgPath()+"character/char1.gif").getImage().getScaledInstance(gifSize,
                 gifSize, 0));
-        s[2] = new ImageIcon(new ImageIcon(setting.getImgPath()+"character/char2.gif").getImage().getScaledInstance(gifSize,
+        s[2] = new ImageIcon(new ImageIcon(settings.getImgPath()+"character/char2.gif").getImage().getScaledInstance(gifSize,
                 gifSize, 0));
 
         l = new JLabel("", JLabel.CENTER);
@@ -148,7 +148,7 @@ class GameStart extends Thread {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        new GameStartFrame(GameSelectFrame.charIdx,1);
+        new GameStartFrame(GameSelectFrame.charIdx,0);
         super.run();
     }
 
