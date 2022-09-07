@@ -14,6 +14,7 @@ class InfoDTO implements Serializable{
 	private int step;
 	private int moveX;
 	private int skill;
+	private int [] result;
 	
 	public String getNickName(){
 		return nickName;
@@ -50,6 +51,12 @@ class InfoDTO implements Serializable{
 	}
 	public void setMoveX(int moveX) {
 		this.moveX = moveX;
+	}
+	public int[] getResult() {
+		return result;
+	}
+	public void setResult(int[] result) {
+		this.result = result;
 	}
 	
 }

@@ -35,6 +35,8 @@ public class GameStartFrame extends JFrame implements Runnable
     public static int gauge = 0;
    JProgressBar gaugeBar;
    public JLabel iceBackbl , blackEyelbl;
+   int result[];
+   public JLabel[] blockArr;
     
     
    //상대
@@ -42,15 +44,19 @@ public class GameStartFrame extends JFrame implements Runnable
     int otherKeyCount=0,otherMoveX=-110;
     private Socket socket;
     private ObjectInputStream reader=null;
-    private ObjectOutputStream writer=null;   
-    public JLabel[] blockArr;
-    public JLabel otherChar;
+    private ObjectOutputStream writer=null;      
+    public JLabel otherCharlbl;
     public int otherSkill=0;
+    public String otherCharName;
+    int otherCharW , otherCharH ,  otherCharX ,  otherCharY;
+    public ImageIcon[] otherCharArr,otherCharDown;
 
-    public GameStartFrame(int charIdx) {
+
+    public GameStartFrame(int charIdx,int otherCharIdx) {
         super("J프레임 테스트"); // 프레임의 타이틀  
+        service();
 
-        getSetting(charIdx);
+        getSetting(charIdx,otherCharIdx);
 
 
         setSize(FramW, FramH); // 컨테이너 크기 지정
@@ -101,16 +107,20 @@ public class GameStartFrame extends JFrame implements Runnable
 
         //캐릭터
         ImageIcon[] charArr = new ImageIcon[12];
+        otherCharArr = new ImageIcon[12];
         for(int i=0;i<charArr.length;i++){
             charArr[i]=imgMk(charName+"/"+charName+i+".png", charW, charH);
+            otherCharArr[i]=imgMk(otherCharName+"/"+otherCharName+i+".png", otherCharW, otherCharH);
         }
-        // 이미지 레이블 생성
+        //
         ImageIcon[] charDown = new ImageIcon[12];
+        otherCharDown = new ImageIcon[12];
         for(int i=0;i<charArr.length;i++){
             charDown[i]=imgMk(charName+"/"+charName+(i+24)+".png", charW, charH);
+            otherCharDown[i]=imgMk(otherCharName+"/"+otherCharName+(i+24)+".png", otherCharW, otherCharH);
         }
-       
-
+        
+      
 
         //hp아이콘
         ImageIcon hpIcon =imgMk("hp.png", 50,50);
@@ -181,30 +191,26 @@ public class GameStartFrame extends JFrame implements Runnable
 
         JLabel charlbl = new JLabel(charArr[0]);
         backPanel.add(charlbl);
-        otherChar = new JLabel(charArr[0]);
-        backPanel.add(otherChar);
+        otherCharlbl = new JLabel(otherCharArr[0]);
+        backPanel.add(otherCharlbl);
 
         // 블록아이콘
         blockArr = new JLabel[blockCount];
-        int result[] = new int[blockCount];
         ImageIcon blockIcon = imgMk("block.png",blockW,blockH);
         
-        for (int i = 0; i < blockArr.length; i++) {
+        for (int i = 0; i < result.length; i++) {
             blockArr[i] = new JLabel(blockIcon);
-            backPanel.add(blockArr[i]);
             blockArr[i].setBounds(blockX, blockY, blockW, blockH);
-            int n = 0;
-            if (i != 0) {
-                n = (int) (Math.random() * 2);
-            }
-            if (n == 0) {
+            backPanel.add(blockArr[i]);
+           
+
+            if (result[i] == 0) {
                 blockX -= 110;
 
             } else {
                 blockX += 110;
 
             }
-            result[i] = n;
             blockY -= 50;
 
         }
@@ -215,13 +221,13 @@ public class GameStartFrame extends JFrame implements Runnable
         // 초기 위치
 
         charlbl.setBounds(charX, charY, charW, charW);
-        otherChar.setBounds(charX, charY, charW, charW);
+        otherCharlbl.setBounds(otherCharX, otherCharY, otherCharW, otherCharW);
         backlbl.setBounds(0, startBackH, FramW, 5000);
         // 컨테이너에 패널 추가
         add(backPanel);
         setVisible(true);
 
-        service();
+       
         //키이벤트
         addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
@@ -312,8 +318,17 @@ public class GameStartFrame extends JFrame implements Runnable
                 if(gameRunning==false){
                     timerCount.stop();
                     gameRunning=true;
-                    dispose();
-                    new GameStartFrame(charIdx);
+                    try {
+                    	InfoDTO dto = new InfoDTO();
+    					dto.setCommand(Info.EXIT);
+    					writer.writeObject(dto);  //역슬러쉬가 필요가 없음
+    					writer.flush();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+                   dispose();
+                    new GameStartFrame(charIdx,otherCharIdx);
                    
                
                  }
@@ -328,7 +343,7 @@ public class GameStartFrame extends JFrame implements Runnable
     }
     
     //setting을 가져옴
-    public void getSetting(int charIdx){
+    public void getSetting(int charIdx,int otherCharIdx){
         Setting settings=new Setting();  
         imgPath= settings.getImgPath();
         blockCount=settings.getBlockCount();
@@ -338,6 +353,12 @@ public class GameStartFrame extends JFrame implements Runnable
         charX = settings.getCharX()[charIdx];
         charY = settings.getCharY()[charIdx];
         charName=settings.getCharName()[charIdx];
+        otherCharH= settings.getCharH()[otherCharIdx];
+        otherCharW= settings.getCharW()[otherCharIdx];
+        otherCharX= settings.getCharX()[otherCharIdx];
+        otherCharY=settings.getCharY()[otherCharIdx];
+        otherCharName=settings.getCharName()[otherCharIdx];
+        
     }
         // 시작 카운트
     public void countGo(JLabel jl3, ImageIcon[] ImgArr3, ImageIcon[] ImgArr2,
@@ -381,7 +402,7 @@ public class GameStartFrame extends JFrame implements Runnable
     public void moving(JLabel backlbl,JLabel[] blockArr,JLabel charlbl, ImageIcon[] charArr,JProgressBar gaugeBar,JLabel stepsJL2,JLabel comboJL2){
         new MoveBackGround(backlbl).start();
         new MoveBlock(blockArr, moveX, moveY).start();
-        new CharAni(charlbl, charArr).start();
+        new CharAni(charlbl, charArr,moveX).start();
         if(gauge<100){
             gaugeUp(gaugeBar, gauge += 3);
         }
@@ -398,6 +419,7 @@ public class GameStartFrame extends JFrame implements Runnable
     	
         try{
             //서버로 보냄
+        	System.out.println("send");
             String msg="";
             InfoDTO dto = new InfoDTO();
             dto.setStep(keyCount);
@@ -440,6 +462,7 @@ public class GameStartFrame extends JFrame implements Runnable
         
         try{
         	//연결시 서버에 보내는 코드
+
             InfoDTO dto = new InfoDTO();
             dto.setNickName(nick);
             dto.setStep(keyCount);
@@ -447,6 +470,7 @@ public class GameStartFrame extends JFrame implements Runnable
             dto.setCommand(Info.JOIN);
             writer.writeObject(dto);  //역슬러쉬가 필요가 없음
             writer.flush();
+        	System.out.println("연결");
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -475,7 +499,7 @@ public class GameStartFrame extends JFrame implements Runnable
 					 if(dto.getNickName()!=null&&dto.getNickName().equals(otherNick)) {
 						 otherKeyCount=dto.getStep(); 
 						 otherMoveX=dto.getMoveX();
-						
+						 new CharAni(otherCharlbl, otherCharArr,dto.getMoveX()).start();
 						 if(dto.getSkill()==1) {
 							 new SkillIce(iceBackbl).start();
 						 }else if(dto.getSkill()==2) {
@@ -484,8 +508,14 @@ public class GameStartFrame extends JFrame implements Runnable
 							 new SkillIce(iceBackbl).start();
 						 }
 					 }
-	
-                }
+                }else if(dto.getCommand()==Info.JOIN){
+					 System.out.println(123);
+					 result=dto.getResult();
+					 for(int i=0;i<result.length;i++) {
+						 System.out.println(result[i]);
+					 }
+				 }
+
             }catch(IOException e){
                 e.printStackTrace();
             }catch(ClassNotFoundException e){
@@ -498,9 +528,8 @@ public class GameStartFrame extends JFrame implements Runnable
         }
     }
     public void otherMove(int step) {
-    	otherChar.setLocation(blockArr[step].getLocation().x-20,blockArr[step].getLocation().y-130);
-
-    	
+    	otherCharlbl.setLocation(blockArr[step].getLocation().x+otherCharX-450,blockArr[step].getLocation().y+otherCharY-500);	
+    	//-20 -130
     }
     // 게이지 채워주는 함수
     public void gaugeUp(JProgressBar gaugeBar, int gauge) {

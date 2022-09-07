@@ -19,19 +19,23 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 	//private InfoDTO dto;
 	///private Info command;
 	private List <ChatHandlerObject> list;
+	public int result [];
 	//생성자
-	public ChatHandlerObject(Socket socket, List <ChatHandlerObject> list) throws IOException {
+	public ChatHandlerObject(Socket socket, List <ChatHandlerObject> list,int [] result) throws IOException {
 		
 		this.socket = socket;
 		this.list = list;
 		writer = new ObjectOutputStream(socket.getOutputStream());
 		reader = new ObjectInputStream(socket.getInputStream());
 		//순서가 뒤바뀌면 값을 입력받지 못하는 상황이 벌어지기 때문에 반드시 writer부터 생성시켜주어야 함!!!!!!
+		this.result=result;
 		
 	}
 	public void run(){
 		InfoDTO dto = null;
 		String nickName;
+		
+		
 		try{
 			while(true){
 				dto=(InfoDTO)reader.readObject();
@@ -57,13 +61,12 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 					broadcast(sendDto);
 					break;
 				} else if(dto.getCommand()==Info.JOIN){
-					//모든 사용자에게 메세지 보내기
-					//nickName = dto.getNickName();
-					//모든 클라이언트에게 입장 메세지를 보내야 함
 					InfoDTO sendDto = new InfoDTO();
-					sendDto.setCommand(Info.SEND);
+					sendDto.setCommand(Info.JOIN);
 					sendDto.setMessage(nickName+"님 입장하였습니다");
+					sendDto.setResult(result);
 					broadcast(sendDto);
+					System.out.println(123);
 				} else if(dto.getCommand()==Info.SEND){
 					InfoDTO sendDto = new InfoDTO();
 					sendDto=dto;

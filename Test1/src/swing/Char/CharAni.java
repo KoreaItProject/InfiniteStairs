@@ -8,10 +8,12 @@ import swing.GameStartFrame;
 public class CharAni extends Thread{
     JLabel charlbl;
     ImageIcon [] charArr;
-    public CharAni(JLabel charlbl,ImageIcon []charArr){
+    int moveX;
+    public CharAni(JLabel charlbl,ImageIcon []charArr,int moveX){
 
         this.charArr=charArr;
         this.charlbl=charlbl;
+        this.moveX=moveX;
     }
 
     @Override
@@ -19,19 +21,19 @@ public class CharAni extends Thread{
         // TODO Auto-generated method stub
 
         int start=0,end=charArr.length/2;
-        int move=GameStartFrame.moveX;
-        if(GameStartFrame.moveX>0){
+        int move=moveX;
+        if(moveX>0){
             start=charArr.length/2;   
             end=charArr.length;
         }
         for(int i=start;i<end;i++){
-            if(GameStartFrame.moveX!=move){
+            if(moveX!=move){
                 break;
             }
-            if(move==GameStartFrame.moveX)
+            if(move==moveX)
             charlbl.setIcon(charArr[i]);
             try {
-                if(move!=GameStartFrame.moveX)
+                if(move!=moveX)
                     Thread.sleep(90);
                 Thread.sleep(30);
 
