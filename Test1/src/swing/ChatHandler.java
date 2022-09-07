@@ -66,8 +66,10 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 					broadcast(sendDto);
 				} else if(dto.getCommand()==Info.SEND){
 					InfoDTO sendDto = new InfoDTO();
+					sendDto=dto;
 					sendDto.setCommand(Info.SEND);
 					sendDto.setMessage("["+nickName+"]"+ dto.getMessage());
+				
 					broadcast(sendDto);
 				}
 			}//while
