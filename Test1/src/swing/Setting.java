@@ -3,7 +3,7 @@ package swing;
 public class Setting {
     private String imgPath="src/img/"; //img까지 경로
     private int blockCount=250; //생성할 블록 갯수
-    private int hp=10; //hp
+    private int hp[]= {5,5,10}; //hp
     private int gameTime= 100;//게임 진행시간
     
     private String charName[]={"snowChar","ghostChar","miraChar"};
@@ -19,7 +19,7 @@ public class Setting {
     public void setBlockCount(int blockCount) {
         this.blockCount = blockCount;
     }
-    public int getHp() {
+    public int[] getHp() {
         return hp;
     }
     public String[] getCharName() {
@@ -28,7 +28,7 @@ public class Setting {
     public void setCharName(String[] charName) {
         this.charName = charName;
     }
-    public void setHp(int hp) {
+    public void setHp(int[] hp) {
         this.hp = hp;
     }
     public void setImgPath(String imgPath) {

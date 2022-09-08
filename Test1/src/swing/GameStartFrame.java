@@ -49,6 +49,8 @@ public class GameStartFrame extends JFrame implements Runnable {
     int otherCharW, otherCharH, otherCharX, otherCharY;
     public ImageIcon[] otherCharArr, otherCharDown;
     public int otherCharIdx;
+    
+    int betweenStep=0;
 
     public GameStartFrame(int charIdx, int otherCharIdx) {
         super("J프레임 테스트"); // 프레임의 타이틀
@@ -69,6 +71,9 @@ public class GameStartFrame extends JFrame implements Runnable {
         // 배경
         ImageIcon backgroundIcon = imgMk("backg.png", FramW, 5000);
 
+
+        
+        
         // 3-2-1-go
         ImageIcon[] ImgArr3 = new ImageIcon[10];
         ImageIcon[] ImgArr2 = new ImageIcon[10];
@@ -115,7 +120,7 @@ public class GameStartFrame extends JFrame implements Runnable {
 
         // hp아이콘
         ImageIcon hpIcon = imgMk("hp.png", 50, 50);
-        JLabel[] hplbl = new JLabel[10];
+        JLabel[] hplbl = new JLabel[hp];
         if (charIdx == 2) {
             hp = 10;
             for (int i = 0; i < hp; i++) {
@@ -131,11 +136,29 @@ public class GameStartFrame extends JFrame implements Runnable {
             }
         }
 
+        //상대가 위에 있아래 있는지 보여주는 화살표
+        ImageIcon upCheckIcon=imgMk("sub/upCheck.png", 40,30);
+        ImageIcon downCheckIcon=imgMk("sub/downCheck.png", 40,30);
+        JLabel upChecklbl=new JLabel(upCheckIcon);
+        JLabel downChecklbl=new JLabel(downCheckIcon);
+        JLabel betweenlbl=new JLabel(betweenStep+"");
+        upChecklbl.setBounds(300, 10, 40, 30);
+        downChecklbl.setBounds(300, 805, 40, 30);
+        betweenlbl.setBounds(300, 20, 70, 200);
+        Font font = new Font("Gothic", Font.BOLD, betweenlbl.getFont().getSize() + 15);
+        betweenlbl.setFont(font);
+        backPanel.add(upChecklbl);
+        backPanel.add(downChecklbl);
+        backPanel.add(betweenlbl);  
+        upChecklbl.setVisible(false);
+        downChecklbl.setVisible(false);
+        betweenlbl.setVisible(false);
+        
         // 게이지바5
         gaugeBar = new JProgressBar();
         gaugeBar.setValue(gauge);
         backPanel.add(gaugeBar);
-        gaugeBar.setBounds(-1, 835, 985, 40);
+        gaugeBar.setBounds(-1, 840, 996, 40);
 
         // step
         JLabel stepsJL = new JLabel("step : ");
@@ -143,7 +166,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         int size = stepsJL.getFont().getSize();
         stepsJL.setForeground(Color.BLUE);
         stepsJL2.setForeground(Color.BLUE);
-        Font font = new Font("Gothic", Font.BOLD, size + 12);
+        font = new Font("Gothic", Font.BOLD, size + 12);
         stepsJL.setFont(font);
         stepsJL2.setFont(font);
         stepsJL.setBounds(30, -430, 1000, 1000);
@@ -310,10 +333,11 @@ public class GameStartFrame extends JFrame implements Runnable {
             new GaugeDown().start();
 
             while (gameRunning) {
-                otherMove(otherKeyCount);
+                otherMove();
                 timelbl.setText(timerCount.getTime());
-                Thread.sleep(100);
+                otherCheck(otherCharlbl, upChecklbl, downChecklbl,betweenlbl);
                 gaugeUp(gaugeBar, gauge);
+                Thread.sleep(180);
 
             }
             if (gameRunning == false) {
@@ -343,7 +367,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         Setting settings = new Setting();
         imgPath = settings.getImgPath();
         blockCount = settings.getBlockCount();
-        hp = settings.getHp();
+        hp = settings.getHp()[charIdx];
         charW = settings.getCharW()[charIdx];
         charH = settings.getCharH()[charIdx];
         charX = settings.getCharX()[charIdx];
@@ -383,7 +407,7 @@ public class GameStartFrame extends JFrame implements Runnable {
             if (gauge < 100 && gauge > 0)
                 gaugeUp(gaugeBar, gauge -= 6);
 
-            if (charIdx == 2) {
+
                 for (int i = 0; i < hplbl.length; i++) {
                     hplbl[i].setVisible(false);
 
@@ -391,17 +415,9 @@ public class GameStartFrame extends JFrame implements Runnable {
                 for (int i = 0; i < hp; i++) {
                     hplbl[i].setVisible(true);
                 }
-            } else {
-                for (int i = 0; i < (hplbl.length - 5); i++) {
-                    hplbl[i].setVisible(false);
-
-                }
-                for (int i = 0; i < hp; i++) {
-                    hplbl[i].setVisible(true);
-                }
-            } // charIdx == 2거나 아닐때
+            }  // charIdx == 2거나 아닐때
         }
-    }
+    
 
     // 캐릭터 움직이는 함수
     public void moving(JLabel backlbl, JLabel[] blockArr, JLabel charlbl, ImageIcon[] charArr, JProgressBar gaugeBar,
@@ -523,15 +539,62 @@ public class GameStartFrame extends JFrame implements Runnable {
         }
     }
 
-    public void otherMove(int step) {
-        otherCharlbl.setLocation(blockArr[step].getLocation().x + otherCharX - 450,
-                blockArr[step].getLocation().y + otherCharY - 500);
+    public void otherMove() {
+        otherCharlbl.setLocation(blockArr[otherKeyCount].getLocation().x + otherCharX - 450,
+        blockArr[otherKeyCount].getLocation().y + otherCharY - 500);
+        betweenStep=otherKeyCount-keyCount;
+
         // -20 -130
     }
 
     // 게이지 채워주는 함수
     public void gaugeUp(JProgressBar gaugeBar, int gauge) {
         gaugeBar.setValue(gauge);
+    }
+    public void otherCheck(JLabel otherCharlbl,JLabel upChecklbl,JLabel downChecklbl,JLabel betweenlbl) {
+    	//-170 780
+    	
+    	if(-170<otherCharlbl.getLocation().y&&780>otherCharlbl.getLocation().y) {
+    		upChecklbl.setVisible(false);
+    		downChecklbl.setVisible(false);
+    		betweenlbl.setVisible(false);
+    	}else if(-170>=otherCharlbl.getLocation().y){
+    		betweenlbl.setVisible(true);
+    		upChecklbl.setVisible(true);
+    		downChecklbl.setVisible(false);
+    		
+    		betweenlbl.setText(betweenStep+"");
+
+    		if(0<otherCharlbl.getLocation().x+85&&otherCharlbl.getLocation().x+85<=935) {
+    			upChecklbl.setLocation(otherCharlbl.getLocation().x+80,upChecklbl.getLocation().y);
+        		betweenlbl.setLocation(otherCharlbl.getLocation().x+85,upChecklbl.getLocation().y-60);
+        	}else if(otherCharlbl.getLocation().x<=0){
+        		upChecklbl.setLocation(10,upChecklbl.getLocation().y);
+        		betweenlbl.setLocation(15,upChecklbl.getLocation().y-60);
+        	}else {
+        		upChecklbl.setLocation(950,upChecklbl.getLocation().y);
+        		betweenlbl.setLocation(951,upChecklbl.getLocation().y-60);
+        	}
+    //935
+    	}else {
+    		betweenlbl.setVisible(true);
+    		upChecklbl.setVisible(false);
+    		downChecklbl.setVisible(true);
+    		betweenlbl.setText(-betweenStep+"");
+
+    	if(0<otherCharlbl.getLocation().x+85&&otherCharlbl.getLocation().x+85<=935) {
+    		downChecklbl.setLocation(otherCharlbl.getLocation().x+80,downChecklbl.getLocation().y);
+    		betweenlbl.setLocation(otherCharlbl.getLocation().x+85,downChecklbl.getLocation().y-115);
+    	}else if(otherCharlbl.getLocation().x<=0){
+    		downChecklbl.setLocation(10,downChecklbl.getLocation().y);
+    		betweenlbl.setLocation(15,downChecklbl.getLocation().y-115);
+    	}else {
+    		downChecklbl.setLocation(950,downChecklbl.getLocation().y);
+    		betweenlbl.setLocation(951,downChecklbl.getLocation().y-115);
+    	}
+//935
+ //55
+    	}
     }
 
 }
