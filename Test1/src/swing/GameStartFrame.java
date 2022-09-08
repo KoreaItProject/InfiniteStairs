@@ -68,8 +68,7 @@ public class GameStartFrame extends JFrame implements Runnable {
 
         JPanel backPanel = new JPanel();
         backPanel.setLayout(null);
-        // 배경
-        ImageIcon backgroundIcon = imgMk("backg.png", FramW, 5000);
+
 
 
         
@@ -202,7 +201,7 @@ public class GameStartFrame extends JFrame implements Runnable {
 
         // 스킬 블랙아이
         ImageIcon blackEyeIcon = imgMk("blackEye3.png", FramW, FramH);
-        JLabel backlbl = new JLabel(backgroundIcon);
+ 
         blackEyelbl = new JLabel(blackEyeIcon);
         blackEyelbl.setBounds(0, 0, FramW, FramH);
         blackEyelbl.setVisible(false);
@@ -234,12 +233,20 @@ public class GameStartFrame extends JFrame implements Runnable {
         }
 
         backPanel.setSize(FramW, FramH);
-        backPanel.add(backlbl);
+
 
         // 초기 위치
 
         charlbl.setBounds(charX, charY, charW, charW);
         otherCharlbl.setBounds(otherCharX, otherCharY, otherCharW, otherCharW);
+        // 배경
+        ImageIcon [] backgroundIcon=new ImageIcon[9];
+        for(int i=0;i<backgroundIcon.length;i++) {
+        	 backgroundIcon[i] = imgMk("back/backg"+i+".png", FramW, 5000);
+        }
+       
+        JLabel backlbl = new JLabel(backgroundIcon[0]);
+        backPanel.add(backlbl);
         backlbl.setBounds(0, startBackH, FramW, 5000);
         // 컨테이너에 패널 추가
         add(backPanel);
@@ -331,6 +338,9 @@ public class GameStartFrame extends JFrame implements Runnable {
             Thread.sleep(3100);
             timerCount.start();
             new GaugeDown().start();
+            new BackAni(backlbl, backgroundIcon).start();
+
+       
 
             while (gameRunning) {
                 otherMove();
@@ -340,20 +350,23 @@ public class GameStartFrame extends JFrame implements Runnable {
                 Thread.sleep(180);
 
             }
-            if (gameRunning == false) {
-                timerCount.stop();
+  
+            	if(gameRunning==false) {
                 gameRunning = true;
                 try {
-                    InfoDTO dto = new InfoDTO();
+                
+                	InfoDTO dto = new InfoDTO();
                     dto.setCommand(Info.EXIT);
                     writer.writeObject(dto); // 역슬러쉬가 필요가 없음
-                    writer.flush();
+                    writer.flush();    
+
+
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
 
-            }
+            	}
 
         } catch (InterruptedException e1) {
 
@@ -509,13 +522,14 @@ public class GameStartFrame extends JFrame implements Runnable {
             try {
                 dto = (InfoDTO) reader.readObject();
                 if (dto.getCommand() == Info.EXIT) { // 서버로부터 내 자신의 exit를 받으면 종료됨
-                    reader.close();
-                    writer.close();
-                    socket.close();
-                    dispose();
-                    new GameStartFrame(charIdx, otherCharIdx);
+                	//reader.close();
+                	//writer.close();
+                	//socket.close();
+                    //dispose();
+                   // new GameStartFrame(charIdx, otherCharIdx);
+                	 System.exit(0);
+            
                 } else if (dto.getCommand() == Info.SEND) {
-
                     if (dto.getNickName() != null && dto.getNickName().equals(otherNick)) {
                         otherKeyCount = dto.getStep();
                         otherMoveX = dto.getMoveX();

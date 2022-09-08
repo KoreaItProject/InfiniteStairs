@@ -24,7 +24,6 @@ public class TimerCount extends Thread{
                     timer++;
             }
             GameStartFrame.gameRunning=false;
-            System.out.println();
            
         } catch (InterruptedException e) {
             e.printStackTrace();

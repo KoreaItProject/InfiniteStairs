@@ -56,9 +56,7 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 					//남아있는 클라이언트에게 퇴장메세지 보내기
 					list.remove(this);
 
-					sendDto.setCommand(Info.SEND);
-					sendDto.setMessage(nickName+"님 퇴장하였습니다");
-					broadcast(sendDto);
+			
 					break;
 				} else if(dto.getCommand()==Info.JOIN){
 					InfoDTO sendDto = new InfoDTO();
