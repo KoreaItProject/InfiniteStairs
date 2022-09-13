@@ -505,7 +505,7 @@ public class GameStartFrame extends JFrame implements Runnable {
     // 서버 연결부
     public void service() {
         try {
-            socket = new Socket("58.224.48.139", 9500);
+            socket = new Socket("localhost", 9500);
             reader = new ObjectInputStream(socket.getInputStream());
             writer = new ObjectOutputStream(socket.getOutputStream());
             System.out.println("전송 준비 완료!");
