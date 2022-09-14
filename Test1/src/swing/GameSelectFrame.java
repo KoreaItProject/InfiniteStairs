@@ -11,9 +11,12 @@ import java.awt.event.*;
 import java.util.prefs.BackingStoreException;
 import java.awt.*;
 
-public class GameSelectFrame extends JFrame {
+public class GameSelectFrame extends JFrame  {
 
     int FramW = 1000, FramH = 900;
+    public JPanel panel;
+    static String nick;
+
 
     public GameSelectFrame() {
 
@@ -26,10 +29,40 @@ public class GameSelectFrame extends JFrame {
         // 레이블을 넣기 위한 패널 생성
 
         // 패널 생성
-        JPanel gameCharSelectPanel = new GameCharSelectPanel(this);
-        add(gameCharSelectPanel);
+        //JPanel gameCharSelectPanel = new GameCharSelectPanel(this);
+        panel=new GameRoomPan(this);
+        add(panel);
         setVisible(true);
+        
+      
+
 
     } // 생성자
+    public void showCharSelectPan(){
+        remove(panel);
+        revalidate();
+        repaint();
+        panel=new GameCharSelectPanel(this);
+        add(panel);
+        setVisible(true);
+   
+    }
+    public void showRoomPan(){
+        remove(panel);
+        revalidate();
+        repaint();
+        panel=new GameRoomPan(this);
+        add(panel);
+        setVisible(true);
+    }
 
+   
+
+    
+
+   
 } // class
+
+
+
+
