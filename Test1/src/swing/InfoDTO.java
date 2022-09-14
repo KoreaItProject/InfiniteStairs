@@ -4,7 +4,7 @@ import java.util.*;
 import java.io.*;
 
 enum Info {
-	JOIN, EXIT, SEND
+	MAKE , JOIN, EXIT, SEND , STATE
 }
 
 class InfoDTO implements Serializable{
@@ -15,6 +15,7 @@ class InfoDTO implements Serializable{
 	private int moveX;
 	private int skill;
 	private int [] result;
+	private String roomId;
 	
 	public String getNickName(){
 		return nickName;
@@ -24,6 +25,12 @@ class InfoDTO implements Serializable{
 	}
 	public void setSkill(int skill) {
 		this.skill = skill;
+	}
+	public String getRoomId() {
+		return roomId;
+	}
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
 	}
 	public Info getCommand(){
 		return command;
