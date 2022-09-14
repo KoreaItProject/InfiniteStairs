@@ -11,10 +11,9 @@ import java.awt.event.*;
 import java.util.prefs.BackingStoreException;
 import java.awt.*;
 
-public class GameSelectFrame extends JFrame  {
+public class GameSelectFrame extends JFrame {
 
     int FramW = 1000, FramH = 900;
-
 
     public GameSelectFrame() {
 
@@ -31,17 +30,6 @@ public class GameSelectFrame extends JFrame  {
         add(gameCharSelectPanel);
         setVisible(true);
 
-
-
     } // 생성자
 
-   
-
-    
-
-   
 } // class
-
-
-
-

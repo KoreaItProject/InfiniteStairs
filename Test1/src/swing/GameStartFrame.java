@@ -7,6 +7,7 @@ import swing.Bird.BirdAni2;
 import swing.Char.*;
 import swing.Move.*;
 import swing.Skill.*;
+import swing.SoundF.sound;
 import swing.Sub.GaugeDown;
 import swing.Sub.StartCount;
 import swing.Sub.TimerCount;
@@ -282,9 +283,11 @@ public class GameStartFrame extends JFrame implements Runnable {
                         case KeyEvent.VK_LEFT:
 
                             if (result[keyCount] == 0 && moveX < 0 || result[keyCount] == 1 && moveX > 0) {// 틀렸을때
+                                downSoundFunc();
                                 down(charlbl, charDown, charArr, gaugeBar, hplbl, comboJL2);// 틀렸다함수
 
                             } else {
+                                moveSoundFunc();
                                 moveX *= -1;
                                 moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2, comboJL2);
                                 send(0);
@@ -295,10 +298,10 @@ public class GameStartFrame extends JFrame implements Runnable {
                         case KeyEvent.VK_RIGHT:
 
                             if (result[keyCount] == 1 && moveX < 0 || result[keyCount] == 0 && moveX > 0) {// 틀렸을때
-
+                                downSoundFunc();
                                 down(charlbl, charDown, charArr, gaugeBar, hplbl, comboJL2);// 틀렸다함수
                             } else {
-
+                                moveSoundFunc();
                                 moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2, comboJL2);
                                 send(0);
                                 if (keyCount == 1) {
@@ -318,12 +321,14 @@ public class GameStartFrame extends JFrame implements Runnable {
                             } else {
                                 if (gauge >= 100) {
                                     if (charIdx == 2) {
+                                        miraSkillSoundFunc();
                                         hp++;
                                         gaugeUp(gaugeBar, gauge = 0);
                                         for (int i = 0; i < hp; i++) {
                                             hplbl[i].setVisible(true);
                                         }
                                     } else {
+                                        skillSoundFunc();
                                         gaugeUp(gaugeBar, gauge = 0);
                                         send(charIdx + 1);
                                         if (keyCount == 1) {
@@ -333,7 +338,6 @@ public class GameStartFrame extends JFrame implements Runnable {
                                         }
                                         new BirdAni2(birdJLabel, birdIcon, moveX).start();
                                     }
-                                    // new SkillIce(iceBackbl).start();
                                 }
                             }
 
@@ -404,6 +408,28 @@ public class GameStartFrame extends JFrame implements Runnable {
             e1.printStackTrace();
         }
 
+    } // 생성자
+
+    sound sd = new sound();
+
+    public void skillSoundFunc() {
+        sd.skillsound();
+    }
+
+    public void miraSkillSoundFunc() {
+        sd.miraSkillSound();
+    }
+
+    public void inGameSoundFunc() {
+        sd.inGameSoundStart();
+    }
+
+    public void moveSoundFunc() {
+        sd.moveSound();
+    }
+
+    public void downSoundFunc() {
+        sd.downSound();
     }
 
     // setting을 가져옴
@@ -430,6 +456,9 @@ public class GameStartFrame extends JFrame implements Runnable {
             ImageIcon[] ImgArr1,
             ImageIcon[] ImgArrGo) {
         new StartCount(jl3, ImgArr3, ImgArr2, ImgArr1, ImgArrGo).start();
+
+        sd.countDownSound();
+        inGameSoundFunc();
     }
 
     // 이미지 생성쓰
@@ -474,6 +503,10 @@ public class GameStartFrame extends JFrame implements Runnable {
         combo++;
         stepsJL2.setText(keyCount + "");
         comboJL2.setText(combo + "");
+
+        if (keyCount == 1) {
+            sd.birdSound();
+        }
     }
 
     //// 소켓보내기
@@ -505,7 +538,7 @@ public class GameStartFrame extends JFrame implements Runnable {
     // 서버 연결부
     public void service() {
         try {
-            socket = new Socket("localhost", 9500);
+            socket = new Socket("58.224.48.139", 9500);
             reader = new ObjectInputStream(socket.getInputStream());
             writer = new ObjectOutputStream(socket.getOutputStream());
             System.out.println("전송 준비 완료!");
@@ -565,8 +598,10 @@ public class GameStartFrame extends JFrame implements Runnable {
                         new CharAni(otherCharlbl, otherCharArr, dto.getMoveX()).start();
                         if (dto.getSkill() == 1) {
                             new SkillIce(iceBackbl).start();
+                            sd.iceSkillSound();
                         } else if (dto.getSkill() == 2) {
                             new SkillBlackEye(blackEyelbl).start();
+                            sd.blackEyeSkillSound();
                         }
                     }
                 } else if (dto.getCommand() == Info.JOIN) {
