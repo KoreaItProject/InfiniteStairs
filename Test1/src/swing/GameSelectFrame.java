@@ -15,7 +15,9 @@ public class GameSelectFrame extends JFrame  {
 
     int FramW = 1000, FramH = 900;
     public JPanel panel;
-    static String nick;
+
+ 
+
 
 
     public GameSelectFrame() {
@@ -39,11 +41,15 @@ public class GameSelectFrame extends JFrame  {
 
     } // 생성자
     public void showCharSelectPan(){
+     
+
         remove(panel);
         revalidate();
         repaint();
         panel=new GameCharSelectPanel(this);
         add(panel);
+        revalidate();
+        repaint();
         setVisible(true);
    
     }

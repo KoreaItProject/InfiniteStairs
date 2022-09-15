@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.List;
+import java.util.Random;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,16 +20,14 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 	//private InfoDTO dto;
 	///private Info command;
 	private List <ChatHandlerObject> list;
-	public int result [];
 	//생성자
-	public ChatHandlerObject(Socket socket, List <ChatHandlerObject> list,int [] result) throws IOException {
+	public ChatHandlerObject(Socket socket, List <ChatHandlerObject> list) throws IOException {
 		
 		this.socket = socket;
 		this.list = list;
 		writer = new ObjectOutputStream(socket.getOutputStream());
 		reader = new ObjectInputStream(socket.getInputStream());
 		//순서가 뒤바뀌면 값을 입력받지 못하는 상황이 벌어지기 때문에 반드시 writer부터 생성시켜주어야 함!!!!!!
-		this.result=result;
 		
 	}
 	public void run(){
@@ -60,11 +59,34 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 					break;
 				} else if(dto.getCommand()==Info.JOIN){
 					InfoDTO sendDto = new InfoDTO();
+					sendDto=dto;
 					sendDto.setCommand(Info.JOIN);
-					sendDto.setMessage(nickName+"님 입장하였습니다");
-					sendDto.setResult(result);
-					broadcast(sendDto);
-					System.out.println(123);
+					sendDto.setNickName(dto.getNickName());
+					
+					System.out.println("조인"+ChatServerObject.room.get(dto.getRoomId()));
+					
+				
+					if(isMember(dto.getNickName())){
+						sendDto.setMessage(dto.getNickName()+"ERR");
+						System.out.println("닉중복");
+						broadcast(sendDto);
+						
+						
+					}else{
+
+						if(ChatServerObject.room.get(dto.getRoomId())==null){
+							sendDto.setMessage(dto.getRoomId()+"ERR");
+							System.out.println("방없음");
+							broadcast(sendDto);
+							
+						}else{
+							sendDto.setResult(ChatServerObject.room.get(dto.getRoomId()));
+							sendDto.setRoomId(dto.getRoomId());
+							broadcast(sendDto);
+						}
+					}
+
+
 				} else if(dto.getCommand()==Info.SEND){
 					InfoDTO sendDto = new InfoDTO();
 					sendDto=dto;
@@ -72,6 +94,47 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 					sendDto.setMessage("["+nickName+"]"+ dto.getMessage());
 				
 					broadcast(sendDto);
+				}
+				else if(dto.getCommand()==Info.MAKE){
+					InfoDTO sendDto = new InfoDTO();
+					sendDto=dto;
+					sendDto.setCommand(Info.MAKE);
+					sendDto.setNickName(dto.getNickName());
+					
+					
+				
+					if(isMember(dto.getNickName())){
+						sendDto.setMessage(dto.getNickName()+"ERR");
+						broadcast(sendDto);
+						
+					}else{
+
+						ChatServerObject.member.add(nickName);
+						int leftLimit = 97; // letter 'a'
+						int rightLimit = 122; // letter 'z'
+						int targetStringLength = 12;
+						Random random = new Random();
+						String generatedString = random.ints(leftLimit, rightLimit + 1).limit(targetStringLength).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();	
+						
+						int [] result=new int [new Setting().getBlockCount()];
+						result[0] = 0;
+						for (int i = 1; i < result.length; i++) {
+								result[i] = (int) (Math.random() * 2);
+						}
+
+						ChatServerObject.room.put(generatedString, result);
+						sendDto.setRoomId(generatedString);
+						sendDto.setResult(result);
+						broadcast(sendDto);
+
+					}
+					
+					
+
+
+
+					
+				
 				}
 			}//while
 
@@ -89,5 +152,14 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 			handler.writer.writeObject(sendDto); //핸들러 안의 writer에 값을 보내기
 			handler.writer.flush();  //핸들러 안의 writer 값 비워주기
 		}
+	}
+	public boolean isMember(String nick){
+		for(int i=0;i<ChatServerObject.member.size();i++){
+			if(nick.equals(ChatServerObject.member.get(i))){
+				return true;
+			}
+			
+		}
+		return false;
 	}
 }

@@ -7,19 +7,39 @@ import javax.swing.*;
 
 import swing.Bird.BirdAni;
 import java.awt.event.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.awt.*;
-public class GameRoomPan extends JPanel implements ActionListener{
+
+import java.awt.event.*;
+
+
+public class GameRoomPan extends JPanel implements ActionListener , Runnable {
     int frameW = 1000, frameH = 900;
-    JFrame frame;
+    static JFrame frame;
     String imgPath;
     JButton roomBtn1lbl,roomBtn2lbl,roomBtn3lbl,roomBtn4lbl;
     JTextArea codeText,nicktxt;
     JLabel  blacklbl,codelbl,blacklbl1;
+
+    static boolean nickCheck=false,roomCheck=false;
+
+
+    //
+    private Socket socket;
+    private ObjectInputStream reader = null;
+    private ObjectOutputStream writer = null;
+    public static Thread t ;
+    
     public GameRoomPan(JFrame frame){
         this.frame=frame; 
         this.setLayout(null);
         this.setSize(frameW, frameH);
         getSetting();
+        t= new Thread(this);
 
        
         JLabel nicklbl=new JLabel("닉네임을 입력해주세요");
@@ -117,11 +137,45 @@ public class GameRoomPan extends JPanel implements ActionListener{
          backlbl.setBounds(0, 0, frameW, frameH);
          this.add(backlbl);
 
- 
+        // 창닫을 경우
+        frame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                // System.exit(0);
+                try {
+                    // InfoDTO dto = new InfoDTO(nickName,Info.EXIT);
+                    InfoDTO dto = new InfoDTO();
+                    dto.setCommand(Info.EXIT);
+                    writer.writeObject(dto); // 역슬러쉬가 필요가 없음
+                    writer.flush();
+                } catch (IOException io) {
+                    io.printStackTrace();
+                }
+            }
+        });
 
- 
+        //소켓연결부
+            try {
+            
+            socket = new Socket("localhost", 9500);
+            reader = new ObjectInputStream(socket.getInputStream());
+            writer = new ObjectOutputStream(socket.getOutputStream());
 
+            } catch (UnknownHostException e) {
+                System.out.println("서버를 찾을 수 없습니다.");
+                e.printStackTrace();
+                System.exit(0);
+            } catch (IOException e) {
+                System.out.println("서버와 연결이 안되었습니다.");
+                e.printStackTrace();
+                System.exit(0);
+            }
+
+
+        System.out.println("전송 준비 완료!");
+        t.start();
+       new tt().start();
     }
+    
     public void getSetting() {
         Setting settings = new Setting();
         this.imgPath=settings.getImgPath();
@@ -136,7 +190,20 @@ public class GameRoomPan extends JPanel implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
          if (e.getSource() == roomBtn1lbl) {//방만들기 바로 입장됨
-          ((GameSelectFrame)frame).showCharSelectPan();
+            service(Info.MAKE);
+            if(GameRoomPan.nickCheck){
+               
+                if(GameRoomPan.roomCheck){
+                    
+                   ((GameSelectFrame)GameRoomPan.frame).showCharSelectPan();
+                }else{
+                    
+                    System.out.println("방중복");
+                }
+            }else{
+                System.out.println("닉중복");
+            }
+           
          
             
          }else if(e.getSource() == roomBtn2lbl) {//방입장하기 버튼
@@ -156,11 +223,108 @@ public class GameRoomPan extends JPanel implements ActionListener{
             roomBtn4lbl.setVisible(false);
          }
          else if(e.getSource() == roomBtn4lbl) {//확인 코드값 가지고 입장
-
+            service(Info.JOIN);
+           
          }
 
          
         
     }
+     // 서버 연결부
+     public void service(Info info) {
+       
+
+        try {
+            // 연결시 서버에 보내는 코드
+
+                InfoDTO dto = new InfoDTO();
+                dto.setNickName(nicktxt.getText());
+                dto.setRoomId(codeText.getText());
+                dto.setCommand(info);
+                writer.writeObject(dto); // 역슬러쉬가 필요가 없음
+                writer.flush();
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+       
+
+    }
+
+    @Override
+    public void run() {
+        InfoDTO dto = null;
+        while (true) {
+            try {
+                dto = (InfoDTO) reader.readObject();
+                if (dto.getCommand() == Info.EXIT) { // 서버로부터 내 자신의 exit를 받으면 종료됨
+             
+                    System.exit(0);
+
+                } else if (dto.getCommand() == Info.MAKE) {
+                   if(dto.getMessage()!=null&&dto.getMessage().equals(nicktxt.getText()+"ERR")){
+                    System.out.println("사용중인 닉네임");
+                   }else{
+                    System.out.println("방코드:"+dto.getRoomId());
+                    System.out.println("닉네임:"+dto.getNickName());
+                    nickCheck=true;
+                    roomCheck=true;
+                    break;
+
+                   }
+                } else if (dto.getCommand() == Info.JOIN) {
+                    System.out.println(dto.getMessage());
+                    if(dto.getMessage()!=null&&dto.getMessage().equals(nicktxt.getText()+"ERR")){
+                        System.out.println("사용중인 닉네임");
+                       }else if(dto.getMessage()!=null&&dto.getMessage().equals(codeText.getText()+"ERR")){
+                        System.out.println("존재하지 않는 방");
+                        nickCheck=true;
+                       }else{
+                        nickCheck=true;
+                        roomCheck=true;
+                        break;
+                       }
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+
+                e.printStackTrace();
+            }
+        }
+      
+      
+      
+    }
     
+      
+}
+class tt extends Thread{
+ @Override
+ public void run() {
+    while(true){
+        try {
+            Thread.sleep(500);
+            if(GameRoomPan.nickCheck&&GameRoomPan.roomCheck){
+               
+
+                    
+                   ((GameSelectFrame)GameRoomPan.frame).showCharSelectPan();
+                   GameRoomPan.t.stop();
+                    this.stop();
+                   break;
+
+            }
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+   
+
+ }
 }
