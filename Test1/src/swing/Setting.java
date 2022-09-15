@@ -5,6 +5,15 @@ public class Setting {
     private int blockCount = 250; // 생성할 블록 갯수
     private int hp[] = { 5, 5, 10 }; // hp
     private int gameTime = 100;// 게임 진행시간
+    private String host = "58.224.48.139";
+
+    public String getHost() {
+        return this.host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
 
     private String charName[] = { "snowChar", "ghostChar", "miraChar" };
     private int charW[] = { 180, 130, 100 }, charH[] = { 180, 130, 100 }, charX[] = { 410, 430, 460 },
