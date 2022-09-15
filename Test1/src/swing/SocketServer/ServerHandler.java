@@ -1,5 +1,4 @@
-package swing;
-
+package swing.SocketServer;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.InputStreamReader;
@@ -7,21 +6,25 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.List;
 import java.util.Random;
+
+import swing.SocketServer.*;
+import swing.SocketServer.InfoDTO.Info;
+
 import java.util.ArrayList;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 정보가 담겨있는 곳. 소켓을 처리함)
+class ServerHandler extends Thread //처리해주는 곳(소켓에 대한 정보가 담겨있는 곳. 소켓을 처리함)
 {
 	private ObjectInputStream reader;
 	private ObjectOutputStream writer;
 	private Socket socket;
 	//private InfoDTO dto;
 	///private Info command;
-	private List <ChatHandlerObject> list;
+	private List <ServerHandler> list;
 	//생성자
-	public ChatHandlerObject(Socket socket, List <ChatHandlerObject> list) throws IOException {
+	public ServerHandler(Socket socket, List <ServerHandler> list) throws IOException {
 		
 		this.socket = socket;
 		this.list = list;
@@ -45,9 +48,9 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 				if(dto.getCommand()==Info.EXIT){
 					InfoDTO sendDto = new InfoDTO();
 					//나가려고 exit를 보낸 클라이언트에게 답변 보내기
-					sendDto.setCommand(Info.EXIT);
-					writer.writeObject(sendDto);
-					writer.flush();
+					//sendDto.setCommand(Info.EXIT);
+					//writer.writeObject(sendDto);
+					//writer.flush();
 
 					reader.close();
 					writer.close();
@@ -63,7 +66,7 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 					sendDto.setCommand(Info.JOIN);
 					sendDto.setNickName(dto.getNickName());
 					
-					System.out.println("조인"+ChatServerObject.room.get(dto.getRoomId()));
+					System.out.println("조인"+ServerMain.room.get(dto.getRoomId()));
 					
 				
 					if(isMember(dto.getNickName())){
@@ -74,13 +77,13 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 						
 					}else{
 
-						if(ChatServerObject.room.get(dto.getRoomId())==null){
+						if(ServerMain.room.get(dto.getRoomId())==null){
 							sendDto.setMessage(dto.getRoomId()+"ERR");
 							System.out.println("방없음");
 							broadcast(sendDto);
 							
 						}else{//방입장하기
-							sendDto.setSeed(ChatServerObject.room.get(dto.getRoomId()));
+							sendDto.setSeed(ServerMain.room.get(dto.getRoomId()));
 							sendDto.setRoomId(dto.getRoomId());
 
 							broadcast(sendDto);
@@ -110,7 +113,7 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 						
 					}else{//방만들기
 
-						ChatServerObject.member.add(nickName);
+						ServerMain.member.add(nickName);
 						int leftLimit = 97; // letter 'a'
 						int rightLimit = 122; // letter 'z'
 						int targetStringLength = 12;
@@ -128,7 +131,7 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 						Random rand = new Random();
 						int seed = rand.nextInt(10000);
 				
-						ChatServerObject.room.put(generatedString, seed);
+						ServerMain.room.put(generatedString, seed);
 
 						sendDto.setRoomId(generatedString);
 						sendDto.setSeed(seed);
@@ -137,12 +140,16 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 
 					}
 					
-					
-
-
-
-					
 				
+				}else if (dto.getCommand()==Info.STATE){
+					InfoDTO sendDto = new InfoDTO();
+					sendDto=dto;
+					sendDto.setCommand(Info.STATE);
+					sendDto.setNickName(dto.getNickName());
+					sendDto.setMessage(dto.getMessage());
+					sendDto.setRoomId(dto.getRoomId());
+					broadcast(sendDto);
+
 				}
 			}//while
 
@@ -156,14 +163,14 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 	}
 	//다른 클라이언트에게 전체 메세지 보내주기
 	public void broadcast(InfoDTO sendDto) throws IOException {
-		for(ChatHandlerObject handler: list){
+		for(ServerHandler handler: list){
 			handler.writer.writeObject(sendDto); //핸들러 안의 writer에 값을 보내기
 			handler.writer.flush();  //핸들러 안의 writer 값 비워주기
 		}
 	}
 	public boolean isMember(String nick){
-		for(int i=0;i<ChatServerObject.member.size();i++){
-			if(nick.equals(ChatServerObject.member.get(i))){
+		for(int i=0;i<ServerMain.member.size();i++){
+			if(nick.equals(ServerMain.member.get(i))){
 				return true;
 			}
 			

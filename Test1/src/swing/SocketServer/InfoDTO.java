@@ -1,13 +1,14 @@
-package swing;
+package swing.SocketServer;
 
 import java.util.*;
 import java.io.*;
 
-enum Info {
-	MAKE , JOIN, EXIT, SEND , STATE
-}
 
-class InfoDTO implements Serializable{
+public class InfoDTO implements Serializable{
+	public enum Info {
+		MAKE , JOIN, EXIT, SEND , STATE
+	}
+	
 	private String nickName;
 	private String message;
 	private Info command;
@@ -16,7 +17,7 @@ class InfoDTO implements Serializable{
 	private int skill;
 	private int  seed;
 	private String roomId;
-	
+
 	public String getNickName(){
 		return nickName;
 	}

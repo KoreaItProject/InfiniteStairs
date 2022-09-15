@@ -7,6 +7,8 @@ import swing.Bird.BirdAni2;
 import swing.Char.*;
 import swing.Move.*;
 import swing.Skill.*;
+import swing.SocketServer.InfoDTO;
+import swing.SocketServer.InfoDTO.Info;
 import swing.SoundF.sound;
 import swing.Sub.GaugeDown;
 import swing.Sub.StartCount;
@@ -605,7 +607,7 @@ public class GameStartFrame extends JFrame implements Runnable {
                         }
                     }
                 } else if (dto.getCommand() == Info.JOIN) {
-                    result = dto.getResult();
+                 
                 }
 
             } catch (IOException e) {

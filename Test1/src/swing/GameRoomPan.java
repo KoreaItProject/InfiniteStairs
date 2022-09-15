@@ -6,6 +6,9 @@ import java.awt.Image;
 import javax.swing.*;
 
 import swing.Bird.BirdAni;
+import swing.SocketServer.InfoDTO;
+import swing.SocketServer.InfoDTO.Info;
+
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -46,6 +49,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
         getSetting();
         t= new Thread(this);
 
+        
        
         JLabel nicklbl=new JLabel("닉네임을 입력해주세요");
         nicklbl.setFont(new Font("Gothic", Font.BOLD, nicklbl.getFont().getSize() + 20));
@@ -145,13 +149,15 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
         // 창닫을 경우
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                // System.exit(0);
+                // 
                 try {
                     // InfoDTO dto = new InfoDTO(nickName,Info.EXIT);
+                    t.stop();
                     InfoDTO dto = new InfoDTO();
                     dto.setCommand(Info.EXIT);
                     writer.writeObject(dto); // 역슬러쉬가 필요가 없음
                     writer.flush();
+
                 } catch (IOException io) {
                     io.printStackTrace();
                 }
@@ -161,7 +167,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
         //소켓연결부
             try {
             
-            socket = new Socket("localhost", 9500);
+            socket = new Socket(host, 9500);
             reader = new ObjectInputStream(socket.getInputStream());
             writer = new ObjectOutputStream(socket.getOutputStream());
 
@@ -184,7 +190,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
     public void getSetting() {
         Setting settings = new Setting();
         this.imgPath=settings.getImgPath();
-        this.host=host;
+        this.host=settings.getHost();
 
     }
 
@@ -254,41 +260,45 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
     public void run() {
         InfoDTO dto = null;
         while (true) {
+           
             try {
-                dto = (InfoDTO) reader.readObject();
-                if (dto.getCommand() == Info.EXIT) { // 서버로부터 내 자신의 exit를 받으면 종료됨
-             
-                    System.exit(0);
+                dto =  (InfoDTO)reader.readObject();
+                System.out.println();
+                if(dto.getNickName()!=null&&dto.getNickName().equals(nicktxt.getText())){
 
-                } else if (dto.getCommand() == Info.MAKE) {
-                   if(dto.getMessage()!=null&&dto.getMessage().equals(nicktxt.getText()+"ERR")){
-                    System.out.println("사용중인 닉네임");
-                   }else{
-                    System.out.println("방코드:"+dto.getRoomId());
-                    System.out.println("닉네임:"+dto.getNickName());
-                    nick=dto.getNickName();
-                    roomId=dto.getRoomId();
-                    seed= dto.getSeed();
-                    nickCheck=true;
-                    roomCheck=true;
-                    break;
-
-                   }
-                } else if (dto.getCommand() == Info.JOIN) {
-                    System.out.println(dto.getMessage());
+                    if (dto.getCommand() == Info.MAKE) {
                     if(dto.getMessage()!=null&&dto.getMessage().equals(nicktxt.getText()+"ERR")){
                         System.out.println("사용중인 닉네임");
-                       }else if(dto.getMessage()!=null&&dto.getMessage().equals(codeText.getText()+"ERR")){
-                        System.out.println("존재하지 않는 방");
-                        nickCheck=true;
-                       }else{
+                    }else{
+                        System.out.println("방코드:"+dto.getRoomId());
+                        System.out.println("닉네임:"+dto.getNickName());
                         nick=dto.getNickName();
                         roomId=dto.getRoomId();
                         seed= dto.getSeed();
                         nickCheck=true;
                         roomCheck=true;
                         break;
-                       }
+
+                    }
+                    } else if (dto.getCommand() == Info.JOIN) {
+                        System.out.println(dto.getMessage());
+
+                        if(dto.getMessage()!=null&&dto.getMessage().equals(nicktxt.getText()+"ERR")){
+                            System.out.println("사용중인 닉네임");
+                        }else if(dto.getMessage()!=null&&dto.getMessage().equals(codeText.getText()+"ERR")){
+                            System.out.println("존재하지 않는 방");
+                            nickCheck=true;
+                        }else{
+                            nick=dto.getNickName();
+                            roomId=dto.getRoomId();
+                            seed= dto.getSeed();
+                            nickCheck=true;
+                            roomCheck=true;
+                            break;
+                        }
+
+
+                    }
                 }
 
             } catch (IOException e) {

@@ -46,8 +46,7 @@ public class GameSelectFrame extends JFrame  {
 
 
     public void showCharSelectPan(Socket socket,ObjectInputStream reader,ObjectOutputStream writer,String roomId, String nick,int seed){
-     
-        System.out.println(roomId+nick+seed);
+
 
         remove(panel);
         revalidate();
