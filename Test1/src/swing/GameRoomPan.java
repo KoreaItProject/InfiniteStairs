@@ -152,11 +152,16 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
                 // 
                 try {
                     // InfoDTO dto = new InfoDTO(nickName,Info.EXIT);
-                    t.stop();
+                    
                     InfoDTO dto = new InfoDTO();
                     dto.setCommand(Info.EXIT);
-                    writer.writeObject(dto); // 역슬러쉬가 필요가 없음
-                    writer.flush();
+                    dto.setNickName(GameCharSelectPanel.nick);
+                    dto.setRoomId(GameCharSelectPanel.roomId);
+                   writer.writeObject(dto); // 역슬러쉬가 필요가 없음
+                   writer.flush();
+                    t.stop();
+                    if(GameCharSelectPanel.t1!=null)
+                         GameCharSelectPanel.t1.stop();
 
                 } catch (IOException io) {
                     io.printStackTrace();
@@ -326,11 +331,11 @@ class tt extends Thread{
                
 
                     
-                   ((GameSelectFrame)GameRoomPan.frame).showCharSelectPan(GameRoomPan.socket,GameRoomPan.reader,
-                   GameRoomPan.writer,GameRoomPan.roomId,GameRoomPan.nick,GameRoomPan.seed);
-                   GameRoomPan.t.stop();
-                    this.stop();
-                   break;
+                ((GameSelectFrame)GameRoomPan.frame).showCharSelectPan(GameRoomPan.socket,GameRoomPan.reader,
+                GameRoomPan.writer,GameRoomPan.roomId,GameRoomPan.nick,GameRoomPan.seed);
+                GameRoomPan.t.stop();
+                this.stop();
+                break;
 
             }
         } catch (InterruptedException e) {

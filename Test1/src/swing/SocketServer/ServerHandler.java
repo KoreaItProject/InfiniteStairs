@@ -35,27 +35,27 @@ class ServerHandler extends Thread //처리해주는 곳(소켓에 대한 정보
 	}
 	public void run(){
 		InfoDTO dto = null;
-		String nickName;
 		
 		
 		try{
 			while(true){
 				dto=(InfoDTO)reader.readObject();
-				nickName=dto.getNickName();
-				
-				//System.out.println("배열 크기:"+ar.length);
-				//사용자가 접속을 끊었을 경우. 프로그램을 끝내서는 안되고 남은 사용자들에게 퇴장메세지를 보내줘야 한다. 
+				System.out.println(dto.getRoomId());
+				System.out.println(dto.getNickName());
 				if(dto.getCommand()==Info.EXIT){
+					System.out.println("종료");
 					InfoDTO sendDto = new InfoDTO();
 					//나가려고 exit를 보낸 클라이언트에게 답변 보내기
-					//sendDto.setCommand(Info.EXIT);
-					//writer.writeObject(sendDto);
-					//writer.flush();
+					
+					sendDto=dto;
+					writer.writeObject(sendDto);
+					broadcast(sendDto);
 
-					reader.close();
-					writer.close();
-					socket.close();
-					//남아있는 클라이언트에게 퇴장메세지 보내기
+					
+					//reader.close();
+					//writer.close();
+					//socket.close();
+
 					list.remove(this);
 
 			
@@ -95,7 +95,7 @@ class ServerHandler extends Thread //처리해주는 곳(소켓에 대한 정보
 					InfoDTO sendDto = new InfoDTO();
 					sendDto=dto;
 					sendDto.setCommand(Info.SEND);
-					sendDto.setMessage("["+nickName+"]"+ dto.getMessage());
+	
 				
 					broadcast(sendDto);
 				}
@@ -113,7 +113,7 @@ class ServerHandler extends Thread //처리해주는 곳(소켓에 대한 정보
 						
 					}else{//방만들기
 
-						ServerMain.member.add(nickName);
+						ServerMain.member.add(dto.getNickName());
 						int leftLimit = 97; // letter 'a'
 						int rightLimit = 122; // letter 'z'
 						int targetStringLength = 12;

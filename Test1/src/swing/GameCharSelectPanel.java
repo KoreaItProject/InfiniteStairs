@@ -9,16 +9,19 @@ import javax.swing.JPanel;
 
 import org.w3c.dom.css.RGBColor;
 
+import swing.SocketServer.InfoDTO;
+import swing.SocketServer.InfoDTO.Info;
 import swing.SoundF.sound;
 
 import java.awt.event.*;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.prefs.BackingStoreException;
 import java.awt.*;
 
-public class GameCharSelectPanel extends JPanel implements ActionListener {
+public class GameCharSelectPanel extends JPanel implements ActionListener ,Runnable {
 
     int FramW = 1000, FramH = 900;
     static int charIdx = 0;
@@ -28,6 +31,11 @@ public class GameCharSelectPanel extends JPanel implements ActionListener {
     int charSizeH = 600;
     int gifSize = 300;
 
+    //상대 들어왔나 안들어왔나
+    ImageIcon someone;
+    JLabel whiteIbl2;
+    ImageIcon whiteIcon;
+
     ImageIcon s[];
     Icon gif[];
     JLabel l;
@@ -35,13 +43,34 @@ public class GameCharSelectPanel extends JPanel implements ActionListener {
     JButton leftBtn;
     JButton rightBtn;
 
+    int ready=0;
+
+    public static JLabel readylbl1,readylbl2;
+
     sound sd = new sound();
     int i, l1;
     JFrame frame;
+    
+    public static String roomId,nick;
+    public static int seed;
+    public static Socket socket;
+    public static ObjectInputStream reader = null;
+    public static ObjectOutputStream writer = null;
+    public static Thread t1 ;
+
+
 
     public GameCharSelectPanel(JFrame frame,Socket socket,ObjectInputStream reader,ObjectOutputStream writer,String roomId, String nick,int seed) {
         getSetting();
         this.frame = frame;
+        this.socket=socket;
+        this.reader=reader;
+        this.writer=writer;
+        this.roomId=roomId;
+        this.nick=nick;
+        this.seed=seed;
+
+        t1=new Thread(this);
 
         // JPanel game2 = new JPanel();
         this.setLayout(null);
@@ -66,12 +95,16 @@ public class GameCharSelectPanel extends JPanel implements ActionListener {
         rightBtn.addActionListener(this);
 
         ImageIcon readyIcon = imgMk("sub/ready.png", 200, 80, Image.SCALE_SMOOTH);
-        JLabel readylbl1 = new JLabel(readyIcon);
-        JLabel readylbl2 = new JLabel(readyIcon);
+        readylbl1 = new JLabel(readyIcon);
+        readylbl2 = new JLabel(readyIcon);
         readylbl1.setBounds(65, 100, 300, 120);
         readylbl2.setBounds(645, 100, 300, 120);
         this.add(readylbl1);
         this.add(readylbl2);
+        readylbl1.setVisible(false);
+        readylbl2.setVisible(false);
+
+
 
         s = new ImageIcon[3];
         gif = new Icon[3];
@@ -93,10 +126,10 @@ public class GameCharSelectPanel extends JPanel implements ActionListener {
         this.add(readyBtn);
         this.add(l);
 
-        ImageIcon whiteIcon = imgMk("sub/white.png", 330, 490, Image.SCALE_SMOOTH);
-        ImageIcon someone = imgMk("sub/someone.png", 330, 490, Image.SCALE_SMOOTH);
+        whiteIcon = imgMk("sub/white.png", 330, 490, Image.SCALE_SMOOTH);
+        someone = imgMk("sub/someone.png", 330, 490, Image.SCALE_SMOOTH);
         JLabel whiteIbl1 = new JLabel();// 왼쪽 캐릭터 div
-        JLabel whiteIbl2 = new JLabel();// 오른쪽 캐릭터 div
+        whiteIbl2 = new JLabel();// 오른쪽 캐릭터 div
         JLabel whiteIbl3 = new JLabel();// 밑에 설명 div
         JLabel whiteIbl4 = new JLabel();// 위에 방코드 div
         JLabel contents = new JLabel(
@@ -113,7 +146,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener {
         this.add(whiteIbl3);
         this.add(whiteIbl4);
         whiteIbl1.setIcon(whiteIcon);
-        whiteIbl2.setIcon(someone);
+        whiteIbl2.setIcon(whiteIcon);
         whiteIbl3.setIcon(imgMk("sub/white.png", 910, 120, Image.SCALE_SMOOTH));
         whiteIbl4.setIcon(imgMk("sub/white.png", 910, 80, Image.SCALE_SMOOTH));
 
@@ -124,12 +157,94 @@ public class GameCharSelectPanel extends JPanel implements ActionListener {
         this.add(backlbl);
         backlbl.setIcon(backImg);
 
+   
+
+        service("입장");
+        t1.start();
+
+
     } // 생성자
 
     public void getSetting() {
         Setting settings = new Setting();
         imgPath = settings.getImgPath();
 
+    }
+
+    // 서버 연결부
+    public void service(String message) {
+       
+        try {
+            // 연결시 서버에 보내는 코드
+
+                InfoDTO dto = new InfoDTO();
+                dto.setNickName(nick);
+                dto.setRoomId(roomId);
+                dto.setMessage(message);
+                dto.setCommand(Info.STATE);
+                writer.writeObject(dto); // 역슬러쉬가 필요가 없음
+                writer.flush();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+       
+
+    }
+
+    @Override
+    public void run() {
+        InfoDTO dto = null;
+        while (true) {
+           
+            try {
+                dto =  (InfoDTO)reader.readObject();
+                System.out.println(dto.getRoomId());
+                if(dto.getRoomId()!=null&&dto.getRoomId().equals(roomId)){
+                   
+
+                    if(dto.getNickName()!=null&&!dto.getNickName().equals(nick)){ 
+                        if (dto.getCommand() == Info.STATE) {
+                            
+                            if(dto.getMessage()!=null&&dto.getMessage().equals("입장")){//내가 방주인이고 상대가 입장했음
+                                System.out.println(dto.getNickName()+"님 입장하셨습니다.");
+                                whiteIbl2.setIcon(someone);
+                                dto.setNickName(nick);
+                                dto.setRoomId(roomId);
+                                dto.setMessage("입장확인");
+                                dto.setCommand(Info.STATE);
+                                writer.writeObject(dto); // 역슬러쉬가 필요가 없음
+                                writer.flush();
+                            }else if(dto.getMessage()!=null&&dto.getMessage().equals("입장확인")){//내가 입장했고 상대가 내 입장을 확인했음
+                                System.out.println(dto.getNickName()+"님 방에 입장하였습니다");
+                                whiteIbl2.setIcon(someone);
+                              
+                            }
+
+
+                        }else if(dto.getCommand() == Info.EXIT){
+                            System.out.println("상대종료");
+                            whiteIbl2.setIcon(whiteIcon);
+
+                            
+                        }
+                       
+                    }
+                   
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+
+                e.printStackTrace();
+            }
+        }
+      
+      
+      
     }
 
     @Override
@@ -159,8 +274,15 @@ public class GameCharSelectPanel extends JPanel implements ActionListener {
 
         if (e.getSource() == readyBtn) {
             selectSoundStopFunc();
-            frame.dispose();
-            new GameStart().start();
+            if(ready==0){
+                readylbl1.setVisible(true);
+                ready=1;
+            }else{
+                readylbl1.setVisible(false);
+                ready=0;
+            }
+               
+
         } else if (e.getSource() == rightBtn) {
             // charLabel
         }
@@ -179,7 +301,6 @@ public class GameCharSelectPanel extends JPanel implements ActionListener {
 
     // 이미지 생성쓰
     public ImageIcon imgMk(String path, int w, int h, int hint) {
-        System.out.println(imgPath + path);
         return new ImageIcon(new ImageIcon(imgPath + path).getImage().getScaledInstance(w, h, hint));
     }
 
