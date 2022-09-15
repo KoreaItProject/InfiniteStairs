@@ -12,7 +12,7 @@ class ChatServerObject
 	private ServerSocket serverSocket;
 	private List <ChatHandlerObject> list;
 	public static List <String> member;
-	public static HashMap <String, int[]> room;
+	public static HashMap <String, Integer> room;
 	public ChatServerObject(){
 		try{
 			serverSocket= new ServerSocket (9500);

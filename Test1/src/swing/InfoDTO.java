@@ -14,7 +14,7 @@ class InfoDTO implements Serializable{
 	private int step;
 	private int moveX;
 	private int skill;
-	private int [] result;
+	private int  seed;
 	private String roomId;
 	
 	public String getNickName(){
@@ -59,11 +59,11 @@ class InfoDTO implements Serializable{
 	public void setMoveX(int moveX) {
 		this.moveX = moveX;
 	}
-	public int[] getResult() {
-		return result;
+	public int getSeed() {
+		return seed;
 	}
-	public void setResult(int[] result) {
-		this.result = result;
+	public void setSeed(int seed) {
+		this.seed = seed;
 	}
 	
 }

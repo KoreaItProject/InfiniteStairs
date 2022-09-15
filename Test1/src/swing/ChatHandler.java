@@ -79,9 +79,10 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 							System.out.println("방없음");
 							broadcast(sendDto);
 							
-						}else{
-							sendDto.setResult(ChatServerObject.room.get(dto.getRoomId()));
+						}else{//방입장하기
+							sendDto.setSeed(ChatServerObject.room.get(dto.getRoomId()));
 							sendDto.setRoomId(dto.getRoomId());
+
 							broadcast(sendDto);
 						}
 					}
@@ -107,7 +108,7 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 						sendDto.setMessage(dto.getNickName()+"ERR");
 						broadcast(sendDto);
 						
-					}else{
+					}else{//방만들기
 
 						ChatServerObject.member.add(nickName);
 						int leftLimit = 97; // letter 'a'
@@ -115,17 +116,24 @@ class ChatHandlerObject extends Thread //처리해주는 곳(소켓에 대한 �
 						int targetStringLength = 12;
 						Random random = new Random();
 						String generatedString = random.ints(leftLimit, rightLimit + 1).limit(targetStringLength).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();	
-						
-						int [] result=new int [new Setting().getBlockCount()];
-						result[0] = 0;
-						for (int i = 1; i < result.length; i++) {
-								result[i] = (int) (Math.random() * 2);
-						}
+						/* 
+						int seed=400;
+	   					Random rand = new Random();
+       					rand.setSeed(seed);
+ 
+						for (int i = 1; i <= 5; i++) {
+							System.out.print(rand.nextInt(2) + " ");
+				
+						}*/
+						Random rand = new Random();
+						int seed = rand.nextInt(10000);
+				
+						ChatServerObject.room.put(generatedString, seed);
 
-						ChatServerObject.room.put(generatedString, result);
 						sendDto.setRoomId(generatedString);
-						sendDto.setResult(result);
+						sendDto.setSeed(seed);
 						broadcast(sendDto);
+						
 
 					}
 					

@@ -12,6 +12,9 @@ import org.w3c.dom.css.RGBColor;
 import swing.SoundF.sound;
 
 import java.awt.event.*;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.prefs.BackingStoreException;
 import java.awt.*;
 
@@ -36,7 +39,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener {
     int i, l1;
     JFrame frame;
 
-    public GameCharSelectPanel(JFrame frame) {
+    public GameCharSelectPanel(JFrame frame,Socket socket,ObjectInputStream reader,ObjectOutputStream writer,String roomId, String nick,int seed) {
         getSetting();
         this.frame = frame;
 
@@ -55,6 +58,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener {
 
         this.add(leftBtn);
         this.add(rightBtn);
+
 
         // add(game2);
 

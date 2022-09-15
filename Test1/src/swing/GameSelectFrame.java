@@ -8,6 +8,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import java.awt.event.*;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.prefs.BackingStoreException;
 import java.awt.*;
 
@@ -40,13 +43,16 @@ public class GameSelectFrame extends JFrame  {
 
 
     } // 생성자
-    public void showCharSelectPan(){
+
+
+    public void showCharSelectPan(Socket socket,ObjectInputStream reader,ObjectOutputStream writer,String roomId, String nick,int seed){
      
+        System.out.println(roomId+nick+seed);
 
         remove(panel);
         revalidate();
         repaint();
-        panel=new GameCharSelectPanel(this);
+        panel=new GameCharSelectPanel(this,socket,reader,writer,roomId,nick,seed);
         add(panel);
         revalidate();
         repaint();
