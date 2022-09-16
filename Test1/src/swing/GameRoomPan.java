@@ -41,6 +41,8 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
     public static ObjectInputStream reader = null;
     public static ObjectOutputStream writer = null;
     public static Thread t ;
+
+    JLabel nicklbl;
     
     public GameRoomPan(JFrame frame){
         this.frame=frame; 
@@ -51,7 +53,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
 
         
        
-        JLabel nicklbl=new JLabel("닉네임을 입력해주세요");
+        nicklbl=new JLabel("닉네임을 입력해주세요");
         nicklbl.setFont(new Font("Gothic", Font.BOLD, nicklbl.getFont().getSize() + 20));
         nicklbl.setForeground(Color.white);
         this.add(nicklbl);
@@ -274,6 +276,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
                     if (dto.getCommand() == Info.MAKE) {
                     if(dto.getMessage()!=null&&dto.getMessage().equals(nicktxt.getText()+"ERR")){
                         System.out.println("사용중인 닉네임");
+                        nicklbl.setText("사용중인 닉네임");
                     }else{
                         System.out.println("방코드:"+dto.getRoomId());
                         System.out.println("닉네임:"+dto.getNickName());
@@ -290,8 +293,10 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
 
                         if(dto.getMessage()!=null&&dto.getMessage().equals(nicktxt.getText()+"ERR")){
                             System.out.println("사용중인 닉네임");
+                            nicklbl.setText("사용중인 닉네임");
                         }else if(dto.getMessage()!=null&&dto.getMessage().equals(codeText.getText()+"ERR")){
                             System.out.println("존재하지 않는 방");
+                            nicklbl.setText("존재하지 않는 방");
                             nickCheck=true;
                         }else{
                             nick=dto.getNickName();
