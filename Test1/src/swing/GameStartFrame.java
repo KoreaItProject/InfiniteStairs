@@ -22,7 +22,7 @@ import java.awt.event.*;
 
 public class GameStartFrame extends JFrame implements Runnable {
     ImageIcon[] birdIcon;
-    String nick = "bb";
+    String nick ;
     String imgPath;
     int FramW = 1000, FramH = 900, blockW = 100, blockH = 50, blockX = 450, blockY = 500,
             charW, charH, charX, charY, startBackH = -4140;
@@ -44,11 +44,11 @@ public class GameStartFrame extends JFrame implements Runnable {
     public int gaugeUpNum = 2;
 
     // 상대
-    String otherNick = "aa";
+    String otherNick ;
     int otherKeyCount = 0, otherMoveX = -110;
-    private Socket socket;
-    private ObjectInputStream reader = null;
-    private ObjectOutputStream writer = null;
+ 
+    private ObjectInputStream reader ;
+    private ObjectOutputStream writer ;
     public JLabel otherCharlbl;
     public int otherSkill = 0;
     public String otherCharName;
@@ -57,6 +57,7 @@ public class GameStartFrame extends JFrame implements Runnable {
     public int otherCharIdx;
 
     int betweenStep = 0;
+    String roomId;
 
     public GameStartFrame(ObjectInputStream reader,
             ObjectOutputStream writer,
@@ -66,13 +67,18 @@ public class GameStartFrame extends JFrame implements Runnable {
             int otherCharIdx,
             int[] result,
             String otherNick) {
-        super("J프레임 테스트"); // 프레임의 타이틀
+        this.reader=reader;
+        this.writer=writer;
+        this.roomId=roomId;  
+        this.nick = nick;
         this.charIdx = charIdx;
         this.otherCharIdx = otherCharIdx;
-        this.nick = nick;
+        this.result=result;
         this.otherNick = otherNick;
-        service();
+      
+        
 
+      
         getSetting(charIdx, otherCharIdx);
 
         setSize(FramW, FramH); // 컨테이너 크기 지정
@@ -379,6 +385,8 @@ public class GameStartFrame extends JFrame implements Runnable {
             }
         });
 
+        Thread t2 = new Thread(this);
+        t2.start();
         // 프레임 메인쓰레드
         try {
 
@@ -525,18 +533,13 @@ public class GameStartFrame extends JFrame implements Runnable {
 
         try {
             // 서버로 보냄
-            String msg = "";
             InfoDTO dto = new InfoDTO();
             dto.setStep(keyCount);
-            if (msg.equals("exit")) {
-                dto.setCommand(Info.EXIT);
-            } else {
-                dto.setCommand(Info.SEND);
-                dto.setNickName(nick);
-                dto.setMoveX(moveX);
-                dto.setStep(keyCount);
-                dto.setSkill(skillIdx);
-            }
+            dto.setCommand(Info.SEND);
+            dto.setNickName(nick);
+            dto.setMoveX(moveX);
+            dto.setStep(keyCount);
+            dto.setSkill(skillIdx);
             writer.writeObject(dto);
             writer.flush();
             dto.setSkill(0);
@@ -546,78 +549,41 @@ public class GameStartFrame extends JFrame implements Runnable {
 
     }
 
-    // 서버 연결부
-    public void service() {
-        try {
-            socket = new Socket("58.224.48.139", 9500);
-            reader = new ObjectInputStream(socket.getInputStream());
-            writer = new ObjectOutputStream(socket.getOutputStream());
-            System.out.println("전송 준비 완료!");
-
-        } catch (UnknownHostException e) {
-            System.out.println("서버를 찾을 수 없습니다.");
-            e.printStackTrace();
-            System.exit(0);
-        } catch (IOException e) {
-            System.out.println("서버와 연결이 안되었습니다.");
-            e.printStackTrace();
-            System.exit(0);
-        }
-
-        try {
-            // 연결시 서버에 보내는 코드
-
-            InfoDTO dto = new InfoDTO();
-            dto.setNickName(nick);
-            dto.setStep(keyCount);
-            dto.setMoveX(moveX);
-            dto.setCommand(Info.JOIN);
-            writer.writeObject(dto); // 역슬러쉬가 필요가 없음
-            writer.flush();
-            System.out.println("연결");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // 스레드 생성
-
-        Thread t = new Thread(this);
-        t.start();
-
-    }
+  
 
     //// 서버로부터 데이터 받기
     @Override
     public void run() {
 
         InfoDTO dto = null;
-        while (true) {
-            try {
-                dto = (InfoDTO) reader.readObject();
-                if (dto.getCommand() == Info.EXIT) { // 서버로부터 내 자신의 exit를 받으면 종료됨
-                    // reader.close();
-                    // writer.close();
-                    // socket.close();
-                    // dispose();
-                    // new GameStartFrame(charIdx, otherCharIdx);
-                    System.exit(0);
+       
 
-                } else if (dto.getCommand() == Info.SEND) {
-                    if (dto.getNickName() != null && dto.getNickName().equals(otherNick)) {
-                        otherKeyCount = dto.getStep();
-                        otherMoveX = dto.getMoveX();
-                        new CharAni(otherCharlbl, otherCharArr, dto.getMoveX()).start();
-                        if (dto.getSkill() == 1) {
-                            new SkillIce(iceBackbl).start();
-                            sd.iceSkillSound();
-                        } else if (dto.getSkill() == 2) {
-                            new SkillBlackEye(blackEyelbl).start();
-                            sd.blackEyeSkillSound();
+        while (true) {
+      
+
+            try {
+                dto = (InfoDTO)(reader.readObject());
+                System.out.println(123);
+                if(dto.getRoomId()!=null&&dto.getRoomId().equals(roomId)){
+                    System.out.println(dto.getRoomId());
+                    if (dto.getCommand() == Info.SEND) {
+                        if (dto.getNickName() != null && dto.getNickName().equals(otherNick)) {
+                            System.out.println(dto.getNickName());
+                            otherKeyCount = dto.getStep();
+                            otherMoveX = dto.getMoveX();
+                            new CharAni(otherCharlbl, otherCharArr, dto.getMoveX()).start();
+                            if (dto.getSkill() == 1) {
+                                new SkillIce(iceBackbl).start();
+                                sd.iceSkillSound();
+                            } else if (dto.getSkill() == 2) {
+                                new SkillBlackEye(blackEyelbl).start();
+                                sd.blackEyeSkillSound();
+                            }
                         }
                     }
-                } else if (dto.getCommand() == Info.JOIN) {
 
                 }
+               
 
             } catch (IOException e) {
                 e.printStackTrace();

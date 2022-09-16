@@ -58,11 +58,11 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
 
     public static String roomId, nick;
     public static int seed;
-    public static Socket socket;
-    public static ObjectInputStream reader = null;
-    public static ObjectOutputStream writer = null;
+
+    public ObjectInputStream reader = null;
+    public ObjectOutputStream writer = null;
     public static Thread t1;
-    public static int[] result;
+    public int[] result;
     public static String otherNick;
 
     String charDetail[] = {
@@ -70,11 +70,10 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
             "<html><body style='font-size:16px;'><p>&ensp고스트맨</p><p>&ensp스킬 : 일정 시간 동안 상대방의 시야를 방해한다 </p><p>&ensp대상은 시야가 축소된다</p></body></html>",
             "<html><body style='font-size:16px;'><p>&ensp미라맨</p><p>&ensp스킬 : 생명력을 회복한다</p><p>&ensp최대 생명력이 높습니다</p></body></html>" };
 
-    public GameCharSelectPanel(JFrame frame, Socket socket, ObjectInputStream reader, ObjectOutputStream writer,
+    public GameCharSelectPanel(JFrame frame, ObjectInputStream reader, ObjectOutputStream writer,
             String roomId, String nick, int seed) {
         getSetting();
         this.frame = frame;
-        this.socket = socket;
         this.reader = reader;
         this.writer = writer;
         this.roomId = roomId;
@@ -192,7 +191,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
 
         service("입장");
         t1.start();
-        new GameStart().start();
+        new GameStart(this,reader,writer,result).start();
 
     } // 생성자
 
@@ -226,6 +225,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
     public void run() {
         InfoDTO dto = null;
         while (true) {
+            System.out.println(123);
 
             try {
                 dto = (InfoDTO) reader.readObject();
@@ -355,24 +355,40 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
 
 class GameStart extends Thread {
 
+    GameCharSelectPanel gcp;
+    ObjectInputStream reader;
+    ObjectOutputStream writer;
+    int [] result;
+        GameStart(JPanel jp,ObjectInputStream reader, ObjectOutputStream writer ,int [] result){
+            this.gcp=(GameCharSelectPanel)jp;
+            this.reader=reader;
+            this.writer=writer;
+            this.result=result;
+        }
     @Override
     public void run() {
         while (true) {
             try {
-
+                Thread.sleep(300);
                 if (GameCharSelectPanel.ready == 1 && GameCharSelectPanel.otherReady == 1) {
                     System.out.println("게임시작");
-                    new GameStartFrame(GameCharSelectPanel.reader,
-                            GameCharSelectPanel.writer,
+                    GameCharSelectPanel.t1.stop();
+                    gcp.frame.dispose();
+                    System.out.println("-----");
+                   
+                    new GameStartFrame(reader,
+                            writer,
                             GameCharSelectPanel.roomId,
                             GameCharSelectPanel.nick,
                             GameCharSelectPanel.charIdx, 0,
-                            GameCharSelectPanel.result,
+                            result,
                             GameCharSelectPanel.otherNick);
-
+                 
+                    break;
                 }
+             
                 super.run();
-                Thread.sleep(300);
+                
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

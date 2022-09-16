@@ -38,8 +38,8 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
 
     //
     public static Socket socket;
-    public static ObjectInputStream reader = null;
-    public static ObjectOutputStream writer = null;
+    public ObjectInputStream reader = null;
+    public ObjectOutputStream writer = null;
     public static Thread t ;
 
     JLabel nicklbl;
@@ -191,7 +191,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
 
         System.out.println("전송 준비 완료!");
         t.start();
-       new tt().start();
+       new tt(reader,writer).start();
     }
     
     public void getSetting() {
@@ -327,6 +327,12 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
 }
 class tt extends Thread{
 
+    ObjectInputStream reader;ObjectOutputStream writer;
+    tt(ObjectInputStream reader, ObjectOutputStream writer){
+        this.reader=reader;
+        this.writer=writer;
+    }
+
  @Override
  public void run() {
     while(true){
@@ -336,8 +342,8 @@ class tt extends Thread{
                
 
                     
-                ((GameSelectFrame)GameRoomPan.frame).showCharSelectPan(GameRoomPan.socket,GameRoomPan.reader,
-                GameRoomPan.writer,GameRoomPan.roomId,GameRoomPan.nick,GameRoomPan.seed);
+                ((GameSelectFrame)GameRoomPan.frame).showCharSelectPan(reader,
+                writer,GameRoomPan.roomId,GameRoomPan.nick,GameRoomPan.seed);
                 GameRoomPan.t.stop();
                 this.stop();
                 break;

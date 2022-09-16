@@ -37,13 +37,13 @@ public class GameSelectFrame extends JFrame {
 
     } // 생성자
 
-    public void showCharSelectPan(Socket socket, ObjectInputStream reader, ObjectOutputStream writer, String roomId,
+    public void showCharSelectPan(ObjectInputStream reader, ObjectOutputStream writer, String roomId,
             String nick, int seed) {
 
         remove(panel);
         revalidate();
         repaint();
-        panel = new GameCharSelectPanel(this, socket, reader, writer, roomId, nick, seed);
+        panel = new GameCharSelectPanel(this, reader, writer, roomId, nick, seed);
         add(panel);
         revalidate();
         repaint();
