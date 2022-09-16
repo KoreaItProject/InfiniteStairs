@@ -14,14 +14,10 @@ import java.net.Socket;
 import java.util.prefs.BackingStoreException;
 import java.awt.*;
 
-public class GameSelectFrame extends JFrame  {
+public class GameSelectFrame extends JFrame {
 
     int FramW = 1000, FramH = 900;
     public JPanel panel;
-
- 
-
-
 
     public GameSelectFrame() {
 
@@ -34,46 +30,34 @@ public class GameSelectFrame extends JFrame  {
         // 레이블을 넣기 위한 패널 생성
 
         // 패널 생성
-        //JPanel gameCharSelectPanel = new GameCharSelectPanel(this);
-        panel=new GameRoomPan(this);
+        // JPanel gameCharSelectPanel = new GameCharSelectPanel(this);
+        panel = new GameRoomPan(this);
         add(panel);
         setVisible(true);
-        
-      
-
 
     } // 생성자
 
-
-    public void showCharSelectPan(Socket socket,ObjectInputStream reader,ObjectOutputStream writer,String roomId, String nick,int seed){
-
+    public void showCharSelectPan(Socket socket, ObjectInputStream reader, ObjectOutputStream writer, String roomId,
+            String nick, int seed) {
 
         remove(panel);
         revalidate();
         repaint();
-        panel=new GameCharSelectPanel(this,socket,reader,writer,roomId,nick,seed);
+        panel = new GameCharSelectPanel(this, socket, reader, writer, roomId, nick, seed);
         add(panel);
         revalidate();
         repaint();
         setVisible(true);
-   
+
     }
-    public void showRoomPan(){
+
+    public void showRoomPan() {
         remove(panel);
         revalidate();
         repaint();
-        panel=new GameRoomPan(this);
+        panel = new GameRoomPan(this);
         add(panel);
         setVisible(true);
     }
 
-   
-
-    
-
-   
 } // class
-
-
-
-

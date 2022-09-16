@@ -19,11 +19,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Random;
 import java.util.prefs.BackingStoreException;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 
-public class GameCharSelectPanel extends JPanel implements ActionListener ,Runnable {
+public class GameCharSelectPanel extends JPanel implements ActionListener, Runnable {
 
     int FramW = 1000, FramH = 900;
     static int charIdx = 0;
@@ -33,9 +34,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener ,Runna
     int charSizeH = 600;
     int gifSize = 300;
 
-   
-
-    //상대 들어왔나 안들어왔나
+    // 상대 들어왔나 안들어왔나
     ImageIcon someone;
     JLabel whiteIbl2;
     ImageIcon whiteIcon;
@@ -49,37 +48,51 @@ public class GameCharSelectPanel extends JPanel implements ActionListener ,Runna
     JButton clipbtn;
     JLabel contentslbl;
 
-    static int ready=0,otherReady=0 ;
+    static int ready = 0, otherReady = 0;
 
-    public static JLabel readylbl1,readylbl2;
+    public static JLabel readylbl1, readylbl2;
     public JLabel someoneNick;
     sound sd = new sound();
     int i, l1;
     JFrame frame;
-    
-    public static String roomId,nick;
+
+    public static String roomId, nick;
     public static int seed;
     public static Socket socket;
     public static ObjectInputStream reader = null;
     public static ObjectOutputStream writer = null;
-    public static Thread t1 ;
+    public static Thread t1;
+    public static int[] result;
+    public static String otherNick;
 
-    String charDetail []={"<html><body style='font-size:16px;'><p>&ensp스노우맨</p><p>&ensp스킬 : 일정 시간 동안상대방을 얼린다</p><p>&ensp대상은 움직일 수 없다</p></body></html>",
-    "<html><body style='font-size:16px;'><p>&ensp고스트맨</p><p>&ensp스킬 : 일정 시간 동안 상대방의 시야를 방해한다 </p><p>&ensp대상은 시야가 축소된다</p></body></html>",
-     "<html><body style='font-size:16px;'><p>&ensp미라맨</p><p>&ensp스킬 : 생명력을 회복한다</p><p>&ensp최대 생명력이 높습니다</p></body></html>"};
+    String charDetail[] = {
+            "<html><body style='font-size:16px;'><p>&ensp스노우맨</p><p>&ensp스킬 : 일정 시간 동안상대방을 얼린다</p><p>&ensp대상은 움직일 수 없다</p></body></html>",
+            "<html><body style='font-size:16px;'><p>&ensp고스트맨</p><p>&ensp스킬 : 일정 시간 동안 상대방의 시야를 방해한다 </p><p>&ensp대상은 시야가 축소된다</p></body></html>",
+            "<html><body style='font-size:16px;'><p>&ensp미라맨</p><p>&ensp스킬 : 생명력을 회복한다</p><p>&ensp최대 생명력이 높습니다</p></body></html>" };
 
-    public GameCharSelectPanel(JFrame frame,Socket socket,ObjectInputStream reader,ObjectOutputStream writer,String roomId, String nick,int seed) {
+    public GameCharSelectPanel(JFrame frame, Socket socket, ObjectInputStream reader, ObjectOutputStream writer,
+            String roomId, String nick, int seed) {
         getSetting();
         this.frame = frame;
-        this.socket=socket;
-        this.reader=reader;
-        this.writer=writer;
-        this.roomId=roomId;
-        this.nick=nick;
-        this.seed=seed;
+        this.socket = socket;
+        this.reader = reader;
+        this.writer = writer;
+        this.roomId = roomId;
+        this.nick = nick;
+        this.seed = seed;
 
-        
-        t1=new Thread(this);
+        // result 배열 만들기
+        Random rand = new Random();
+        rand.setSeed(seed);
+
+        result = new int[new Setting().getBlockCount()];
+        result[0] = 0;
+        for (int i = 1; i < result.length; i++) {
+            result[i] = rand.nextInt(2); // 0 또는 1
+        }
+        // result 배열 만들기
+
+        t1 = new Thread(this);
 
         // JPanel game2 = new JPanel();
         this.setLayout(null);
@@ -97,7 +110,6 @@ public class GameCharSelectPanel extends JPanel implements ActionListener ,Runna
         this.add(leftBtn);
         this.add(rightBtn);
 
-
         // add(game2);
 
         leftBtn.addActionListener(this);
@@ -112,8 +124,6 @@ public class GameCharSelectPanel extends JPanel implements ActionListener ,Runna
         this.add(readylbl2);
         readylbl1.setVisible(false);
         readylbl2.setVisible(false);
-
-
 
         s = new ImageIcon[3];
         gif = new Icon[3];
@@ -137,21 +147,21 @@ public class GameCharSelectPanel extends JPanel implements ActionListener ,Runna
 
         whiteIcon = imgMk("sub/white.png", 330, 490, Image.SCALE_SMOOTH);
         someone = imgMk("sub/someone.png", 330, 490, Image.SCALE_SMOOTH);
-       
+
         JLabel whiteIbl1 = new JLabel();// 왼쪽 캐릭터 div
-        someoneNick=new JLabel("닉네임:");
+        someoneNick = new JLabel("닉네임:");
         whiteIbl2 = new JLabel();// 오른쪽 캐릭터 div
         JLabel whiteIbl3 = new JLabel();// 밑에 설명 div
-        JLabel roomIdlbl=new JLabel("방 코드 : "+roomId);
-        clipbtn=new JButton("복사");
+        JLabel roomIdlbl = new JLabel("방 코드 : " + roomId);
+        clipbtn = new JButton("복사");
         clipbtn.addActionListener(this);
         JLabel whiteIbl4 = new JLabel();// 위에 방코드 div
         contentslbl = new JLabel(charDetail[0]);
 
         whiteIbl1.setBounds(40, 215, 330, 490);
-        someoneNick.setBounds(640,650,300,60);
+        someoneNick.setBounds(640, 650, 300, 60);
         someoneNick.setFont(new Font("Gothic", Font.BOLD, someoneNick.getFont().getSize() + 13));
-       
+
         someoneNick.setVisible(false);
         whiteIbl2.setBounds(620, 215, 330, 490);
         whiteIbl3.setBounds(40, 725, 910, 120);
@@ -180,12 +190,9 @@ public class GameCharSelectPanel extends JPanel implements ActionListener ,Runna
         this.add(backlbl);
         backlbl.setIcon(backImg);
 
-   
-
         service("입장");
         t1.start();
         new GameStart().start();
-
 
     } // 생성자
 
@@ -197,24 +204,21 @@ public class GameCharSelectPanel extends JPanel implements ActionListener ,Runna
 
     // 서버 연결부
     public void service(String message) {
-       
+
         try {
             // 연결시 서버에 보내는 코드
 
-                InfoDTO dto = new InfoDTO();
-                dto.setNickName(nick);
-                dto.setRoomId(roomId);
-                dto.setMessage(message);
-                dto.setCommand(Info.STATE);
-                writer.writeObject(dto); // 역슬러쉬가 필요가 없음
-                writer.flush();
-
+            InfoDTO dto = new InfoDTO();
+            dto.setNickName(nick);
+            dto.setRoomId(roomId);
+            dto.setMessage(message);
+            dto.setCommand(Info.STATE);
+            writer.writeObject(dto); // 역슬러쉬가 필요가 없음
+            writer.flush();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-       
 
     }
 
@@ -222,58 +226,58 @@ public class GameCharSelectPanel extends JPanel implements ActionListener ,Runna
     public void run() {
         InfoDTO dto = null;
         while (true) {
-           
-            try {
-                dto =  (InfoDTO)reader.readObject();
-                System.out.println(dto.getRoomId());
-                if(dto.getRoomId()!=null&&dto.getRoomId().equals(roomId)){
-                   
 
-                    if(dto.getNickName()!=null&&!dto.getNickName().equals(nick)){ 
+            try {
+                dto = (InfoDTO) reader.readObject();
+                System.out.println(dto.getRoomId());
+                if (dto.getRoomId() != null && dto.getRoomId().equals(roomId)) {
+
+                    if (dto.getNickName() != null && !dto.getNickName().equals(nick)) {
                         if (dto.getCommand() == Info.STATE) {
-                            
-                            if(dto.getMessage()!=null&&dto.getMessage().equals("입장")){//내가 방주인이고 상대가 입장했음
-                                System.out.println(dto.getNickName()+"님 입장하셨습니다.");
+
+                            if (dto.getMessage() != null && dto.getMessage().equals("입장")) {// 내가 방주인이고 상대가 입장했음
+                                System.out.println(dto.getNickName() + "님 입장하셨습니다.");
                                 whiteIbl2.setIcon(someone);
                                 someoneNick.setVisible(true);
-                                someoneNick.setText("닉네임:"+dto.getNickName());
+                                someoneNick.setText("닉네임:" + dto.getNickName());
                                 dto.setNickName(nick);
                                 dto.setRoomId(roomId);
                                 dto.setMessage("입장확인");
                                 dto.setCommand(Info.STATE);
                                 writer.writeObject(dto); // 역슬러쉬가 필요가 없음
                                 writer.flush();
-                              
-                            }else if(dto.getMessage()!=null&&dto.getMessage().equals("입장확인")){//내가 입장했고 상대가 내 입장을 확인했음
-                                System.out.println(dto.getNickName()+"님 방에 입장하였습니다");
+
+                            } else if (dto.getMessage() != null && dto.getMessage().equals("입장확인")) {// 내가 입장했고 상대가 내
+                                                                                                     // 입장을 확인했음
+                                System.out.println(dto.getNickName() + "님 방에 입장하였습니다");
                                 whiteIbl2.setIcon(someone);
                                 someoneNick.setVisible(true);
-                                someoneNick.setText("닉네임:"+dto.getNickName());
-                              
-                            }else if(dto.getMessage()!=null&&dto.getMessage().equals("레디1")){//내가 입장했고 상대가 내 입장을 확인했음
-                                otherReady=1;
+                                someoneNick.setText("닉네임:" + dto.getNickName());
+                                GameCharSelectPanel.otherNick = dto.getNickName();
+
+                            } else if (dto.getMessage() != null && dto.getMessage().equals("레디1")) {// 내가 입장했고 상대가 내 입장을
+                                                                                                    // 확인했음
+                                otherReady = 1;
                                 readylbl2.setVisible(true);
-                            }else if(dto.getMessage()!=null&&dto.getMessage().equals("레디0")){//내가 입장했고 상대가 내 입장을 확인했음
-                                otherReady=0;
+                            } else if (dto.getMessage() != null && dto.getMessage().equals("레디0")) {// 내가 입장했고 상대가 내 입장을
+                                                                                                    // 확인했음
+                                otherReady = 0;
                                 readylbl2.setVisible(false);
                             }
 
-
-                        }else if(dto.getCommand() == Info.EXIT){
+                        } else if (dto.getCommand() == Info.EXIT) {
                             System.out.println("상대종료");
                             whiteIbl2.setIcon(whiteIcon);
                             someoneNick.setVisible(false);
-                            ready=0;
-                            otherReady=0;
+                            ready = 0;
+                            otherReady = 0;
                             readylbl1.setVisible(false);
                             readylbl2.setVisible(false);
-                            
+
                         }
 
-
-                       
                     }
-                   
+
                 }
 
             } catch (IOException e) {
@@ -283,9 +287,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener ,Runna
                 e.printStackTrace();
             }
         }
-      
-      
-      
+
     }
 
     @Override
@@ -293,7 +295,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener ,Runna
         if (e.getSource() == leftBtn) {
             if (charIdx == 0) {
                 charIdx += 2;
-                
+
                 System.out.println(charIdx);
             } else {
                 charIdx = charIdx - 1;
@@ -310,7 +312,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener ,Runna
             l.setIcon(s[charIdx]);
             contentslbl.setText(charDetail[charIdx]);
         }
-        if(e.getSource() == clipbtn){
+        if (e.getSource() == clipbtn) {
 
             StringSelection contents = new StringSelection(roomId);
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -318,22 +320,21 @@ public class GameCharSelectPanel extends JPanel implements ActionListener ,Runna
         }
         if (e.getSource() == readyBtn) {
             selectSoundStopFunc();
-            if(ready==0){
+            if (ready == 0) {
                 readylbl1.setVisible(true);
-                ready=1;
+                ready = 1;
                 service("레디1");
-            }else{
+            } else {
                 readylbl1.setVisible(false);
-                ready=0;
+                ready = 0;
                 service("레디0");
-            }    
+            }
 
         } else if (e.getSource() == rightBtn) {
             // charLabel
         }
 
     }
-
 
     public void selectSoundStartFunc() {
 
@@ -356,18 +357,28 @@ class GameStart extends Thread {
 
     @Override
     public void run() {
-        while(true){
+        while (true) {
             try {
 
-                if(GameCharSelectPanel.ready==1&&GameCharSelectPanel.otherReady==1){
+                if (GameCharSelectPanel.ready == 1 && GameCharSelectPanel.otherReady == 1) {
                     System.out.println("게임시작");
+                    new GameStartFrame(GameCharSelectPanel.reader,
+                            GameCharSelectPanel.writer,
+                            GameCharSelectPanel.roomId,
+                            GameCharSelectPanel.nick,
+                            GameCharSelectPanel.charIdx, 0,
+                            GameCharSelectPanel.result,
+                            GameCharSelectPanel.otherNick);
+
                 }
+                super.run();
                 Thread.sleep(300);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
         }
-  
+
     }
 
 }

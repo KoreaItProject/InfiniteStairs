@@ -58,10 +58,19 @@ public class GameStartFrame extends JFrame implements Runnable {
 
     int betweenStep = 0;
 
-    public GameStartFrame(int charIdx, int otherCharIdx) {
+    public GameStartFrame(ObjectInputStream reader,
+            ObjectOutputStream writer,
+            String roomId,
+            String nick,
+            int charIdx,
+            int otherCharIdx,
+            int[] result,
+            String otherNick) {
         super("J프레임 테스트"); // 프레임의 타이틀
         this.charIdx = charIdx;
         this.otherCharIdx = otherCharIdx;
+        this.nick = nick;
+        this.otherNick = otherNick;
         service();
 
         getSetting(charIdx, otherCharIdx);
@@ -607,7 +616,7 @@ public class GameStartFrame extends JFrame implements Runnable {
                         }
                     }
                 } else if (dto.getCommand() == Info.JOIN) {
-                 
+
                 }
 
             } catch (IOException e) {
