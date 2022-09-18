@@ -92,12 +92,10 @@ class ServerHandler extends Thread //처리해주는 곳(소켓에 대한 정보
 
 
 				} else if(dto.getCommand()==Info.SEND){
-					
-					InfoDTO sendDto; // = new InfoDTO();
-					sendDto=dto;
+				
 					
 				
-					broadcast(sendDto);
+					broadcast(dto);
 				}
 				else if(dto.getCommand()==Info.MAKE){
 					InfoDTO sendDto = new InfoDTO();
