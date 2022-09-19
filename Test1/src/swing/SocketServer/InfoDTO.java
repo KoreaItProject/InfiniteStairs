@@ -17,7 +17,9 @@ public class InfoDTO implements Serializable{
 	private int skill;
 	private int  seed;
 	private String roomId;
+	private int charIdx;
 
+	
 	public String getNickName(){
 		return nickName;
 	}
@@ -65,6 +67,12 @@ public class InfoDTO implements Serializable{
 	}
 	public void setSeed(int seed) {
 		this.seed = seed;
+	}
+	public int getCharIdx() {
+		return charIdx;
+	}
+	public void setCharIdx(int charIdx) {
+		this.charIdx = charIdx;
 	}
 	
 }
