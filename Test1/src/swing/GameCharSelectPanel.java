@@ -11,6 +11,7 @@ import java.awt.datatransfer.*;
 import org.w3c.dom.css.RGBColor;
 
 import swing.SocketServer.InfoDTO;
+import swing.SocketServer.Sock;
 import swing.SocketServer.InfoDTO.Info;
 import swing.SoundF.sound;
 
@@ -59,8 +60,6 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
     public static String roomId, nick;
     public static int seed;
 
-    public ObjectInputStream reader = null;
-    public ObjectOutputStream writer = null;
     public static Thread t1;
     public int[] result;
     public static String otherNick;
@@ -70,12 +69,9 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
             "<html><body style='font-size:16px;'><p>&ensp고스트맨</p><p>&ensp스킬 : 일정 시간 동안 상대방의 시야를 방해한다 </p><p>&ensp대상은 시야가 축소된다</p></body></html>",
             "<html><body style='font-size:16px;'><p>&ensp미라맨</p><p>&ensp스킬 : 생명력을 회복한다</p><p>&ensp최대 생명력이 높습니다</p></body></html>" };
 
-    public GameCharSelectPanel(JFrame frame, ObjectInputStream reader, ObjectOutputStream writer,
-            String roomId, String nick, int seed) {
+    public GameCharSelectPanel(JFrame frame, String roomId, String nick, int seed) {
         getSetting();
         this.frame = frame;
-        this.reader = reader;
-        this.writer = writer;
         this.roomId = roomId;
         this.nick = nick;
         this.seed = seed;
@@ -191,7 +187,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
 
         service("입장");
         t1.start();
-        new GameStart(this,reader,writer,result).start();
+        new GameStart(this,result).start();
 
     } // 생성자
 
@@ -212,8 +208,8 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
             dto.setRoomId(roomId);
             dto.setMessage(message);
             dto.setCommand(Info.STATE);
-            writer.writeObject(dto); // 역슬러쉬가 필요가 없음
-            writer.flush();
+            Sock.writer.writeObject(dto); // 역슬러쉬가 필요가 없음
+            Sock.writer.flush();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -228,7 +224,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
             System.out.println(123);
 
             try {
-                dto = (InfoDTO) reader.readObject();
+                dto = (InfoDTO) Sock.reader.readObject();
                 System.out.println(dto.getRoomId());
                 if (dto.getRoomId() != null && dto.getRoomId().equals(roomId)) {
 
@@ -240,12 +236,15 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
                                 whiteIbl2.setIcon(someone);
                                 someoneNick.setVisible(true);
                                 someoneNick.setText("닉네임:" + dto.getNickName());
+                                GameCharSelectPanel.otherNick = dto.getNickName();
                                 dto.setNickName(nick);
                                 dto.setRoomId(roomId);
                                 dto.setMessage("입장확인");
                                 dto.setCommand(Info.STATE);
-                                writer.writeObject(dto); // 역슬러쉬가 필요가 없음
-                                writer.flush();
+                                Sock.writer.writeObject(dto); // 역슬러쉬가 필요가 없음
+                                Sock.writer.flush();
+                               
+
 
                             } else if (dto.getMessage() != null && dto.getMessage().equals("입장확인")) {// 내가 입장했고 상대가 내
                                                                                                      // 입장을 확인했음
@@ -356,13 +355,9 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
 class GameStart extends Thread {
 
     GameCharSelectPanel gcp;
-    ObjectInputStream reader;
-    ObjectOutputStream writer;
     int [] result;
-        GameStart(JPanel jp,ObjectInputStream reader, ObjectOutputStream writer ,int [] result){
+        GameStart(JPanel jp,int [] result){
             this.gcp=(GameCharSelectPanel)jp;
-            this.reader=reader;
-            this.writer=writer;
             this.result=result;
         }
     @Override
@@ -372,17 +367,34 @@ class GameStart extends Thread {
                 Thread.sleep(300);
                 if (GameCharSelectPanel.ready == 1 && GameCharSelectPanel.otherReady == 1) {
                     System.out.println("게임시작");
+                  
+                    InfoDTO dto = new InfoDTO();
+                    dto.setCommand(Info.EXIT);
+                    dto.setMessage("startGame");
+                    dto.setNickName(GameCharSelectPanel.nick);
+                    dto.setRoomId(GameCharSelectPanel.roomId);
+                    Sock.writer.writeObject(dto); // 역슬러쉬가 필요가 없음
+                    Sock.writer.flush();
+
+
+
                     GameCharSelectPanel.t1.stop();
+                    gcp.frame.removeAll();
                     gcp.frame.dispose();
                     System.out.println("-----");
-                   
-                    new GameStartFrame(reader,
-                            writer,
+                  
+                    
+                    new GameStartFrame(
                             GameCharSelectPanel.roomId,
                             GameCharSelectPanel.nick,
                             GameCharSelectPanel.charIdx, 0,
                             result,
                             GameCharSelectPanel.otherNick);
+
+
+
+                            
+                    this.stop();
                  
                     break;
                 }
@@ -390,6 +402,9 @@ class GameStart extends Thread {
                 super.run();
                 
             } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 

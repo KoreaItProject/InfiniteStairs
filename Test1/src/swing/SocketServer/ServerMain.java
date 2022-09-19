@@ -22,7 +22,7 @@ class ServerMain
 
 		
 			while(true){
-				
+				System.out.println(123);
 				Socket socket = serverSocket.accept();
 				ServerHandler handler = new  ServerHandler(socket,list);  //스레드를 생성한 것이랑 동일함! 떄문에 시자해주어야 
 				handler.start();  //스레드 시작- 스레드 실행

@@ -8,6 +8,7 @@ import swing.Char.*;
 import swing.Move.*;
 import swing.Skill.*;
 import swing.SocketServer.InfoDTO;
+import swing.SocketServer.Sock;
 import swing.SocketServer.InfoDTO.Info;
 import swing.SoundF.sound;
 import swing.Sub.GaugeDown;
@@ -58,17 +59,35 @@ public class GameStartFrame extends JFrame implements Runnable {
 
     int betweenStep = 0;
     String roomId;
+    static Thread sockt2;
+    String host;
 
-    public GameStartFrame(ObjectInputStream reader,
-            ObjectOutputStream writer,
+    public GameStartFrame(
             String roomId,
             String nick,
             int charIdx,
             int otherCharIdx,
             int[] result,
             String otherNick) {
-        this.reader=reader;
-        this.writer=writer;
+                        
+       
+            try {
+                Sock.socket = new Socket(host, 9500);
+                this.reader = new ObjectInputStream(Sock.socket.getInputStream());
+                this.writer = new ObjectOutputStream(Sock.socket.getOutputStream());
+       
+            } catch (UnknownHostException e2) {
+                // TODO Auto-generated catch block
+                e2.printStackTrace();
+            } catch (IOException e2) {
+                // TODO Auto-generated catch block
+                e2.printStackTrace();
+            }
+
+            send(0);
+            Thread sockt2 = new Thread(this);
+            sockt2.start();
+
         this.roomId=roomId;  
         this.nick = nick;
         this.charIdx = charIdx;
@@ -375,18 +394,23 @@ public class GameStartFrame extends JFrame implements Runnable {
                 // System.exit(0);
                 try {
                     // InfoDTO dto = new InfoDTO(nickName,Info.EXIT);
+                    sockt2.stop();
                     InfoDTO dto = new InfoDTO();
                     dto.setCommand(Info.EXIT);
-                    writer.writeObject(dto); // 역슬러쉬가 필요가 없음
+                    dto.setNickName(GameCharSelectPanel.nick);
+                    dto.setRoomId(GameCharSelectPanel.roomId);
+                    dto.setMessage("finish");
+                    writer.writeObject(dto); 
                     writer.flush();
+                    
+
                 } catch (IOException io) {
                     io.printStackTrace();
                 }
             }
         });
 
-        Thread t2 = new Thread(this);
-        t2.start();
+       
         // 프레임 메인쓰레드
         try {
 
@@ -467,6 +491,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         otherCharX = settings.getCharX()[otherCharIdx];
         otherCharY = settings.getCharY()[otherCharIdx];
         otherCharName = settings.getCharName()[otherCharIdx];
+        host=settings.getHost();
 
     }
 
@@ -532,6 +557,7 @@ public class GameStartFrame extends JFrame implements Runnable {
     public void send(int skillIdx) {
 
         try {
+            System.out.println(1);
             // 서버로 보냄
             InfoDTO dto = new InfoDTO();
             dto.setStep(keyCount);
@@ -540,9 +566,10 @@ public class GameStartFrame extends JFrame implements Runnable {
             dto.setMoveX(moveX);
             dto.setStep(keyCount);
             dto.setSkill(skillIdx);
+            dto.setRoomId(roomId);
             writer.writeObject(dto);
             writer.flush();
-            dto.setSkill(0);
+
         } catch (IOException io) {
             io.printStackTrace();
         }
@@ -560,30 +587,38 @@ public class GameStartFrame extends JFrame implements Runnable {
 
         while (true) {
       
-
+              
+           
             try {
-                dto = (InfoDTO)(reader.readObject());
-                System.out.println(123);
-                if(dto.getRoomId()!=null&&dto.getRoomId().equals(roomId)){
-                    System.out.println(dto.getRoomId());
-                    if (dto.getCommand() == Info.SEND) {
-                        if (dto.getNickName() != null && dto.getNickName().equals(otherNick)) {
-                            System.out.println(dto.getNickName());
-                            otherKeyCount = dto.getStep();
-                            otherMoveX = dto.getMoveX();
-                            new CharAni(otherCharlbl, otherCharArr, dto.getMoveX()).start();
-                            if (dto.getSkill() == 1) {
-                                new SkillIce(iceBackbl).start();
-                                sd.iceSkillSound();
-                            } else if (dto.getSkill() == 2) {
-                                new SkillBlackEye(blackEyelbl).start();
-                                sd.blackEyeSkillSound();
-                            }
+          
+
+            dto = (InfoDTO)reader.readObject();
+            
+            if(dto.getRoomId()!=null&&dto.getRoomId().equals(roomId)){
+                System.out.println(dto.getRoomId());
+            
+                if (dto.getCommand() == Info.SEND) {
+                    if (dto.getNickName() != null && dto.getNickName().equals(otherNick)) {
+                        System.out.println(dto.getNickName());
+                        otherKeyCount = dto.getStep();
+                        otherMoveX = dto.getMoveX();
+                        new CharAni(otherCharlbl, otherCharArr, dto.getMoveX()).start();
+                        if (dto.getSkill() == 1) {
+                            new SkillIce(iceBackbl).start();
+                            sd.iceSkillSound();
+                        } else if (dto.getSkill() == 2) {
+                            new SkillBlackEye(blackEyelbl).start();
+                            sd.blackEyeSkillSound();
                         }
                     }
+                }else if (dto.getCommand() == Info.EXIT) {
+                    System.out.println("상대종료");
+                
+    
 
-                }
-               
+                 }
+            }
+                
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -592,7 +627,10 @@ public class GameStartFrame extends JFrame implements Runnable {
                 e.printStackTrace();
             }
         }
+        
     }
+      
+
 
     public void otherMove() {
         otherCharlbl.setLocation(blockArr[otherKeyCount].getLocation().x + otherCharX - 450,

@@ -44,12 +44,14 @@ class ServerHandler extends Thread //처리해주는 곳(소켓에 대한 정보
 				System.out.println(dto.getNickName());
 				if(dto.getCommand()==Info.EXIT){
 					System.out.println("종료");
-					InfoDTO sendDto = new InfoDTO();
-					//나가려고 exit를 보낸 클라이언트에게 답변 보내기
+			
+					if(dto.getMessage()==null||!dto.getMessage().equals("startGame")){
+						writer.writeObject(dto);
+						broadcast(dto);
+					}
+						
+						
 					
-					sendDto=dto;
-					writer.writeObject(sendDto);
-					broadcast(sendDto);
 
 					
 					//reader.close();
@@ -57,57 +59,51 @@ class ServerHandler extends Thread //처리해주는 곳(소켓에 대한 정보
 					//socket.close();
 
 					list.remove(this);
+					this.stop();
 
 			
 					break;
 				} else if(dto.getCommand()==Info.JOIN){
-					InfoDTO sendDto = new InfoDTO();
-					sendDto=dto;
-					sendDto.setCommand(Info.JOIN);
-					sendDto.setNickName(dto.getNickName());
+					dto.setCommand(Info.JOIN);
+					dto.setNickName(dto.getNickName());
 					
 					System.out.println("조인"+ServerMain.room.get(dto.getRoomId()));
 					
 				
 					if(isMember(dto.getNickName())){
-						sendDto.setMessage(dto.getNickName()+"ERR");
+						dto.setMessage(dto.getNickName()+"ERR");
 						System.out.println("닉중복");
-						broadcast(sendDto);
+						broadcast(dto);
 						
 						
 					}else{
 
 						if(ServerMain.room.get(dto.getRoomId())==null){
-							sendDto.setMessage(dto.getRoomId()+"ERR");
+							dto.setMessage(dto.getRoomId()+"ERR");
 							System.out.println("방없음");
-							broadcast(sendDto);
+							broadcast(dto);
 							
 						}else{//방입장하기
-							sendDto.setSeed(ServerMain.room.get(dto.getRoomId()));
-							sendDto.setRoomId(dto.getRoomId());
+							dto.setSeed(ServerMain.room.get(dto.getRoomId()));
+							dto.setRoomId(dto.getRoomId());
 
-							broadcast(sendDto);
+							broadcast(dto);
 						}
 					}
 
 
 				} else if(dto.getCommand()==Info.SEND){
-				
-					
-				
 					broadcast(dto);
 				}
 				else if(dto.getCommand()==Info.MAKE){
-					InfoDTO sendDto = new InfoDTO();
-					sendDto=dto;
-					sendDto.setCommand(Info.MAKE);
-					sendDto.setNickName(dto.getNickName());
+					dto.setCommand(Info.MAKE);
+					dto.setNickName(dto.getNickName());
 					
 					
 				
 					if(isMember(dto.getNickName())){
-						sendDto.setMessage(dto.getNickName()+"ERR");
-						broadcast(sendDto);
+						dto.setMessage(dto.getNickName()+"ERR");
+						broadcast(dto);
 						
 					}else{//방만들기
 
@@ -131,22 +127,20 @@ class ServerHandler extends Thread //처리해주는 곳(소켓에 대한 정보
 				
 						ServerMain.room.put(generatedString, seed);
 
-						sendDto.setRoomId(generatedString);
-						sendDto.setSeed(seed);
-						broadcast(sendDto);
+						dto.setRoomId(generatedString);
+						dto.setSeed(seed);
+						broadcast(dto);
 						
 
 					}
 					
 				
 				}else if (dto.getCommand()==Info.STATE){
-					InfoDTO sendDto = new InfoDTO();
-					sendDto=dto;
-					sendDto.setCommand(Info.STATE);
-					sendDto.setNickName(dto.getNickName());
-					sendDto.setMessage(dto.getMessage());
-					sendDto.setRoomId(dto.getRoomId());
-					broadcast(sendDto);
+					dto.setCommand(Info.STATE);
+					dto.setNickName(dto.getNickName());
+					dto.setMessage(dto.getMessage());
+					dto.setRoomId(dto.getRoomId());
+					broadcast(dto);
 
 				}
 			}//while
@@ -160,9 +154,9 @@ class ServerHandler extends Thread //처리해주는 곳(소켓에 대한 정보
 		
 	}
 	//다른 클라이언트에게 전체 메세지 보내주기
-	public void broadcast(InfoDTO sendDto) throws IOException {
+	public void broadcast(InfoDTO dto) throws IOException {
 		for(ServerHandler handler: list){
-			handler.writer.writeObject(sendDto); //핸들러 안의 writer에 값을 보내기
+			handler.writer.writeObject(dto); //핸들러 안의 writer에 값을 보내기
 			handler.writer.flush();  //핸들러 안의 writer 값 비워주기
 		}
 	}

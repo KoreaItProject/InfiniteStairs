@@ -7,6 +7,7 @@ import javax.swing.*;
 
 import swing.Bird.BirdAni;
 import swing.SocketServer.InfoDTO;
+import swing.SocketServer.Sock;
 import swing.SocketServer.InfoDTO.Info;
 
 import java.awt.event.*;
@@ -36,10 +37,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
     static boolean nickCheck=false,roomCheck=false;
 
 
-    //
-    public static Socket socket;
-    public ObjectInputStream reader = null;
-    public ObjectOutputStream writer = null;
+
     public static Thread t ;
 
     JLabel nicklbl;
@@ -159,8 +157,8 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
                     dto.setCommand(Info.EXIT);
                     dto.setNickName(GameCharSelectPanel.nick);
                     dto.setRoomId(GameCharSelectPanel.roomId);
-                   writer.writeObject(dto); // 역슬러쉬가 필요가 없음
-                   writer.flush();
+                    Sock.writer.writeObject(dto); // 역슬러쉬가 필요가 없음
+                    Sock.writer.flush();
                     t.stop();
                     if(GameCharSelectPanel.t1!=null)
                          GameCharSelectPanel.t1.stop();
@@ -174,9 +172,11 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
         //소켓연결부
             try {
             
-            socket = new Socket(host, 9500);
-            reader = new ObjectInputStream(socket.getInputStream());
-            writer = new ObjectOutputStream(socket.getOutputStream());
+            Sock.socket = new Socket(host, 9500);
+            Sock.reader = new ObjectInputStream(Sock.socket.getInputStream());
+            Sock.writer = new ObjectOutputStream(Sock.socket.getOutputStream());
+
+
 
             } catch (UnknownHostException e) {
                 System.out.println("서버를 찾을 수 없습니다.");
@@ -191,7 +191,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
 
         System.out.println("전송 준비 완료!");
         t.start();
-       new tt(reader,writer).start();
+       new tt().start();
     }
     
     public void getSetting() {
@@ -250,8 +250,8 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
                 dto.setNickName(nicktxt.getText());
                 dto.setRoomId(codeText.getText());
                 dto.setCommand(info);
-                writer.writeObject(dto); // 역슬러쉬가 필요가 없음
-                writer.flush();
+                Sock.writer.writeObject(dto); // 역슬러쉬가 필요가 없음
+                Sock.writer.flush();
 
 
 
@@ -269,7 +269,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
         while (true) {
            
             try {
-                dto =  (InfoDTO)reader.readObject();
+                dto =  (InfoDTO)Sock.reader.readObject();
                 System.out.println();
                 if(dto.getNickName()!=null&&dto.getNickName().equals(nicktxt.getText())){
 
@@ -327,11 +327,6 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
 }
 class tt extends Thread{
 
-    ObjectInputStream reader;ObjectOutputStream writer;
-    tt(ObjectInputStream reader, ObjectOutputStream writer){
-        this.reader=reader;
-        this.writer=writer;
-    }
 
  @Override
  public void run() {
@@ -342,8 +337,8 @@ class tt extends Thread{
                
 
                     
-                ((GameSelectFrame)GameRoomPan.frame).showCharSelectPan(reader,
-                writer,GameRoomPan.roomId,GameRoomPan.nick,GameRoomPan.seed);
+                ((GameSelectFrame)GameRoomPan.frame).showCharSelectPan(GameRoomPan.roomId,GameRoomPan.nick,GameRoomPan.seed);
+                
                 GameRoomPan.t.stop();
                 this.stop();
                 break;
