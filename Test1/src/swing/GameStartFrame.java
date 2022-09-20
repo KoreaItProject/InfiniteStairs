@@ -636,7 +636,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         new MoveBlock(blockArr, moveX, moveY).start();
         new CharAni(charlbl, charArr, moveX).start();
         if (gauge < 100) {
-            gaugeUp(gaugeBar, gauge += ((gaugeUpNum + (combo * 0.05)) <= 6 ? (gaugeUpNum + (combo * 0.05)) :6));
+            gaugeUp(gaugeBar, gauge += ((gaugeUpNum + (combo * 0.05)) <= 7 ? (gaugeUpNum + (combo * 0.05)) :7));
         }
         keyCount++;
         combo++;
