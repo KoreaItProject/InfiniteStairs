@@ -297,6 +297,13 @@ public class GameStartFrame extends JFrame implements Runnable {
         otherCharlbl = new JLabel(otherCharArr[0]);
         backPanel.add(otherCharlbl);
 
+        // 상대 닉네임
+        otherCharNicklbl = new JLabel(otherNick);
+        otherCharNicklbl.setBounds(455, 300, 150, 30);
+        otherCharNicklbl.setFont(new Font("Gothic", Font.BOLD, otherCharNicklbl.getFont().getSize() + 8));
+        backPanel.add(otherCharNicklbl);
+        // 상대 닉네임
+
         // 블록아이콘
         blockArr = new JLabel[blockCount];
         ImageIcon blockIcon = imgMk("block.png", blockW, blockH);
