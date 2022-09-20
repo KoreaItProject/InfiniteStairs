@@ -213,13 +213,11 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
     public ImageIcon imgMk(String path, int w, int h,int hint) {
         return new ImageIcon(new ImageIcon(imgPath + path).getImage().getScaledInstance(w, h, hint));
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
          if (e.getSource() == roomBtn1lbl) {//방만들기 바로 입장됨
             service(Info.MAKE);
-           
-           
-         
             
          }else if(e.getSource() == roomBtn2lbl) {//방입장하기 버튼
             roomBtn1lbl.setVisible(false);
@@ -242,9 +240,25 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
           
            
          }
-         else if(e.getSource() == roomBtn5lbl) {//취소
-            System.out.println("싱글플레이");
+         else if(e.getSource() == roomBtn5lbl) {//싱글플레이
+            try {
+            InfoDTO dto = new InfoDTO();
+            dto.setCommand(Info.EXIT);
+            dto.setMessage("startGame");
+            dto.setNickName(GameCharSelectPanel.nick);
+            dto.setRoomId(GameCharSelectPanel.roomId);
+            Sock.writer.writeObject(dto);
+            Sock.writer.flush();
+            t.stop();
+            System.out.println("123");
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            } 
+            ((GameSelectFrame)frame).showSingleSelectPan();
+        
          }
+        
 
          
         

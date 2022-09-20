@@ -62,4 +62,20 @@ public class GameSelectFrame extends JFrame {
         setVisible(true);
     }
 
+    public void showSingleSelectPan() {
+        System.out.println(123);
+        remove(panel);
+        revalidate();
+        repaint();
+        panel = new SingleCharSelectPanel(this);
+        add(panel);
+        revalidate();
+        repaint();
+
+
+        
+        setVisible(true);
+
+    }
+
 } // class
