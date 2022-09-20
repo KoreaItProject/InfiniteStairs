@@ -23,7 +23,7 @@ import java.awt.event.*;
 
 public class GameStartFrame extends JFrame implements Runnable {
     ImageIcon[] birdIcon;
-    String nick ;
+    String nick;
     String imgPath;
     int FramW = 1000, FramH = 900, blockW = 100, blockH = 50, blockX = 450, blockY = 500,
             charW, charH, charX, charY, startBackH = -4140;
@@ -45,12 +45,13 @@ public class GameStartFrame extends JFrame implements Runnable {
     public int gaugeUpNum = 2;
 
     // 상대
-    String otherNick ;
+    String otherNick;
     int otherKeyCount = 0, otherMoveX = -110;
- 
-    private ObjectInputStream reader ;
-    private ObjectOutputStream writer ;
+
+    private ObjectInputStream reader;
+    private ObjectOutputStream writer;
     public JLabel otherCharlbl;
+    public JLabel otherCharNicklbl;
     public int otherSkill = 0;
     public String otherCharName;
     int otherCharW, otherCharH, otherCharX, otherCharY;
@@ -62,7 +63,11 @@ public class GameStartFrame extends JFrame implements Runnable {
     static Thread sockt2;
     String host;
 
-    int waitGame=0;
+    int waitGame = 0;
+
+    // WinLose
+    JLabel winLoselbl;
+    ImageIcon winLoseIcon;
 
     public GameStartFrame(
             String roomId,
@@ -71,35 +76,31 @@ public class GameStartFrame extends JFrame implements Runnable {
             int otherCharIdx,
             int[] result,
             String otherNick) {
-          
-            getSetting(charIdx, otherCharIdx);              
-       
-            try {
-                Sock.socket = new Socket(host, 9500);
-                this.reader = new ObjectInputStream(Sock.socket.getInputStream());
-                this.writer = new ObjectOutputStream(Sock.socket.getOutputStream());
-       
-            } catch (UnknownHostException e2) {
-                // TODO Auto-generated catch block
-                e2.printStackTrace();
-            } catch (IOException e2) {
-                // TODO Auto-generated catch block
-                e2.printStackTrace();
-            }
 
-            sockt2 = new Thread(this);
-            sockt2.start();
+        getSetting(charIdx, otherCharIdx);
 
-        this.roomId=roomId;  
+        try {
+            Sock.socket = new Socket(host, 9500);
+            this.reader = new ObjectInputStream(Sock.socket.getInputStream());
+            this.writer = new ObjectOutputStream(Sock.socket.getOutputStream());
+
+        } catch (UnknownHostException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        } catch (IOException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        }
+
+        sockt2 = new Thread(this);
+        sockt2.start();
+
+        this.roomId = roomId;
         this.nick = nick;
         this.charIdx = charIdx;
         this.otherCharIdx = otherCharIdx;
-        this.result=result;
+        this.result = result;
         this.otherNick = otherNick;
-      
-        
-
-      
 
         setSize(FramW, FramH); // 컨테이너 크기 지정
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -140,6 +141,30 @@ public class GameStartFrame extends JFrame implements Runnable {
         jl2.setVisible(false);
         jl1.setVisible(false);
         jlGo.setVisible(false);
+
+        // WinLose Label
+        winLoseIcon = imgMk("sub/white.png", 330, 490);
+        winLoselbl = new JLabel();
+
+        winLoselbl.setBounds(350, 115, 330, 490);
+        backPanel.add(winLoselbl);
+        winLoselbl.setIcon(winLoseIcon);
+        winLoselbl.setVisible(false);
+        // WinLose Label
+
+        // 본인 화살표
+        ImageIcon ImgMyArrow = new ImageIcon();
+        ImgMyArrow = imgMk("character/myArrow.png", 30, 30);
+        JLabel jlMyArrow = new JLabel(ImgMyArrow);
+        if (charIdx == 1) {
+            jlMyArrow.setBounds(charX + 50, charY - 40, 30, 30);
+        } else if (charIdx == 2) {
+            jlMyArrow.setBounds(charX + 25, charY - 40, 30, 30);
+        } else {
+            jlMyArrow.setBounds(charX + 80, charY - 40, 30, 30);
+        }
+        backPanel.add(jlMyArrow);
+        // 본인 화살표
 
         // 새
         birdIcon = new ImageIcon[2];
@@ -327,7 +352,7 @@ public class GameStartFrame extends JFrame implements Runnable {
                                 moveSoundFunc();
                                 moveX *= -1;
                                 moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2, comboJL2);
-                                send(0);
+                                send(0, keyCount);
                             }
 
                             break;
@@ -340,7 +365,7 @@ public class GameStartFrame extends JFrame implements Runnable {
                             } else {
                                 moveSoundFunc();
                                 moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2, comboJL2);
-                                send(0);
+                                send(0, keyCount);
                                 if (keyCount == 1) {
                                     birdJLabel[0].setVisible(true);
                                     birdJLabel[1].setVisible(true);
@@ -367,7 +392,7 @@ public class GameStartFrame extends JFrame implements Runnable {
                                     } else {
                                         skillSoundFunc();
                                         gaugeUp(gaugeBar, gauge = 0);
-                                        send(charIdx + 1);
+                                        send(charIdx + 1, 0);
                                         if (keyCount == 1) {
                                             birdJLabel[0].setVisible(true);
                                             birdJLabel[1].setVisible(true);
@@ -386,34 +411,32 @@ public class GameStartFrame extends JFrame implements Runnable {
 
         });
 
-
-
         try {
             Thread.sleep(2500);
-        try {
-            InfoDTO dto = new InfoDTO();
-            dto.setCommand(Info.SEND);
-            dto.setRoomId(roomId);
-            dto.setNickName(nick);
-            dto.setMessage("waitGame");
-            writer.writeObject(dto);
-            writer.flush();
+            try {
+                InfoDTO dto = new InfoDTO();
+                dto.setCommand(Info.SEND);
+                dto.setRoomId(roomId);
+                dto.setNickName(nick);
+                dto.setMessage("waitGame");
+                writer.writeObject(dto);
+                writer.flush();
 
-        } catch (IOException io) {
-            io.printStackTrace();
-        }
-
-        while(true){
-            Thread.sleep(2);
-            if(waitGame>=2){
-                break;
+            } catch (IOException io) {
+                io.printStackTrace();
             }
-                
+
+            while (true) {
+                Thread.sleep(2);
+                if (waitGame >= 2) {
+                    break;
+                }
+
+            }
+        } catch (InterruptedException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
         }
-    } catch (InterruptedException e2) {
-        // TODO Auto-generated catch block
-        e2.printStackTrace();
-    }
         countGo(jl3, ImgArr3, ImgArr2, ImgArr1, ImgArrGo);
 
         // 창닫을 경우
@@ -428,9 +451,8 @@ public class GameStartFrame extends JFrame implements Runnable {
                     dto.setNickName(GameCharSelectPanel.nick);
                     dto.setRoomId(GameCharSelectPanel.roomId);
                     dto.setMessage("finish");
-                    writer.writeObject(dto); 
+                    writer.writeObject(dto);
                     writer.flush();
-                    
 
                 } catch (IOException io) {
                     io.printStackTrace();
@@ -438,8 +460,7 @@ public class GameStartFrame extends JFrame implements Runnable {
             }
         });
         // 카운트 스타트
-        
-       
+
         // 프레임 메인쓰레드
         try {
 
@@ -520,7 +541,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         otherCharX = settings.getCharX()[otherCharIdx];
         otherCharY = settings.getCharY()[otherCharIdx];
         otherCharName = settings.getCharName()[otherCharIdx];
-        host=settings.getHost();
+        host = settings.getHost();
 
     }
 
@@ -583,19 +604,31 @@ public class GameStartFrame extends JFrame implements Runnable {
     }
 
     //// 소켓보내기
-    public void send(int skillIdx) {
+    public void send(int skillIdx, int key) {
 
         try {
             System.out.println(1);
             // 서버로 보냄
             InfoDTO dto = new InfoDTO();
-            dto.setStep(keyCount);
-            dto.setCommand(Info.SEND);
-            dto.setNickName(nick);
-            dto.setMoveX(moveX);
-            dto.setStep(keyCount);
-            dto.setSkill(skillIdx);
-            dto.setRoomId(roomId);
+
+            if (key == blockCount - 1) {
+                dto.setCommand(Info.STATE);
+                dto.setRoomId(roomId);
+                dto.setWinlose("승리");
+                stop = 1;
+                winLoselbl.setVisible(true);
+
+                System.out.println("승리");
+            } else {
+                dto.setStep(keyCount);
+                dto.setCommand(Info.SEND);
+                dto.setNickName(nick);
+                dto.setMoveX(moveX);
+                dto.setStep(keyCount);
+                dto.setSkill(skillIdx);
+                dto.setRoomId(roomId);
+            }
+
             writer.writeObject(dto);
             writer.flush();
 
@@ -605,35 +638,29 @@ public class GameStartFrame extends JFrame implements Runnable {
 
     }
 
-  
-
     //// 서버로부터 데이터 받기
     @Override
     public void run() {
 
         InfoDTO dto = null;
-       
 
         while (true) {
-      
-              
-           
+
             try {
-          
 
-            dto = (InfoDTO)reader.readObject();
-            
-            if(dto.getRoomId()!=null&&dto.getRoomId().equals(roomId)){
-                System.out.println(dto.getRoomId());
-            
-                if (dto.getCommand() == Info.SEND) {
+                dto = (InfoDTO) reader.readObject();
 
-                    if(dto.getMessage()==null){
-                        if (dto.getNickName() != null && dto.getNickName().equals(otherNick)) {
-                            System.out.println(dto.getNickName());
-                            otherKeyCount = dto.getStep();
-                            otherMoveX = dto.getMoveX();
-                            new CharAni(otherCharlbl, otherCharArr, dto.getMoveX()).start();
+                if (dto.getRoomId() != null && dto.getRoomId().equals(roomId)) {
+                    System.out.println(dto.getRoomId());
+
+                    if (dto.getCommand() == Info.SEND) {
+
+                        if (dto.getMessage() == null) {
+                            if (dto.getNickName() != null && dto.getNickName().equals(otherNick)) {
+                                System.out.println(dto.getNickName());
+                                otherKeyCount = dto.getStep();
+                                otherMoveX = dto.getMoveX();
+                                new CharAni(otherCharlbl, otherCharArr, dto.getMoveX()).start();
                                 if (dto.getSkill() == 1) {
                                     new SkillIce(iceBackbl).start();
                                     sd.iceSkillSound();
@@ -642,23 +669,23 @@ public class GameStartFrame extends JFrame implements Runnable {
                                     sd.blackEyeSkillSound();
                                 }
                             }
-                    }
-                    else if (dto.getMessage()!=null&&dto.getMessage().equals("waitGame")){
+                        } else if (dto.getMessage() != null && dto.getMessage().equals("waitGame")) {
 
-                        waitGame++;
-                        System.out.println(waitGame);
-                    }
-                   
-                    
-                   
-                }else if (dto.getCommand() == Info.EXIT) {
-                    System.out.println("상대종료");
-                
-    
+                            waitGame++;
+                            System.out.println(waitGame);
+                        }
 
-                 }
-            }
-                
+                    } else if (dto.getCommand() == Info.EXIT) {
+                        System.out.println("상대종료");
+
+                    } else if (dto.getCommand() == Info.STATE) {
+                        if (dto.getWinlose().equals("승리")) {
+                            System.out.println("패배");
+                            stop = 1;
+                            winLoselbl.setVisible(true);
+                        }
+                    }
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -667,14 +694,15 @@ public class GameStartFrame extends JFrame implements Runnable {
                 e.printStackTrace();
             }
         }
-        
-    }
-      
 
+    }
 
     public void otherMove() {
         otherCharlbl.setLocation(blockArr[otherKeyCount].getLocation().x + otherCharX - 450,
                 blockArr[otherKeyCount].getLocation().y + otherCharY - 500);
+
+        otherCharNicklbl.setLocation(blockArr[otherKeyCount].getLocation().x + 45 + otherCharX - 450,
+                blockArr[otherKeyCount].getLocation().y - 30 + otherCharY - 500);
         betweenStep = otherKeyCount - keyCount;
 
         // -20 -130
