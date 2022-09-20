@@ -23,7 +23,7 @@ import java.awt.event.*;
 
 public class GameRoomPan extends JPanel implements ActionListener , Runnable {
     int frameW = 1000, frameH = 900;
-    static JFrame frame;
+    JFrame frame;
     String imgPath;
     JButton roomBtn1lbl,roomBtn2lbl,roomBtn3lbl,roomBtn4lbl;
     JTextArea codeText,nicktxt;
@@ -191,13 +191,15 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
 
         System.out.println("전송 준비 완료!");
         t.start();
-       new tt().start();
+       new GoRoom(frame).start();
     }
     
     public void getSetting() {
         Setting settings = new Setting();
         this.imgPath=settings.getImgPath();
         this.host=settings.getHost();
+
+
 
     }
 
@@ -298,6 +300,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
                             System.out.println("존재하지 않는 방");
                             nicklbl.setText("존재하지 않는 방");
                             nickCheck=true;
+                            roomCheck=false;
                         }else{
                             nick=dto.getNickName();
                             roomId=dto.getRoomId();
@@ -325,20 +328,24 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
     
       
 }
-class tt extends Thread{
+class GoRoom extends Thread{
+    JFrame frame;
 
-
+GoRoom(JFrame frame){
+    this.frame=frame;
+}
  @Override
  public void run() {
+
     while(true){
         try {
             Thread.sleep(500);
             if(GameRoomPan.nickCheck&&GameRoomPan.roomCheck){
                
-
+                 GameRoomPan.nickCheck=false;
+                 GameRoomPan.roomCheck=false;
                     
-                ((GameSelectFrame)GameRoomPan.frame).showCharSelectPan(GameRoomPan.roomId,GameRoomPan.nick,GameRoomPan.seed);
-                
+                ((GameSelectFrame)frame).showCharSelectPan(GameRoomPan.roomId,GameRoomPan.nick,GameRoomPan.seed);
                 GameRoomPan.t.stop();
                 this.stop();
                 break;

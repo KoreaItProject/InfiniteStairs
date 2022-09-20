@@ -28,7 +28,7 @@ public class GameStartFrame extends JFrame implements Runnable {
     int FramW = 1000, FramH = 900, blockW = 100, blockH = 50, blockX = 450, blockY = 500,
             charW, charH, charX, charY, startBackH = -4140;
     int skillIdx = 1;
-    public static int moveX = -110, moveY = 50, stop = 0;
+    public static int moveX = -110, moveY = 50, stop = 1;
     Image imgch;
     int keyCount = 0, combo = 0;
     int hp;
@@ -62,6 +62,8 @@ public class GameStartFrame extends JFrame implements Runnable {
     static Thread sockt2;
     String host;
 
+    int waitGame=0;
+
     public GameStartFrame(
             String roomId,
             String nick,
@@ -69,7 +71,8 @@ public class GameStartFrame extends JFrame implements Runnable {
             int otherCharIdx,
             int[] result,
             String otherNick) {
-                        
+          
+            getSetting(charIdx, otherCharIdx);              
        
             try {
                 Sock.socket = new Socket(host, 9500);
@@ -84,8 +87,7 @@ public class GameStartFrame extends JFrame implements Runnable {
                 e2.printStackTrace();
             }
 
-            send(0);
-            Thread sockt2 = new Thread(this);
+            sockt2 = new Thread(this);
             sockt2.start();
 
         this.roomId=roomId;  
@@ -98,7 +100,6 @@ public class GameStartFrame extends JFrame implements Runnable {
         
 
       
-        getSetting(charIdx, otherCharIdx);
 
         setSize(FramW, FramH); // 컨테이너 크기 지정
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -385,7 +386,34 @@ public class GameStartFrame extends JFrame implements Runnable {
 
         });
 
-        // 카운트 스타트
+
+
+        try {
+            Thread.sleep(2500);
+        try {
+            InfoDTO dto = new InfoDTO();
+            dto.setCommand(Info.SEND);
+            dto.setRoomId(roomId);
+            dto.setNickName(nick);
+            dto.setMessage("waitGame");
+            writer.writeObject(dto);
+            writer.flush();
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        while(true){
+            Thread.sleep(2);
+            if(waitGame>=2){
+                break;
+            }
+                
+        }
+    } catch (InterruptedException e2) {
+        // TODO Auto-generated catch block
+        e2.printStackTrace();
+    }
         countGo(jl3, ImgArr3, ImgArr2, ImgArr1, ImgArrGo);
 
         // 창닫을 경우
@@ -409,7 +437,8 @@ public class GameStartFrame extends JFrame implements Runnable {
                 }
             }
         });
-
+        // 카운트 스타트
+        
        
         // 프레임 메인쓰레드
         try {
@@ -598,19 +627,30 @@ public class GameStartFrame extends JFrame implements Runnable {
                 System.out.println(dto.getRoomId());
             
                 if (dto.getCommand() == Info.SEND) {
-                    if (dto.getNickName() != null && dto.getNickName().equals(otherNick)) {
-                        System.out.println(dto.getNickName());
-                        otherKeyCount = dto.getStep();
-                        otherMoveX = dto.getMoveX();
-                        new CharAni(otherCharlbl, otherCharArr, dto.getMoveX()).start();
-                        if (dto.getSkill() == 1) {
-                            new SkillIce(iceBackbl).start();
-                            sd.iceSkillSound();
-                        } else if (dto.getSkill() == 2) {
-                            new SkillBlackEye(blackEyelbl).start();
-                            sd.blackEyeSkillSound();
-                        }
+
+                    if(dto.getMessage()==null){
+                        if (dto.getNickName() != null && dto.getNickName().equals(otherNick)) {
+                            System.out.println(dto.getNickName());
+                            otherKeyCount = dto.getStep();
+                            otherMoveX = dto.getMoveX();
+                            new CharAni(otherCharlbl, otherCharArr, dto.getMoveX()).start();
+                                if (dto.getSkill() == 1) {
+                                    new SkillIce(iceBackbl).start();
+                                    sd.iceSkillSound();
+                                } else if (dto.getSkill() == 2) {
+                                    new SkillBlackEye(blackEyelbl).start();
+                                    sd.blackEyeSkillSound();
+                                }
+                            }
                     }
+                    else if (dto.getMessage()!=null&&dto.getMessage().equals("waitGame")){
+
+                        waitGame++;
+                        System.out.println(waitGame);
+                    }
+                   
+                    
+                   
                 }else if (dto.getCommand() == Info.EXIT) {
                     System.out.println("상대종료");
                 

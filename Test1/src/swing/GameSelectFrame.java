@@ -51,11 +51,14 @@ public class GameSelectFrame extends JFrame {
     }
 
     public void showRoomPan() {
+
         remove(panel);
         revalidate();
         repaint();
         panel = new GameRoomPan(this);
         add(panel);
+        revalidate();
+        repaint();
         setVisible(true);
     }
 

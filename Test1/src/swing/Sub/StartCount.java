@@ -23,14 +23,9 @@ public class StartCount extends Thread {
 
     @Override
     public void run() {
-        GameStartFrame.stop=1;
-        try {
+ 
             countjl.setIcon(ImgArr3[0]);
-            Thread.sleep(300);
-        } catch (InterruptedException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
+      
         for (int i = 0; i < ImgArr3.length; i++) {
             countjl.setIcon(ImgArr3[i]);
             try {
