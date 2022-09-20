@@ -136,7 +136,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
         this.add(l);
 
         // 레디 버튼
-        readyBtn = new JButton("ready");
+        readyBtn = new JButton("Ready");
         readyBtn.setBackground(new Color(100, 214, 245));
         readyBtn.setBounds(800, 725, 155, 120);
         readyBtn.addActionListener(this); // 이벤트 호출 메서드
@@ -144,11 +144,11 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
         this.add(readyBtn);
         readyBtn.setEnabled(false);
 
-        outbtn = new JButton("뒤로");
+        outbtn = new JButton("나가기");
         outbtn.setBackground(new Color(227, 202, 227));
-        outbtn.setBounds(440, 635, 120, 60);
+        outbtn.setBounds(40, 30, 100, 80);
         outbtn.addActionListener(this); // 이벤트 호출 메서드
-        outbtn.setFont(new Font("Gothic", Font.BOLD, outbtn.getFont().getSize() + 22));
+        outbtn.setFont(new Font("Gothic", Font.BOLD, outbtn.getFont().getSize() + 8));
         this.add(outbtn);
 
 
@@ -173,7 +173,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
         whiteIbl2.setBounds(620, 215, 330, 490);
         whiteIbl3.setBounds(40, 725, 910, 120);
         contentslbl.setBounds(40, 725, 910, 120);
-        roomIdlbl.setBounds(50, 30, 910, 80);
+        roomIdlbl.setBounds(160, 30, 910, 80);
         roomIdlbl.setFont(new Font("Gothic", Font.BOLD, roomIdlbl.getFont().getSize() + 20));
         clipbtn.setBounds(870, 50, 60, 40);
         whiteIbl4.setBounds(40, 30, 910, 80);
