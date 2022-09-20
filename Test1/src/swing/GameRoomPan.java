@@ -25,7 +25,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
     int frameW = 1000, frameH = 900;
     JFrame frame;
     String imgPath;
-    JButton roomBtn1lbl,roomBtn2lbl,roomBtn3lbl,roomBtn4lbl;
+    JButton roomBtn1lbl,roomBtn2lbl,roomBtn3lbl,roomBtn4lbl,roomBtn5lbl;
     JTextArea codeText,nicktxt;
     JLabel  blacklbl,codelbl,blacklbl1;
     String host;
@@ -63,7 +63,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
             //닉네임 입력창
             ImageIcon black1 = imgMk("room/black.png",360, 130, Image.SCALE_SMOOTH);
             blacklbl1=new JLabel(black1);
-            blacklbl1.setBounds(320, 140, 360, 130);
+            blacklbl1.setBounds(320, 130, 360, 130);
             this.add(blacklbl1);
 
 
@@ -71,33 +71,38 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
          //버튼
          ImageIcon roomBtn1 = imgMk("room/roomBtn1.png",300, 80, Image.SCALE_SMOOTH);
          ImageIcon roomBtn2 = imgMk("room/roomBtn2.png",300, 80, Image.SCALE_SMOOTH);
+         ImageIcon roomBtn5 = imgMk("room/roomBtn5.png",300, 80, Image.SCALE_SMOOTH);
          roomBtn1lbl=new JButton(roomBtn1);
          roomBtn2lbl=new JButton(roomBtn2);
-         roomBtn1lbl.setBounds(350, 480, 296, 80);
-         roomBtn2lbl.setBounds(350, 380, 296, 80);
+         roomBtn5lbl=new JButton(roomBtn5);
+         roomBtn1lbl.setBounds(350, 430, 296, 80);
+         roomBtn2lbl.setBounds(350, 330, 296, 80);
+         roomBtn5lbl.setBounds(350, 530, 296, 80);
          this.add(roomBtn1lbl);
          this.add(roomBtn2lbl);
+         this.add(roomBtn5lbl);
          roomBtn1lbl.addActionListener(this);
          roomBtn2lbl.addActionListener(this);
+         roomBtn5lbl.addActionListener(this);
 
          //코드 입력
          codeText =new JTextArea();
-         codeText.setBounds(455, 490, 170, 25);
+         codeText.setBounds(455, 440, 170, 25);
          this.add(codeText);
          codeText.setVisible(false);
          codeText.setFont(new Font("Gothic", Font.BOLD, codeText.getFont().getSize()+10 ));
          codelbl=new JLabel("코드입력");
          codelbl.setFont(new Font("Gothic", Font.BOLD, codelbl.getFont().getSize()+8 ));
          codelbl.setForeground(Color.white);
-         codelbl.setBounds(365, 490, 170, 25);
+         codelbl.setBounds(365, 440, 170, 25);
          this.add(codelbl);
 
 
          //코드 입력 버튼
          roomBtn3lbl=new JButton("취소");
          roomBtn4lbl=new JButton("확인");
-         roomBtn3lbl.setBounds(400, 520, 100, 30);
-         roomBtn4lbl.setBounds(500, 520, 100, 30);
+         roomBtn3lbl.setBounds(400, 470, 100, 30);
+         roomBtn4lbl.setBounds(500, 470, 100, 30);
          this.add(roomBtn3lbl);
          this.add(roomBtn4lbl);
          roomBtn3lbl.addActionListener(this);
@@ -108,7 +113,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
         //코드입력창
          ImageIcon black = imgMk("room/black.png",300, 80, Image.SCALE_SMOOTH);
          blacklbl=new JLabel(black);
-         blacklbl.setBounds(350, 480, 294, 80);
+         blacklbl.setBounds(350, 430, 294, 80);
          this.add(blacklbl);
          blacklbl.setVisible(false);
      
@@ -236,6 +241,9 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
             service(Info.JOIN);
           
            
+         }
+         else if(e.getSource() == roomBtn5lbl) {//취소
+            System.out.println("싱글플레이");
          }
 
          

@@ -4,12 +4,15 @@ package swing.Move;
 
 import javax.swing.JLabel;
 
+import swing.GameStartFrame;
+
 
 
 
 public class MoveBlock extends Thread {
     JLabel[] blockArr;
     int moveX, moveY;
+    
 
     public MoveBlock(JLabel[] blockArr, int moveX, int moveY) {
         this.blockArr = blockArr;
@@ -30,6 +33,9 @@ public class MoveBlock extends Thread {
                 }
                 
             }
+            GameStartFrame.totalMoveX-=moveX;
+            GameStartFrame.totalMoveY+=moveY;
+
       
 
         } catch (InterruptedException e2) {

@@ -42,7 +42,7 @@ public class GameStartFrame extends JFrame implements Runnable {
     int result[];
     public JLabel[] blockArr;
     public int charIdx;
-    public int gaugeUpNum = 2;
+    public int gaugeUpNum = 3;
 
     // 상대
     String otherNick;
@@ -65,9 +65,12 @@ public class GameStartFrame extends JFrame implements Runnable {
 
     int waitGame = 0;
 
+    JLabel[] hplbl;
     // WinLose
     JLabel winLoselbl;
     ImageIcon winLoseIcon;
+
+    public static int totalMoveX=0,totalMoveY=0,resetCount=0,totalBackMove=0;
 
     public GameStartFrame(
             String roomId,
@@ -202,7 +205,7 @@ public class GameStartFrame extends JFrame implements Runnable {
 
         // hp아이콘
         ImageIcon hpIcon = imgMk("hp.png", 50, 50);
-        JLabel[] hplbl = new JLabel[hp];
+        hplbl = new JLabel[hp];
         if (charIdx == 2) {
             hp = 10;
             for (int i = 0; i < hp; i++) {
@@ -353,7 +356,7 @@ public class GameStartFrame extends JFrame implements Runnable {
 
                             if (result[keyCount] == 0 && moveX < 0 || result[keyCount] == 1 && moveX > 0) {// 틀렸을때
                                 downSoundFunc();
-                                down(charlbl, charDown, charArr, gaugeBar, hplbl, comboJL2);// 틀렸다함수
+                                down(charlbl, charDown, charArr, gaugeBar, hplbl, comboJL2,backlbl);// 틀렸다함수
 
                             } else {
                                 moveSoundFunc();
@@ -368,7 +371,7 @@ public class GameStartFrame extends JFrame implements Runnable {
 
                             if (result[keyCount] == 1 && moveX < 0 || result[keyCount] == 0 && moveX > 0) {// 틀렸을때
                                 downSoundFunc();
-                                down(charlbl, charDown, charArr, gaugeBar, hplbl, comboJL2);// 틀렸다함수
+                                down(charlbl, charDown, charArr, gaugeBar, hplbl, comboJL2,backlbl);// 틀렸다함수
                             } else {
                                 moveSoundFunc();
                                 moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2, comboJL2);
@@ -483,7 +486,7 @@ public class GameStartFrame extends JFrame implements Runnable {
                 timelbl.setText(timerCount.getTime());
                 otherCheck(otherCharlbl, upChecklbl, downChecklbl, betweenlbl);
                 gaugeUp(gaugeBar, gauge);
-                Thread.sleep(180);
+                Thread.sleep(30);
 
             }
 
@@ -569,13 +572,48 @@ public class GameStartFrame extends JFrame implements Runnable {
     }
 
     // 틀렸을때 함수
-    public void down(JLabel charlbl, ImageIcon[] charDown, ImageIcon[] charArr, JProgressBar gaugeBar, JLabel[] hplbl,
-            JLabel comboJL2) {
+    public void down(JLabel charlbl, ImageIcon[] charDown, ImageIcon[] charArr, JProgressBar gaugeBar, JLabel[] hplbl, JLabel comboJL2 , JLabel backlbl) {
         hp--;
         combo = 0;
         comboJL2.setText(combo + "");
         if (hp <= 0) {
-            gameRunning = false;// 죽음
+            stop=1;
+            System.out.println(totalMoveX+"죽음"+totalMoveY);
+            hp=hplbl.length;
+            for (int i = 0; i < hplbl.length; i++) {
+                hplbl[i].setVisible(false);
+            }
+            for (int i = 0; i < hp; i++) {
+                hplbl[i].setVisible(true);
+            }
+            new MoveBlockReset(blockArr, totalMoveX,totalMoveY).start();
+            new MoveBackGroundReset(backlbl, totalBackMove).start();
+            resetCount++;
+            totalMoveX=0;
+            totalMoveY=0;
+            totalBackMove=0;
+            keyCount=0;
+            moveX = -110;
+            try {
+            InfoDTO dto = new InfoDTO();
+            dto.setStep(keyCount);
+            dto.setCommand(Info.SEND);
+            dto.setNickName(nick);
+            dto.setMoveX(moveX);
+            dto.setStep(keyCount);
+            dto.setSkill(0);
+            dto.setRoomId(roomId);
+            writer.writeObject(dto);
+            writer.flush();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            new CharDown(charlbl, charDown, charArr).start();
+
+            stop=0;
+
+
         } else {
             new CharDown(charlbl, charDown, charArr).start();
             if (gauge < 100 && gauge > 0)
@@ -598,7 +636,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         new MoveBlock(blockArr, moveX, moveY).start();
         new CharAni(charlbl, charArr, moveX).start();
         if (gauge < 100) {
-            gaugeUp(gaugeBar, gauge += ((gaugeUpNum + (combo * 0.04)) <= 5 ? (gaugeUpNum + (combo * 0.04)) : 5));
+            gaugeUp(gaugeBar, gauge += ((gaugeUpNum + (combo * 0.05)) <= 6 ? (gaugeUpNum + (combo * 0.05)) :6));
         }
         keyCount++;
         combo++;
