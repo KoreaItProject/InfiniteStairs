@@ -199,7 +199,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         backPanel.add(steplbl);
 
         deathlbl = new JLabel("죽은 횟수 : 수정필요");
-        deathlbl.setBounds(320, 570, 150, 30);
+        deathlbl.setBounds(320, 570, 170, 30);
         deathlbl.setFont(font2);
         deathlbl.setVisible(false);
         backPanel.add(deathlbl);
@@ -211,7 +211,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         backPanel.add(skillNumlbl);
 
         maxCombolbl = new JLabel("최대 콤보 : ");
-        maxCombolbl.setBounds(320, 610, 150, 30);
+        maxCombolbl.setBounds(320, 610, 170, 30);
         maxCombolbl.setFont(font2);
         maxCombolbl.setVisible(false);
         backPanel.add(maxCombolbl);
@@ -230,7 +230,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         backPanel.add(othersteplbl);
 
         otherdeathlbl = new JLabel("죽은 횟수 : 수정필요");
-        otherdeathlbl.setBounds(560, 570, 150, 30);
+        otherdeathlbl.setBounds(560, 570, 170, 30);
         otherdeathlbl.setFont(font2);
         otherdeathlbl.setVisible(false);
         backPanel.add(otherdeathlbl);
@@ -242,7 +242,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         backPanel.add(otherskillNumlbl);
 
         othermaxCombolbl = new JLabel("최대 콤보 : ");
-        othermaxCombolbl.setBounds(560, 610, 150, 30);
+        othermaxCombolbl.setBounds(560, 610, 170, 30);
         othermaxCombolbl.setFont(font2);
         othermaxCombolbl.setVisible(false);
         backPanel.add(othermaxCombolbl);
