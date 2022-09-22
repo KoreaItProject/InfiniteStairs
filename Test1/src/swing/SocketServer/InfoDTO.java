@@ -1,11 +1,10 @@
 package swing.SocketServer;
 
-import java.util.*;
 import java.io.*;
 
 public class InfoDTO implements Serializable {
 	public enum Info {
-		MAKE, JOIN, EXIT, SEND, STATE, STATELOSE
+		MAKE, JOIN, EXIT, SEND, STATE
 	}
 
 	private String nickName;
@@ -18,24 +17,6 @@ public class InfoDTO implements Serializable {
 	private String roomId;
 	private int charIdx;
 	private String winlose;
-	private int skillCount;
-	private int comboMaxCount;
-
-	public int getComboCount() {
-		return this.comboMaxCount;
-	}
-
-	public void setComboCount(int comboMaxCount) {
-		this.comboMaxCount = comboMaxCount;
-	}
-
-	public int getSkillCount() {
-		return this.skillCount;
-	}
-
-	public void setSkillCount(int skillCount) {
-		this.skillCount = skillCount;
-	}
 
 	public String getWinlose() {
 		return this.winlose;

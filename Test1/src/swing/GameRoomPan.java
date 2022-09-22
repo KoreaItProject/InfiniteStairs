@@ -18,7 +18,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.awt.*;
 
-import java.awt.event.*;
 
 
 public class GameRoomPan extends JPanel implements ActionListener , Runnable {

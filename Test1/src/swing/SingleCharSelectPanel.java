@@ -3,32 +3,26 @@ package swing;
 import javax.swing.ImageIcon;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.datatransfer.*;
 
-import org.w3c.dom.css.RGBColor;
 
-import swing.SocketServer.InfoDTO;
-import swing.SocketServer.Sock;
-import swing.SocketServer.InfoDTO.Info;
+
 import swing.SoundF.sound;
 
 import java.awt.event.*;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
+
 import java.util.Random;
-import java.util.prefs.BackingStoreException;
+
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
+
 
 public class SingleCharSelectPanel extends JPanel implements ActionListener {
    
     int FramW = 1000, FramH = 900;
-    static int charIdx = 0;
+    int charIdx = 0,comCharIdx=0;
     static boolean player1 = false;
     String imgPath;
     int charSizeW = 300;
@@ -42,17 +36,20 @@ public class SingleCharSelectPanel extends JPanel implements ActionListener {
 
     ImageIcon s[];
     Icon gif[];
-    JLabel l;
+    JLabel l,ll;
     JButton readyBtn;
     JButton outbtn;
     JButton leftBtn;
     JButton rightBtn;
+    JButton leftBtn1;
+    JButton rightBtn1;
     JLabel contentslbl;
 
     sound sd = new sound();
     int i, l1;
     JFrame frame;
     public int[] result;
+    JComboBox lvlCombo;
 
 
     String charDetail[] = {
@@ -84,17 +81,42 @@ public class SingleCharSelectPanel extends JPanel implements ActionListener {
 
         leftBtn = new JButton("<<");
         rightBtn = new JButton(">>");
-
         leftBtn.setBounds(110, 640, 60, 30);
         rightBtn.setBounds(240, 640, 60, 30);
-
         this.add(leftBtn);
         this.add(rightBtn);
+       
 
         // add(game2);
 
         leftBtn.addActionListener(this);
         rightBtn.addActionListener(this);
+
+        leftBtn1 = new JButton("<<");
+        rightBtn1 = new JButton(">>");
+        leftBtn1.setBounds(690, 640, 60, 30);
+        rightBtn1.setBounds(820, 640, 60, 30);
+        this.add(leftBtn1);
+        this.add(rightBtn1);
+        leftBtn1.addActionListener(this);
+        rightBtn1.addActionListener(this);
+
+
+        JLabel comlbl=new JLabel("컴퓨터");
+        comlbl.setBounds(640, 220, 300, 60);
+        comlbl.setFont(new Font("Gothic", Font.BOLD, comlbl.getFont().getSize() + 22));
+        this.add(comlbl);
+        String [] lvlData={"50세이상","매우쉬움","쉬움","보통","어려움","매우어려움","헬"};
+        lvlCombo = new JComboBox<>(lvlData);
+        lvlCombo.setBounds(780, 230, 140,35);
+        lvlCombo.setFont(new Font("Gothic", Font.BOLD, lvlCombo.getFont().getSize() + 9));
+        lvlCombo.addActionListener(this);
+        lvlCombo.setSelectedIndex(3);
+        this.add(lvlCombo);
+        JLabel comlbl1=new JLabel("유저");
+        comlbl1.setBounds(60, 220, 300, 60);
+        comlbl1.setFont(new Font("Gothic", Font.BOLD, comlbl1.getFont().getSize() + 22));
+        this.add(comlbl1);
 
 
         s = new ImageIcon[3];
@@ -108,19 +130,22 @@ public class SingleCharSelectPanel extends JPanel implements ActionListener {
         l.setBounds(50, 50, charSizeW, charSizeH + 200);
         l.setIcon(s[0]);
         this.add(l);
+        ll = new JLabel("", JLabel.CENTER);
+        ll.setBounds(640, 50, charSizeW, charSizeH + 200);
+        ll.setIcon(s[0]);
+        this.add(ll);
 
         // 레디 버튼
-        readyBtn = new JButton("Ready");
-        readyBtn.setBackground(new Color(100, 214, 245));
+        readyBtn = new JButton("Start");
+        readyBtn.setBackground(new Color(131, 210, 105));
         readyBtn.setBounds(800, 725, 155, 120);
         readyBtn.addActionListener(this); // 이벤트 호출 메서드
         readyBtn.setFont(new Font("Gothic", Font.BOLD, readyBtn.getFont().getSize() + 23));
         this.add(readyBtn);
-        readyBtn.setEnabled(false);
 
         outbtn = new JButton("나가기");
         outbtn.setBackground(new Color(227, 202, 227));
-        outbtn.setBounds(40, 30, 100, 80);
+        outbtn.setBounds(40, 29, 100, 82);
         outbtn.addActionListener(this); // 이벤트 호출 메서드
         outbtn.setFont(new Font("Gothic", Font.BOLD, outbtn.getFont().getSize() + 8));
         this.add(outbtn);
@@ -130,9 +155,9 @@ public class SingleCharSelectPanel extends JPanel implements ActionListener {
 
 
         JLabel whiteIbl1 = new JLabel();// 왼쪽 캐릭터 div
-
         whiteIbl2 = new JLabel();// 오른쪽 캐릭터 div
         JLabel whiteIbl3 = new JLabel();// 밑에 설명 div
+        JLabel roomIdlbl = new JLabel("vs 컴퓨터");
         JLabel whiteIbl4 = new JLabel();// 위에 방코드 div
         contentslbl = new JLabel(charDetail[0]);
 
@@ -142,14 +167,15 @@ public class SingleCharSelectPanel extends JPanel implements ActionListener {
         whiteIbl2.setBounds(620, 215, 330, 490);
         whiteIbl3.setBounds(40, 725, 910, 120);
         contentslbl.setBounds(40, 725, 910, 120);
-   
+        roomIdlbl.setBounds(160, 30, 910, 80);
+        roomIdlbl.setFont(new Font("Gothic", Font.BOLD, roomIdlbl.getFont().getSize() + 20));
         whiteIbl4.setBounds(40, 30, 910, 80);
         this.add(whiteIbl1);
 
         this.add(whiteIbl2);
         this.add(contentslbl);
         this.add(whiteIbl3);
-
+        this.add(roomIdlbl);
         this.add(whiteIbl4);
         whiteIbl1.setIcon(whiteIcon);
         whiteIbl2.setIcon(whiteIcon);
@@ -189,7 +215,7 @@ public class SingleCharSelectPanel extends JPanel implements ActionListener {
             contentslbl.setText(charDetail[charIdx]);
            
         }
-        if (e.getSource() == rightBtn) {
+        else if (e.getSource() == rightBtn) {
             if (charIdx == s.length - 1) {
                 charIdx -= 2;
             } else {
@@ -200,20 +226,44 @@ public class SingleCharSelectPanel extends JPanel implements ActionListener {
             
         }
       
-        if (e.getSource() == readyBtn) {
-            selectSoundStopFunc();
+        else if (e.getSource() == leftBtn1) {
+            if (comCharIdx == 0) {
+                comCharIdx += 2;
+
+                System.out.println(comCharIdx);
+            } else {
+                comCharIdx = comCharIdx - 1;
+            }
+            ll.setIcon(s[comCharIdx]);
+           
+           
+        }
+        else if (e.getSource() == rightBtn1) {
+            if (comCharIdx == s.length - 1) {
+                comCharIdx -= 2;
+            } else {
+                comCharIdx = comCharIdx + 1;
+            }
+            ll.setIcon(s[comCharIdx]);
+           
             
+        }
+      
+        else if (e.getSource() == readyBtn) {
+            selectSoundStopFunc();
+
+            frame.removeAll();
+            frame.dispose();
+            new SingleStartFrame(result, charIdx, comCharIdx, lvlCombo.getSelectedIndex());
 
         } else if (e.getSource() == rightBtn) {
             // charLabel
-        }if (e.getSource() == outbtn) {
+        }else if (e.getSource() == outbtn) {
         
-            
-     
-    
             ((GameSelectFrame)frame).showRoomPan();
             
         }
+        
 
     }
 

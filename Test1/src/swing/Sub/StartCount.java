@@ -4,6 +4,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import swing.GameStartFrame;
+import swing.SingleStartFrame;
 
 public class StartCount extends Thread {
     JLabel countjl;
@@ -52,6 +53,8 @@ public class StartCount extends Thread {
             }
         }
         GameStartFrame.stop=0;
+        SingleStartFrame.stop=0;
+        SingleStartFrame.comStop=false;
         for (int i = 0; i < ImgArrGo.length; i++) {
             countjl.setIcon(ImgArrGo[i]);
             try {

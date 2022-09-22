@@ -7,6 +7,16 @@ public class Setting {
     private int gameTime = 100;// 게임 진행시간
     private String host = "localhost";
 
+    private int comlvl[][]={{700,360,290,230,190,150,110},//쓰레드 속도
+                            {5  ,4  ,3  ,2  ,2  ,1  ,1  },//틀릴확률
+                            {300,240,180,160,140,120,110}//머뭇거림시간
+                            };
+
+  
+    private String charName[] = { "snowChar", "ghostChar", "miraChar" };
+    private int charW[] = { 180, 130, 100 }, charH[] = { 180, 130, 100 }, charX[] = { 410, 430, 460 },
+            charY[] = { 330, 375, 410 };
+
     public String getHost() {
         return this.host;
     }
@@ -14,11 +24,7 @@ public class Setting {
     public void setHost(String host) {
         this.host = host;
     }
-
-    private String charName[] = { "snowChar", "ghostChar", "miraChar" };
-    private int charW[] = { 180, 130, 100 }, charH[] = { 180, 130, 100 }, charX[] = { 410, 430, 460 },
-            charY[] = { 330, 375, 410 };
-
+        
     public String getImgPath() {
         return imgPath;
     }
@@ -89,6 +95,14 @@ public class Setting {
 
     public void setCharY(int[] charY) {
         this.charY = charY;
+    }
+
+    public int[][] getComlvl() {
+        return comlvl;
+    }
+
+    public void setComlvl(int[][] comlvl) {
+        this.comlvl = comlvl;
     }
 
 }

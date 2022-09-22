@@ -1,18 +1,10 @@
 package swing;
 
-import javax.swing.ImageIcon;
-import javax.swing.Icon;
-import javax.swing.JButton;
+
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+
 import javax.swing.JPanel;
 
-import java.awt.event.*;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.util.prefs.BackingStoreException;
-import java.awt.*;
 
 public class GameSelectFrame extends JFrame {
 

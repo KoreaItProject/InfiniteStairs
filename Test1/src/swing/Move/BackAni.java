@@ -24,7 +24,7 @@ public class BackAni extends Thread{
 	                 break;
 				backlbl.setIcon(backgroundIcon[i]);
 				try {
-					Thread.sleep(100);
+					Thread.sleep(140);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

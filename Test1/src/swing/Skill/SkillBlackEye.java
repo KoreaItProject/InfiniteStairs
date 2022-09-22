@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 public class SkillBlackEye extends Thread {
     JLabel blackEyelbl;
 
+
     public SkillBlackEye(JLabel blackEyelbl) {
         this.blackEyelbl = blackEyelbl;
 
@@ -17,8 +18,8 @@ public class SkillBlackEye extends Thread {
     public void run() {
 
         try {
-            blackEyelbl.setVisible(true);
-            Thread.sleep(5000);
+            blackEyelbl.setVisible(true);    
+            Thread.sleep(4500);
             blackEyelbl.setVisible(false);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block

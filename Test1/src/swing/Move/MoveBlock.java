@@ -5,6 +5,7 @@ package swing.Move;
 import javax.swing.JLabel;
 
 import swing.GameStartFrame;
+import swing.SingleStartFrame;
 
 
 
@@ -12,12 +13,14 @@ import swing.GameStartFrame;
 public class MoveBlock extends Thread {
     JLabel[] blockArr;
     int moveX, moveY;
+    int mode;
     
 
-    public MoveBlock(JLabel[] blockArr, int moveX, int moveY) {
+    public MoveBlock(JLabel[] blockArr, int moveX, int moveY,int mode) {
         this.blockArr = blockArr;
         this.moveX = moveX;
         this.moveY = moveY;
+        this.mode=mode;
     }
 
     @Override
@@ -25,7 +28,7 @@ public class MoveBlock extends Thread {
         try {
         
             for (int k = 0; k < 10; k++) {
-                Thread.sleep(13);
+                Thread.sleep(7);
                 for (int i = 0; i < blockArr.length; i++) {
                     blockArr[i].setLocation(blockArr[i].getLocation().x- moveX / 10,
                     blockArr[i].getLocation().y + moveY / 10);
@@ -33,8 +36,15 @@ public class MoveBlock extends Thread {
                 }
                 
             }
-            GameStartFrame.totalMoveX-=moveX;
-            GameStartFrame.totalMoveY+=moveY;
+            if(mode==0){
+                GameStartFrame.totalMoveX-=moveX;
+                GameStartFrame.totalMoveY+=moveY;
+            }else{
+                SingleStartFrame.totalMoveX-=moveX;
+                SingleStartFrame.totalMoveY+=moveY;
+            }
+            
+          
 
       
 

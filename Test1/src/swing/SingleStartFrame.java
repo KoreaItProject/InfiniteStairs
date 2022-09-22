@@ -2,28 +2,27 @@ package swing;
 
 import javax.swing.*;
 
+import org.w3c.dom.css.RGBColor;
+
 import swing.Bird.BirdAni;
-import swing.Bird.BirdAni2;
+
 import swing.Char.*;
 import swing.Move.*;
-import swing.Skill.*;
-import swing.SocketServer.InfoDTO;
-import swing.SocketServer.Sock;
-import swing.SocketServer.InfoDTO.Info;
+import swing.Skill.SkillBlackEye;
+import swing.Skill.SkillIce;
 import swing.SoundF.sound;
 import swing.Sub.GaugeDown;
 import swing.Sub.StartCount;
 import swing.Sub.TimerCount;
-import java.io.*;
-import java.net.*;
 
+
+import java.util.Random;
 
 import java.awt.*;
 import java.awt.event.*;
 
-public class GameStartFrame extends JFrame implements Runnable {
+public class SingleStartFrame extends JFrame  {
     ImageIcon[] birdIcon;
-    String nick;
     String imgPath;
     int FramW = 1000, FramH = 900, blockW = 100, blockH = 50, blockX = 450, blockY = 500,
             charW, charH, charX, charY, startBackH = -4140;
@@ -43,68 +42,41 @@ public class GameStartFrame extends JFrame implements Runnable {
     int result[];
     public JLabel[] blockArr;
     public int charIdx;
-    public int gaugeUpNum = 3;
+    public int gaugeUpNum = 2;
 
     // 상대
-    String otherNick;
-    int otherKeyCount = 0, otherMoveX = -110;
-
-    private ObjectInputStream reader;
-    private ObjectOutputStream writer;
+    public int otherKeyCount = 0, otherMoveX = -110;
+    int comHp;
     public JLabel otherCharlbl;
     public JLabel otherCharNicklbl;
     public int otherSkill = 0;
-    public String otherCharName;
+    public String otherCharName="COM";
     int otherCharW, otherCharH, otherCharX, otherCharY;
     public ImageIcon[] otherCharArr, otherCharDown;
     public int otherCharIdx;
 
     int betweenStep = 0;
     String roomId;
-    static Thread sockt2;
     String host;
-
-    int waitGame = 0;
-
     JLabel[] hplbl;
-    // WinLose
     JLabel winLoselbl;
     ImageIcon winLoseIcon;
-
+    int comlvl [][];
+    public static boolean isStartCount=true;
     public static int totalMoveX=0,totalMoveY=0,resetCount=0,totalBackMove=0;
+    int slowPer=0,downPer=0;
+    static public boolean comStop=true;
 
-    public GameStartFrame(
-            String roomId,
-            String nick,
-            int charIdx,
-            int otherCharIdx,
-            int[] result,
-            String otherNick) {
+    static public int comCombo=0,comGauge=0;
+    
 
-        getSetting(charIdx, otherCharIdx);
+    public SingleStartFrame(int[] result,int charIdx,int comCharIdx,int lvl) {
 
-        try {
-            Sock.socket = new Socket(host, 9500);
-            this.reader = new ObjectInputStream(Sock.socket.getInputStream());
-            this.writer = new ObjectOutputStream(Sock.socket.getOutputStream());
+        getSetting(charIdx, comCharIdx);
 
-        } catch (UnknownHostException e2) {
-            // TODO Auto-generated catch block
-            e2.printStackTrace();
-        } catch (IOException e2) {
-            // TODO Auto-generated catch block
-            e2.printStackTrace();
-        }
-
-        sockt2 = new Thread(this);
-        sockt2.start();
-
-        this.roomId = roomId;
-        this.nick = nick;
         this.charIdx = charIdx;
-        this.otherCharIdx = otherCharIdx;
+        this.otherCharIdx = comCharIdx;
         this.result = result;
-        this.otherNick = otherNick;
 
         setSize(FramW, FramH); // 컨테이너 크기 지정
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -114,7 +86,7 @@ public class GameStartFrame extends JFrame implements Runnable {
 
         JPanel backPanel = new JPanel();
         backPanel.setLayout(null);
-
+    
         // 3-2-1-go
         ImageIcon[] ImgArr3 = new ImageIcon[10];
         ImageIcon[] ImgArr2 = new ImageIcon[10];
@@ -131,7 +103,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         JLabel jl2 = new JLabel(ImgArr2[0]);
         JLabel jl1 = new JLabel(ImgArr1[0]);
         JLabel jlGo = new JLabel(ImgArrGo[0]);
-
+      
         jl3.setBounds(0, 0, gameStartCountW, gameStartCountH);
         jl2.setBounds(0, 0, gameStartCountW, gameStartCountH);
         jl1.setBounds(0, 0, gameStartCountW, gameStartCountH);
@@ -170,7 +142,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         backPanel.add(jlMyArrow);
         // 본인 화살표
 
-        // 새
+        //새
         birdIcon = new ImageIcon[2];
         birdIcon[0] = new ImageIcon(new ImageIcon(imgPath +
                 "bird/rbird.gif").getImage().getScaledInstance(60, 60, 0));
@@ -188,6 +160,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         birdJLabel[1].setVisible(false);
         backPanel.add(birdJLabel[0]);
         backPanel.add(birdJLabel[1]);
+       
 
         // 캐릭터
         ImageIcon[] charArr = new ImageIcon[12];
@@ -245,10 +218,10 @@ public class GameStartFrame extends JFrame implements Runnable {
         // 게이지바5
         gaugeBar = new JProgressBar();
         gaugeBar.setValue(gauge);
+        gaugeBar.setForeground(new Color(214, 26, 98));
         backPanel.add(gaugeBar);
-        gaugeBar.setBackground(new Color(214, 26, 98));
         gaugeBar.setBounds(-1, 840, 996, 40);
-
+      
         // step
         JLabel stepsJL = new JLabel("step : ");
         JLabel stepsJL2 = new JLabel(keyCount + "");
@@ -282,6 +255,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         timelbl.setBounds(840, -470, 1000, 1000);
         backPanel.add(timelbl);
 
+
         // 스킬 아이스
         ImageIcon iceBackIcon = imgMk("iceback.png", FramW, FramH);
         iceBackbl = new JLabel(iceBackIcon);
@@ -303,11 +277,11 @@ public class GameStartFrame extends JFrame implements Runnable {
         backPanel.add(otherCharlbl);
 
         // 상대 닉네임
-        otherCharNicklbl = new JLabel(otherNick);
+        otherCharNicklbl = new JLabel("COMPUTER");
         otherCharNicklbl.setBounds(455, 300, 150, 30);
         otherCharNicklbl.setFont(new Font("Gothic", Font.BOLD, otherCharNicklbl.getFont().getSize() + 8));
         backPanel.add(otherCharNicklbl);
-        // 상대 닉네임
+       
 
         // 블록아이콘
         blockArr = new JLabel[blockCount];
@@ -348,11 +322,14 @@ public class GameStartFrame extends JFrame implements Runnable {
         add(backPanel);
         setVisible(true);
 
+
+
         // 키이벤트
         addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
-
+      
                 if (stop == 0&&!downed) {
+                   
                     switch (e.getKeyCode()) {
                         case KeyEvent.VK_LEFT:
 
@@ -364,7 +341,6 @@ public class GameStartFrame extends JFrame implements Runnable {
                                 moveSoundFunc();
                                 moveX *= -1;
                                 moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2, comboJL2);
-                                send(0, keyCount);
                             }
 
                             break;
@@ -377,43 +353,53 @@ public class GameStartFrame extends JFrame implements Runnable {
                             } else {
                                 moveSoundFunc();
                                 moving(backlbl, blockArr, charlbl, charArr, gaugeBar, stepsJL2, comboJL2);
-                                send(0, keyCount);
                                 if (keyCount == 1) {
                                     birdJLabel[0].setVisible(true);
                                     birdJLabel[1].setVisible(true);
                                     new BirdAni(birdJLabel, birdIcon).start();
 
                                 }
-                                new BirdAni2(birdJLabel, birdIcon, moveX).start();
+                                
                             }
                             break;
 
                         case KeyEvent.VK_SPACE:
 
-                            if (charIdx == 2 && gauge >= 100 && hp == 10) {
-                                System.out.println("하트가 10개 입니다.");
-                            } else {
+                            
                                 if (gauge >= 100) {
-                                    if (charIdx == 2) {
+                                    if(charIdx == 0){
+                                        skillSoundFunc();
+                                        gaugeUp(gaugeBar, gauge = 0);
+                                        new Thread(new Runnable(){public void run() {
+                                            try {System.out.println("얼음 스킬 발동");
+                                                comStop=true;Thread.sleep(1500); comStop=false;
+                                            } catch (InterruptedException e) {
+                                                // TODO Auto-generated catch block
+                                                e.printStackTrace();
+                                            }
+                                        };}).start();
+                                    }else if(charIdx == 1){
+                                        skillSoundFunc();
+                                        gaugeUp(gaugeBar, gauge = 0);
+                                        new Thread(new Runnable(){public void run() {
+                                            try {System.out.println("시야 방해 발동");
+                                                downPer=3;slowPer=30;Thread.sleep(4500); downPer=0;slowPer=0;
+                                            } catch (InterruptedException e1) {
+                                                // TODO Auto-generated catch block
+
+                                            }
+                                        };}).start();
+                               
+                                    }else if (charIdx == 2 && hp != 10) {
                                         miraSkillSoundFunc();
                                         hp++;
                                         gaugeUp(gaugeBar, gauge = 0);
                                         for (int i = 0; i < hp; i++) {
                                             hplbl[i].setVisible(true);
                                         }
-                                    } else {
-                                        skillSoundFunc();
-                                        gaugeUp(gaugeBar, gauge = 0);
-                                        send(charIdx + 1, 0);
-                                        if (keyCount == 1) {
-                                            birdJLabel[0].setVisible(true);
-                                            birdJLabel[1].setVisible(true);
-                                            new BirdAni(birdJLabel, birdIcon).start();
-                                        }
-                                        new BirdAni2(birdJLabel, birdIcon, moveX).start();
                                     }
                                 }
-                            }
+                            
 
                             break;
                     } // switch
@@ -423,95 +409,167 @@ public class GameStartFrame extends JFrame implements Runnable {
 
         });
 
-        try {
-            Thread.sleep(2500);
-            try {
-                InfoDTO dto = new InfoDTO();
-                dto.setCommand(Info.SEND);
-                dto.setRoomId(roomId);
-                dto.setNickName(nick);
-                dto.setMessage("waitGame");
-                writer.writeObject(dto);
-                writer.flush();
-
-            } catch (IOException io) {
-                io.printStackTrace();
-            }
-
-            while (true) {
-                Thread.sleep(2);
-                if (waitGame >= 2) {
-                    break;
-                }
-
-            }
-        } catch (InterruptedException e2) {
-            // TODO Auto-generated catch block
-            e2.printStackTrace();
-        }
         countGo(jl3, ImgArr3, ImgArr2, ImgArr1, ImgArrGo);
 
-        // 창닫을 경우
-        this.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                // System.exit(0);
-                try {
-                    // InfoDTO dto = new InfoDTO(nickName,Info.EXIT);
-                    sockt2.stop();
-                    InfoDTO dto = new InfoDTO();
-                    dto.setCommand(Info.EXIT);
-                    dto.setNickName(GameCharSelectPanel.nick);
-                    dto.setRoomId(GameCharSelectPanel.roomId);
-                    dto.setMessage("finish");
-                    writer.writeObject(dto);
-                    writer.flush();
-
-                } catch (IOException io) {
-                    io.printStackTrace();
-                }
-            }
-        });
+       
         // 카운트 스타트
 
         // 프레임 메인쓰레드
-        try {
+        /* */
+     
 
             TimerCount timerCount = new TimerCount();
             timelbl.setText(timerCount.getTime());
-            Thread.sleep(3100);
             timerCount.start();
             new GaugeDown(1).start();
+            new GaugeDown(2).start();
             new BackAni(backlbl, backgroundIcon).start();
 
-            while (gameRunning) {
-                otherMove();
-                timelbl.setText(timerCount.getTime());
-                otherCheck(otherCharlbl, upChecklbl, downChecklbl, betweenlbl);
-                gaugeUp(gaugeBar, gauge);
-                Thread.sleep(30);
-
-            }
-
-            if (gameRunning == false) {
-                gameRunning = true;
-                try {
-
-                    InfoDTO dto = new InfoDTO();
-                    dto.setCommand(Info.EXIT);
-                    writer.writeObject(dto); // 역슬러쉬가 필요가 없음
-                    writer.flush();
-
-                } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
+            
+            Thread gameRunningThread= new Thread(
+                new Runnable() {
+                  public void run() {
+                    while (gameRunning) {
+                        timelbl.setText(timerCount.getTime());
+                        otherCheck(otherCharlbl, upChecklbl, downChecklbl, betweenlbl);
+                        otherMove();
+                        gaugeUp(gaugeBar, gauge);
+                        
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+        
+                    }
+                  };  
                 }
+            );
+          gameRunningThread.start();
+         
+          
 
+        Thread ComThread= new Thread(//컴퓨터 관련 코드
+            new Runnable() {
+                Random rand = new Random();
+                long speed=comlvl[0][lvl];
+                int i=0;
+                int same=0,dif=0 ,stack=0;
+              public void run() {
+              
+                while (gameRunning) {         
+                    try {
+                        if(!comStop){
+                            System.out.println("comGauge"+comGauge);
+                            if(comCharIdx==0&&comGauge>=100){
+                                new SkillIce(iceBackbl, 1).start();
+                                comGauge=0;
+                            } else if(comCharIdx==1&&comGauge>=100){
+                                new SkillBlackEye(blackEyelbl).start();
+                                comGauge=0;
+                            }else if(comCharIdx==2&&comGauge>=100&&comHp<10){
+                                System.out.println("발동");
+                                comHp++;
+                                comGauge=0; 
+                                System.out.println(comHp);
+                            }
+
+                        // 상황에 따른 컴퓨터 입력속도
+                            if(result.length-10>=otherKeyCount){//끝나기 10칸 전에만 발동된다.
+                                if(stack<=0){
+                                    for(int i=otherKeyCount;i<=otherKeyCount+2;i++){//3칸 앞을보며
+                                        if(result[i]==result[i+1]){
+                                            same++;//3칸 앞이 모두 연속 된것을 찾는다
+                                            dif=0;
+                                        }else{
+                                            dif++;//3칸 앞이 모두 다른 된것을 찾는다
+                                            same=0;
+                                        }
+                                
+                                        if(same>=3||dif>=3){//3칸 앞이 모두 연속 또는 다르다면
+                                            System.out.println();
+                                            stack=3;//3칸을 저장한다
+                                            Thread.sleep((speed/3));
+
+                                        }else{//아닐 경우 정상 움직임
+
+                                                if(randPer(rand,1)){//확률적으로 빠르게 이동한다.
+                                                    Thread.sleep((speed/4));
+                                                }else if(randPer(rand,3)){//확률적으로 빠르게 이동한다.
+                                                    Thread.sleep((speed/3));
+                                                }else if(randPer(rand,4)){
+                                                    Thread.sleep(speed/2);
+                                                }else{
+                                                    Thread.sleep(speed);//기본 속도
+                                                }
+                                            
+
+                                        }
+                                    }
+                                }else{//저장된 칸이 있을경우 그 칸수만큼은 빨리 이동한다.
+                                    Thread.sleep((speed/3));
+                                    if(stack>0)
+                                        stack--;
+                                }
+                                    
+                        
+                            }else{
+                                Thread.sleep(speed);
+                            }
+                                
+
+                            if(randPer(rand,comlvl[1][lvl]+downPer)){//틀렸다면
+                                i++;
+                            
+                                if(i>=comHp){
+                                    otherKeyCount=0;
+                                    otherMoveX=-otherMoveX;
+                                } 
+                                if (gauge < 100 && gauge > 0)
+                                        comGauge -= 6;
+                                comCombo=0;
+                                new CharDown(otherCharlbl, otherCharDown, otherCharArr,3).start();
+                                Thread.sleep(720);
+
+                            }else{//안틀렸다면
+                                if(randPer(rand,2+slowPer)){//머뭇거릴수 있다.
+                                    Thread.sleep(comlvl[2][lvl]);
+                                }
+                                if((0>otherMoveX?0:1)!=result[otherKeyCount])
+                                    otherMoveX=-otherMoveX;
+                                new CharAni(otherCharlbl, otherCharArr, otherMoveX).start();
+                                otherKeyCount++;//이동한다.
+                                comCombo++;
+                                if (comGauge < 100) {
+                                    comGauge += ((gaugeUpNum + (comCombo * 0.05)) <= 5 ? (gaugeUpNum + (comCombo * 0.05)) :5);
+                                }
+                            
+                            }
+                        }else{
+                            Thread.sleep(3);
+                        }
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+
+    
+                }
+              };  
+              public boolean randPer(Random rand,int per){
+                if(per>=(rand.nextInt(100)+1)){
+                    return true;
+                }
+                return false;
+                  
+           
+                
+              }
             }
-
-        } catch (InterruptedException e1) {
-
-            e1.printStackTrace();
-        }
+        );
+        ComThread.start();
+       
 
     } // 생성자
 
@@ -543,6 +601,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         imgPath = settings.getImgPath();
         blockCount = settings.getBlockCount();
         hp = settings.getHp()[charIdx];
+        comHp= settings.getHp()[otherCharIdx];
         charW = settings.getCharW()[charIdx];
         charH = settings.getCharH()[charIdx];
         charX = settings.getCharX()[charIdx];
@@ -554,6 +613,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         otherCharY = settings.getCharY()[otherCharIdx];
         otherCharName = settings.getCharName()[otherCharIdx];
         host = settings.getHost();
+        comlvl=settings.getComlvl();
 
     }
 
@@ -578,12 +638,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         hp--;
         combo = 0;
         comboJL2.setText(combo + "");
-        boolean isStopping=false;
-        if (hp <= 0) {
-            if(stop==1)
-                isStopping=true;
-            else
-                stop=1;
+        if (hp <= 0) { 
             System.out.println(totalMoveX+"죽음"+totalMoveY);
             hp=hplbl.length;
             for (int i = 0; i < hplbl.length; i++) {
@@ -599,34 +654,14 @@ public class GameStartFrame extends JFrame implements Runnable {
             totalMoveY=0;
             totalBackMove=0;
             keyCount=0;
-             moveX = -110;
-      
+            moveX = -110;
+          
             new CharDown(charlbl, charDown, charArr,1).start();
 
-       
-            try {
-            InfoDTO dto = new InfoDTO();
-            dto.setStep(keyCount);
-            dto.setCommand(Info.SEND);
-            dto.setNickName(nick);
-            dto.setMoveX(moveX);
-            dto.setStep(keyCount);
-            dto.setSkill(0);
-            dto.setRoomId(roomId);
-            writer.writeObject(dto);
-            writer.flush();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            new CharDown(charlbl, charDown, charArr,0).start();
-
-            if(!isStopping)
-                stop=0;
-
+            
 
         } else {
-            new CharDown(charlbl, charDown, charArr,0).start();
+            new CharDown(charlbl, charDown, charArr,1).start();
             if (gauge < 100 && gauge > 0)
                 gaugeUp(gaugeBar, gauge -= 6);
 
@@ -643,8 +678,8 @@ public class GameStartFrame extends JFrame implements Runnable {
     // 캐릭터 움직이는 함수
     public void moving(JLabel backlbl, JLabel[] blockArr, JLabel charlbl, ImageIcon[] charArr, JProgressBar gaugeBar,
             JLabel stepsJL2, JLabel comboJL2) {
-        new MoveBackGround(backlbl,0).start();
-        new MoveBlock(blockArr, moveX, moveY,0).start();
+        new MoveBackGround(backlbl,1).start();
+        new MoveBlock(blockArr, moveX, moveY,1).start();
         new CharAni(charlbl, charArr, moveX).start();
         if (gauge < 100) {
             gaugeUp(gaugeBar, gauge += ((gaugeUpNum + (combo * 0.05)) <= 5 ? (gaugeUpNum + (combo * 0.05)) :5));
@@ -659,99 +694,9 @@ public class GameStartFrame extends JFrame implements Runnable {
         }
     }
 
-    //// 소켓보내기
-    public void send(int skillIdx, int key) {
+   
 
-        try {
-            System.out.println(1);
-            // 서버로 보냄
-            InfoDTO dto = new InfoDTO();
 
-            if (key == blockCount - 1) {
-                dto.setCommand(Info.STATE);
-                dto.setRoomId(roomId);
-                dto.setWinlose("승리");
-                stop = 1;
-                winLoselbl.setVisible(true);
-
-                System.out.println("승리");
-            } else {
-                dto.setStep(keyCount);
-                dto.setCommand(Info.SEND);
-                dto.setNickName(nick);
-                dto.setMoveX(moveX);
-                dto.setStep(keyCount);
-                dto.setSkill(skillIdx);
-                dto.setRoomId(roomId);
-            }
-
-            writer.writeObject(dto);
-            writer.flush();
-
-        } catch (IOException io) {
-            io.printStackTrace();
-        }
-
-    }
-
-    //// 서버로부터 데이터 받기
-    @Override
-    public void run() {
-
-        InfoDTO dto = null;
-
-        while (true) {
-
-            try {
-
-                dto = (InfoDTO) reader.readObject();
-
-                if (dto.getRoomId() != null && dto.getRoomId().equals(roomId)) {
-                    System.out.println(dto.getRoomId());
-
-                    if (dto.getCommand() == Info.SEND) {
-
-                        if (dto.getMessage() == null) {
-                            if (dto.getNickName() != null && dto.getNickName().equals(otherNick)) {
-                                System.out.println(dto.getNickName());
-                                otherKeyCount = dto.getStep();
-                                otherMoveX = dto.getMoveX();
-                                new CharAni(otherCharlbl, otherCharArr, dto.getMoveX()).start();
-                                if (dto.getSkill() == 1) {
-                                    new SkillIce(iceBackbl,0).start();
-                                    sd.iceSkillSound();
-                                } else if (dto.getSkill() == 2) {
-                                    new SkillBlackEye(blackEyelbl).start();
-                                    sd.blackEyeSkillSound();
-                                }
-                            }
-                        } else if (dto.getMessage() != null && dto.getMessage().equals("waitGame")) {
-
-                            waitGame++;
-                            System.out.println(waitGame);
-                        }
-
-                    } else if (dto.getCommand() == Info.EXIT) {
-                        System.out.println("상대종료");
-
-                    } else if (dto.getCommand() == Info.STATE) {
-                        if (dto.getWinlose().equals("승리")) {
-                            System.out.println("패배");
-                            stop = 1;
-                            winLoselbl.setVisible(true);
-                        }
-                    }
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-
-                e.printStackTrace();
-            }
-        }
-
-    }
 
     public void otherMove() {
         otherCharlbl.setLocation(blockArr[otherKeyCount].getLocation().x + otherCharX - 450,

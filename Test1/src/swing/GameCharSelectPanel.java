@@ -8,8 +8,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.datatransfer.*;
 
-import org.w3c.dom.css.RGBColor;
-
 import swing.SocketServer.InfoDTO;
 import swing.SocketServer.Sock;
 import swing.SocketServer.InfoDTO.Info;
@@ -17,11 +15,9 @@ import swing.SoundF.sound;
 
 import java.awt.event.*;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
+
 import java.util.Random;
-import java.util.prefs.BackingStoreException;
+
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 

@@ -4,9 +4,7 @@ import java.io.File;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import javax.sound.sampled.FloatControl;
 
-import swing.Setting;
 import swing.SoundThreadClass;
 
 public class sound {
