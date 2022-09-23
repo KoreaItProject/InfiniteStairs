@@ -3,117 +3,122 @@ package swing.SocketServer;
 import java.io.*;
 
 public class InfoDTO implements Serializable {
-	public enum Info {
-		MAKE, JOIN, EXIT, SEND, STATE, STATELOSE
-	}
 
-	private String nickName;
-	private String message;
-	private Info command;
-	private int step;
-	private int moveX;
-	private int skill;
-	private int seed;
-	private String roomId;
-	private int charIdx;
-	private String winlose;
-	private int skillCount;
-	private int comboMaxCount;
+  public enum Info {
+    MAKE,
+    JOIN,
+    EXIT,
+    SEND,
+    STATE,
+    STATELOSE,
+  }
 
-	public int getSkillCount() {
-		return this.skillCount;
-	}
+  private String nickName;
+  private String message;
+  private Info command;
+  private int step;
+  private int moveX;
+  private int skill;
+  private int seed;
+  private String roomId;
+  private int charIdx;
+  private String winlose;
+  private int skillCount;
+  private int comboMaxCount;
 
-	public void setSkillCount(int skillCount) {
-		this.skillCount = skillCount;
-	}
+  public int getSkillCount() {
+    return this.skillCount;
+  }
 
-	public int getComboCount() {
-		return this.comboMaxCount;
-	}
+  public void setSkillCount(int skillCount) {
+    this.skillCount = skillCount;
+  }
 
-	public void setComboCount(int comboMaxCount) {
-		this.comboMaxCount = comboMaxCount;
-	}
+  public int getComboCount() {
+    return this.comboMaxCount;
+  }
 
-	public String getWinlose() {
-		return this.winlose;
-	}
+  public void setComboCount(int comboMaxCount) {
+    this.comboMaxCount = comboMaxCount;
+  }
 
-	public void setWinlose(String winlose) {
-		this.winlose = winlose;
-	}
+  public String getWinlose() {
+    return this.winlose;
+  }
 
-	public String getNickName() {
-		return nickName;
-	}
+  public void setWinlose(String winlose) {
+    this.winlose = winlose;
+  }
 
-	public int getSkill() {
-		return skill;
-	}
+  public String getNickName() {
+    return nickName;
+  }
 
-	public void setSkill(int skill) {
-		this.skill = skill;
-	}
+  public int getSkill() {
+    return skill;
+  }
 
-	public String getRoomId() {
-		return roomId;
-	}
+  public void setSkill(int skill) {
+    this.skill = skill;
+  }
 
-	public void setRoomId(String roomId) {
-		this.roomId = roomId;
-	}
+  public String getRoomId() {
+    return roomId;
+  }
 
-	public Info getCommand() {
-		return command;
-	}
+  public void setRoomId(String roomId) {
+    this.roomId = roomId;
+  }
 
-	public String getMessage() {
-		return message;
-	}
+  public Info getCommand() {
+    return command;
+  }
 
-	public void setNickName(String nickName) {
-		this.nickName = nickName;
-	}
+  public String getMessage() {
+    return message;
+  }
 
-	public void setCommand(Info command) {
-		this.command = command;
-	}
+  public void setNickName(String nickName) {
+    this.nickName = nickName;
+  }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+  public void setCommand(Info command) {
+    this.command = command;
+  }
 
-	public int getStep() {
-		return step;
-	}
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-	public void setStep(int step) {
-		this.step = step;
-	}
+  public int getStep() {
+    return step;
+  }
 
-	public int getMoveX() {
-		return moveX;
-	}
+  public void setStep(int step) {
+    this.step = step;
+  }
 
-	public void setMoveX(int moveX) {
-		this.moveX = moveX;
-	}
+  public int getMoveX() {
+    return moveX;
+  }
 
-	public int getSeed() {
-		return seed;
-	}
+  public void setMoveX(int moveX) {
+    this.moveX = moveX;
+  }
 
-	public void setSeed(int seed) {
-		this.seed = seed;
-	}
+  public int getSeed() {
+    return seed;
+  }
 
-	public int getCharIdx() {
-		return charIdx;
-	}
+  public void setSeed(int seed) {
+    this.seed = seed;
+  }
 
-	public void setCharIdx(int charIdx) {
-		this.charIdx = charIdx;
-	}
+  public int getCharIdx() {
+    return charIdx;
+  }
 
+  public void setCharIdx(int charIdx) {
+    this.charIdx = charIdx;
+  }
 }
