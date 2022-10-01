@@ -451,14 +451,14 @@ public class GameStartFrame extends JFrame implements Runnable {
     backPanel.add(timelbl);
 
     // 스킬 아이스
-    ImageIcon iceBackIcon = imgMk("iceback.png", FramW, FramH);
+    ImageIcon iceBackIcon = imgMk("skill/iceback.png", FramW, FramH);
     iceBackbl = new JLabel(iceBackIcon);
     iceBackbl.setBounds(0, 0, FramW, FramH);
     backPanel.add(iceBackbl);
     iceBackbl.setVisible(false);
 
     // 스킬 블랙아이
-    ImageIcon blackEyeIcon = imgMk("blackEye3.png", FramW, FramH);
+    ImageIcon blackEyeIcon = imgMk("skill/blackEye.png", FramW, FramH);
 
     blackEyelbl = new JLabel(blackEyeIcon);
     blackEyelbl.setBounds(0, 0, FramW, FramH);
