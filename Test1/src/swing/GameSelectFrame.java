@@ -29,7 +29,7 @@ public class GameSelectFrame extends JFrame {
 
     } // 생성자
     
-    public GameSelectFrame(Boolean isSingle) {
+    public GameSelectFrame(Boolean isSingle,int lvl) {
 
    
         if(isSingle){
@@ -43,7 +43,7 @@ public class GameSelectFrame extends JFrame {
 
         // 패널 생성
         // JPanel gameCharSelectPanel = new GameCharSelectPanel(this);
-        panel = new SingleCharSelectPanel(this);
+        panel = new SingleCharSelectPanel(this,lvl);
         add(panel);
         setVisible(true);
         }
@@ -79,7 +79,7 @@ public class GameSelectFrame extends JFrame {
         remove(panel);
         revalidate();
         repaint();
-        panel = new SingleCharSelectPanel(this);
+        panel = new SingleCharSelectPanel(this,3);
         add(panel);
         revalidate();
         repaint();

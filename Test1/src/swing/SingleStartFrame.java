@@ -22,6 +22,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class SingleStartFrame extends JFrame  implements ActionListener{
+    String [] lvlData={"60세이상","매우쉬움","쉬움","보통","어려움","매우어려움","헬"};
     ImageIcon[] birdIcon;
     String imgPath;
     int FramW = 1000, FramH = 900, blockW = 100, blockH = 50, blockX = 450, blockY = 500,
@@ -79,6 +80,7 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
   JLabel winloseOtherChar;
 
   // 나
+  JLabel lvllbl;
   JLabel nicklbl;
   JLabel steplbl;
   JLabel deathlbl;
@@ -104,7 +106,7 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
 
   TimerCount timerCount;
   JButton restartBtn;
-
+  int lvl;
 
   // WinLose
 
@@ -112,6 +114,7 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
     public SingleStartFrame(int[] result,int charIdx,int comCharIdx,int lvl) {
         gameRunning=true;
         getSetting(charIdx, comCharIdx);
+        this.lvl=lvl;
 
         this.charIdx = charIdx;
         this.otherCharIdx = comCharIdx;
@@ -200,12 +203,19 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
         }
     // nick, step, death, skill, maxcombo
     ///// 나
-    nicklbl = new JLabel("나 ");
+    lvllbl = new JLabel("난이도 : "+lvlData[lvl]);
+    lvllbl.setBounds(540, 270, 200, 30);
+    lvllbl.setFont(new Font("Gothic", Font.BOLD, lvllbl.getFont().getSize() + 8));
+    lvllbl.setVisible(false);
+    backPanel.add(lvllbl);
+
+    nicklbl = new JLabel("플레이어 ");
     nicklbl.setBounds(320, 530, 200, 30);
     Font font2 = new Font("Gothic", Font.BOLD, nicklbl.getFont().getSize() + 5);
     nicklbl.setFont(font2);
     nicklbl.setVisible(false);
     backPanel.add(nicklbl);
+
 
     steplbl = new JLabel("step : " + keyCount);
     steplbl.setBounds(320, 550, 100, 30);
@@ -294,7 +304,7 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
 
     restartBtn= new JButton("닫기");
     restartBtn.setBackground(new Color(131, 210, 105));
-    restartBtn.setBounds(460, 660, 100, 40);
+    restartBtn.setBounds(460, 690, 100, 40);
     restartBtn.setFont(new Font("Gothic", Font.BOLD, restartBtn.getFont().getSize() + 13));
     restartBtn.addActionListener(this);
     restartBtn.setVisible(false);
@@ -426,7 +436,7 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
         backPanel.add(otherCharlbl);
 
         // 상대 닉네임
-        otherCharNicklbl = new JLabel("COMPUTER");
+        otherCharNicklbl = new JLabel("COM("+lvlData[lvl]+")");
         otherCharNicklbl.setBounds(455, 300, 150, 30);
         otherCharNicklbl.setFont(new Font("Gothic", Font.BOLD, otherCharNicklbl.getFont().getSize() + 8));
         backPanel.add(otherCharNicklbl);
@@ -814,11 +824,12 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
         otherskillNumlbl.setVisible(true);
         othermaxCombolbl.setVisible(true);
         restartBtn.setVisible(true);
-        steplbl.setText("step : "+keyCount);
-        othersteplbl.setText("step : "+otherKeyCount);
-        deathlbl.setText("사망횟수 : "+mydeathcount+"회");
-        otherdeathlbl.setText("사망횟수 : "+otherdeathcount+"회");
-        skillNumlbl.setText("스킬 사용 : "+myskillcount+"회");
+        lvllbl.setVisible(true);
+        steplbl.setText(keyCount+"계단");
+        othersteplbl.setText(otherKeyCount+"계단");
+        deathlbl.setText("사망 : "+mydeathcount+"회");
+        otherdeathlbl.setText("사망 횟수 : "+otherdeathcount+"회");
+        skillNumlbl.setText("스킬 : "+myskillcount+"회");
         otherskillNumlbl.setText("스킬 사용 : "+otherskillcount+"회");
         maxCombolbl.setText("최대 콤보 : "+mymaxcombocount+"콤보");
         othermaxCombolbl.setText("최대 콤보 : "+othermaxcombocount+"콤보");
@@ -1001,7 +1012,7 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
         if (e.getSource() == restartBtn) {
             gameRunning=false;
             this.removeAll();
-            new GameSelectFrame(true);
+            new GameSelectFrame(true,lvl);
             this.dispose();
 
           

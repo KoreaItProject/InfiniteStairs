@@ -56,11 +56,14 @@ public class SingleCharSelectPanel extends JPanel implements ActionListener {
             "<html><body style='font-size:16px;'><p>&ensp스노우맨</p><p>&ensp스킬 : 일정 시간 동안상대방을 얼린다</p><p>&ensp대상은 움직일 수 없다</p></body></html>",
             "<html><body style='font-size:16px;'><p>&ensp고스트맨</p><p>&ensp스킬 : 일정 시간 동안 상대방의 시야를 방해한다 </p><p>&ensp대상은 시야가 축소된다</p></body></html>",
             "<html><body style='font-size:16px;'><p>&ensp미라맨</p><p>&ensp스킬 : 생명력을 회복한다</p><p>&ensp최대 생명력이 높습니다</p></body></html>" };
+    
+    int lvl;
+ 
 
-    public SingleCharSelectPanel(JFrame frame) {
+    public SingleCharSelectPanel(JFrame frame,int lvl) {
         getSetting();
         this.frame = frame;
-
+        this.lvl=lvl;
 
         // result 배열 만들기
         Random rand = new Random();
@@ -111,7 +114,7 @@ public class SingleCharSelectPanel extends JPanel implements ActionListener {
         lvlCombo.setBounds(780, 230, 140,35);
         lvlCombo.setFont(new Font("Gothic", Font.BOLD, lvlCombo.getFont().getSize() + 9));
         lvlCombo.addActionListener(this);
-        lvlCombo.setSelectedIndex(3);
+        lvlCombo.setSelectedIndex(lvl);
         this.add(lvlCombo);
         JLabel comlbl1=new JLabel("유저");
         comlbl1.setBounds(60, 220, 300, 60);
