@@ -262,6 +262,9 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
          
         
     }
+    public void startSingleGame(){
+
+    }
      // 서버 연결부
      public void service(Info info) {
        

@@ -21,7 +21,7 @@ import java.util.Random;
 import java.awt.*;
 import java.awt.event.*;
 
-public class SingleStartFrame extends JFrame  {
+public class SingleStartFrame extends JFrame  implements ActionListener{
     ImageIcon[] birdIcon;
     String imgPath;
     int FramW = 1000, FramH = 900, blockW = 100, blockH = 50, blockX = 450, blockY = 500,
@@ -68,10 +68,49 @@ public class SingleStartFrame extends JFrame  {
     static public boolean comStop=true;
 
     static public int comCombo=0,comGauge=0;
-    
+    // WinLose
+  JLabel winLoseWhitelbl;
+
+
+  JLabel winlbl;
+  JLabel loselbl;
+
+  JLabel winloseMyChar;
+  JLabel winloseOtherChar;
+
+  // 나
+  JLabel nicklbl;
+  JLabel steplbl;
+  JLabel deathlbl;
+  JLabel skillNumlbl;
+  JLabel maxCombolbl;
+
+  // 상대
+  JLabel othernicklbl;
+  JLabel othersteplbl;
+  JLabel otherdeathlbl;
+  JLabel otherskillNumlbl;
+  JLabel othermaxCombolbl;
+
+  int myskillcount = 0;
+  int mymaxcombocount = 0;
+  int mydeathcount = 0;
+  int otherskillcount = 0;
+  int othermaxcombocount = 0;
+  int otherdeathcount = 0;
+
+
+  Font font;
+
+  TimerCount timerCount;
+  JButton restartBtn;
+
+
+  // WinLose
+
 
     public SingleStartFrame(int[] result,int charIdx,int comCharIdx,int lvl) {
-
+        gameRunning=true;
         getSetting(charIdx, comCharIdx);
 
         this.charIdx = charIdx;
@@ -118,28 +157,11 @@ public class SingleStartFrame extends JFrame  {
         jl1.setVisible(false);
         jlGo.setVisible(false);
 
-        // WinLose Label
-        winLoseIcon = imgMk("sub/white.png", 330, 490);
-        winLoselbl = new JLabel();
+  
 
-        winLoselbl.setBounds(350, 115, 330, 490);
-        backPanel.add(winLoselbl);
-        winLoselbl.setIcon(winLoseIcon);
-        winLoselbl.setVisible(false);
-        // WinLose Label
 
-        // 본인 화살표
-        ImageIcon ImgMyArrow = new ImageIcon();
-        ImgMyArrow = imgMk("character/myArrow.png", 30, 30);
-        JLabel jlMyArrow = new JLabel(ImgMyArrow);
-        if (charIdx == 1) {
-            jlMyArrow.setBounds(charX + 50, charY - 40, 30, 30);
-        } else if (charIdx == 2) {
-            jlMyArrow.setBounds(charX + 25, charY - 40, 30, 30);
-        } else {
-            jlMyArrow.setBounds(charX + 80, charY - 40, 30, 30);
-        }
-        backPanel.add(jlMyArrow);
+
+        
         // 본인 화살표
 
         //새
@@ -176,6 +198,133 @@ public class SingleStartFrame extends JFrame  {
             charDown[i] = imgMk(charName + "/" + charName + (i + 24) + ".png", charW, charH);
             otherCharDown[i] = imgMk(otherCharName + "/" + otherCharName + (i + 24) + ".png", otherCharW, otherCharH);
         }
+    // nick, step, death, skill, maxcombo
+    ///// 나
+    nicklbl = new JLabel("나 ");
+    nicklbl.setBounds(320, 530, 200, 30);
+    Font font2 = new Font("Gothic", Font.BOLD, nicklbl.getFont().getSize() + 5);
+    nicklbl.setFont(font2);
+    nicklbl.setVisible(false);
+    backPanel.add(nicklbl);
+
+    steplbl = new JLabel("step : " + keyCount);
+    steplbl.setBounds(320, 550, 100, 30);
+    steplbl.setFont(font2);
+    steplbl.setVisible(false);
+    backPanel.add(steplbl);
+
+    deathlbl = new JLabel("죽은 횟수 : 수정필요");
+    deathlbl.setBounds(320, 570, 170, 30);
+    deathlbl.setFont(font2);
+    deathlbl.setVisible(false);
+    backPanel.add(deathlbl);
+
+    skillNumlbl = new JLabel("스킬 사용 : " + myskillcount);
+    skillNumlbl.setBounds(320, 590, 150, 30);
+    skillNumlbl.setFont(font2);
+    skillNumlbl.setVisible(false);
+    backPanel.add(skillNumlbl);
+
+    maxCombolbl = new JLabel("최대 콤보 : ");
+    maxCombolbl.setBounds(320, 610, 170, 30);
+    maxCombolbl.setFont(font2);
+    maxCombolbl.setVisible(false);
+    backPanel.add(maxCombolbl);
+            ///// 상대
+    othernicklbl = new JLabel("컴퓨터 " );
+    othernicklbl.setBounds(560, 530, 200, 30);
+    othernicklbl.setFont(font2);
+    othernicklbl.setVisible(false);
+    backPanel.add(othernicklbl);
+
+    othersteplbl = new JLabel("step : ");
+    othersteplbl.setBounds(560, 550, 100, 30);
+    othersteplbl.setFont(font2);
+    othersteplbl.setVisible(false);
+    backPanel.add(othersteplbl);
+
+    otherdeathlbl = new JLabel("죽은 횟수 : 수정필요");
+    otherdeathlbl.setBounds(560, 570, 170, 30);
+    otherdeathlbl.setFont(font2);
+    otherdeathlbl.setVisible(false);
+    backPanel.add(otherdeathlbl);
+
+    otherskillNumlbl = new JLabel("스킬 사용 : ");
+    otherskillNumlbl.setBounds(560, 590, 150, 30);
+    otherskillNumlbl.setFont(font2);
+    otherskillNumlbl.setVisible(false);
+    backPanel.add(otherskillNumlbl);
+
+    othermaxCombolbl = new JLabel("최대 콤보 : ");
+    othermaxCombolbl.setBounds(560, 610, 170, 30);
+    othermaxCombolbl.setFont(font2);
+    othermaxCombolbl.setVisible(false);
+    backPanel.add(othermaxCombolbl);
+
+    // nick, step, death, skill, maxcombo
+
+    // WinLose Char
+    winloseMyChar = new JLabel(charArr[0]);
+    winloseMyChar.setBounds(310, 300, 180, 180);
+    backPanel.add(winloseMyChar);
+    winloseMyChar.setVisible(false);
+
+    winloseOtherChar = new JLabel(otherCharArr[0]);
+    winloseOtherChar.setBounds(560, 300, 180, 180);
+    backPanel.add(winloseOtherChar);
+    winloseOtherChar.setVisible(false);
+    // WinLose Char
+
+    // Win & Lose
+    ImageIcon winIcon = new ImageIcon();
+    winIcon = imgMk("character/Win.png", 200, 140);
+    winlbl = new JLabel(winIcon);
+    winlbl.setBounds(410, 150, 200, 140);
+    winlbl.setIcon(winIcon);
+    backPanel.add(winlbl);
+    winlbl.setVisible(false);
+
+    ImageIcon loseIcon = new ImageIcon();
+    loseIcon = imgMk("character/Lose.png", 200, 140);
+    loselbl = new JLabel(loseIcon);
+    loselbl.setBounds(410, 150, 200, 140);
+    loselbl.setIcon(loseIcon);
+    backPanel.add(loselbl);
+    loselbl.setVisible(false);
+
+    restartBtn= new JButton("닫기");
+    restartBtn.setBackground(new Color(131, 210, 105));
+    restartBtn.setBounds(460, 660, 100, 40);
+    restartBtn.setFont(new Font("Gothic", Font.BOLD, restartBtn.getFont().getSize() + 13));
+    restartBtn.addActionListener(this);
+    restartBtn.setVisible(false);
+    backPanel.add(restartBtn);
+
+    // Win & Lose
+
+    // WinLose Label
+    winLoseIcon = imgMk("sub/white.png", 500, 650);
+    winLoseWhitelbl = new JLabel();
+
+    winLoseWhitelbl.setBounds(260, 115, 500, 650);
+    backPanel.add(winLoseWhitelbl);
+    winLoseWhitelbl.setIcon(winLoseIcon);
+    winLoseWhitelbl.setVisible(false);
+    // WinLose Label
+
+
+    // 본인 화살표
+    ImageIcon ImgMyArrow = new ImageIcon();
+    ImgMyArrow = imgMk("character/myArrow.png", 30, 30);
+    JLabel jlMyArrow = new JLabel(ImgMyArrow);
+    if (charIdx == 1) {
+        jlMyArrow.setBounds(charX + 50, charY - 40, 30, 30);
+    } else if (charIdx == 2) {
+        jlMyArrow.setBounds(charX + 25, charY - 40, 30, 30);
+    } else {
+        jlMyArrow.setBounds(charX + 80, charY - 40, 30, 30);
+    }
+    backPanel.add(jlMyArrow);
 
         // hp아이콘
         ImageIcon hpIcon = imgMk("hp.png", 50, 50);
@@ -367,6 +516,7 @@ public class SingleStartFrame extends JFrame  {
 
                             
                                 if (gauge >= 100) {
+                                    myskillcount++;
                                     if(charIdx == 0){
                                         skillSoundFunc();
                                         gaugeUp(gaugeBar, gauge = 0);
@@ -418,22 +568,57 @@ public class SingleStartFrame extends JFrame  {
         /* */
      
 
+        
+     
+           
+
+     
             TimerCount timerCount = new TimerCount();
             timelbl.setText(timerCount.getTime());
-            timerCount.start();
-            new GaugeDown(1).start();
-            new GaugeDown(2).start();
-            new BackAni(backlbl, backgroundIcon).start();
+            BackAni backAni= new BackAni(backlbl, backgroundIcon);
+            GaugeDown gaugeDown1 = new GaugeDown(1);
+            GaugeDown gaugeDown2 = new GaugeDown(2);
 
-            
+            Thread waitThread=new Thread(
+                new Runnable() {
+                  public void run() {
+                    try {
+                        Thread.sleep(3100);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                   backAni.start();
+                    timerCount.start();
+                    gaugeDown1.start();
+                    gaugeDown2.start();
+                  };  
+                }
+            );
+            waitThread.start();
+
             Thread gameRunningThread= new Thread(
                 new Runnable() {
                   public void run() {
-                    while (gameRunning) {
+                    while (true) {
                         timelbl.setText(timerCount.getTime());
                         otherCheck(otherCharlbl, upChecklbl, downChecklbl, betweenlbl);
                         otherMove();
                         gaugeUp(gaugeBar, gauge);
+                        if(keyCount>=blockCount-1||otherKeyCount>=blockCount-1||timerCount.getTime2()<=0){
+                            if(keyCount>=otherKeyCount)
+                                endGame(true);
+                            else{
+                                endGame(false);
+                            }
+                        }
+                        if(gameRunning==false){
+                            timerCount.stop();
+                            gaugeDown1.stop();
+                            gaugeDown2.stop();
+                            break;
+                        }
+
                         
                         try {
                             Thread.sleep(10);
@@ -465,14 +650,17 @@ public class SingleStartFrame extends JFrame  {
                             if(comCharIdx==0&&comGauge>=100){
                                 new SkillIce(iceBackbl, 1).start();
                                 comGauge=0;
+                                otherskillcount++;
                             } else if(comCharIdx==1&&comGauge>=100){
                                 new SkillBlackEye(blackEyelbl).start();
                                 comGauge=0;
+                                otherskillcount++;
                             }else if(comCharIdx==2&&comGauge>=100&&comHp<10){
                                 System.out.println("발동");
                                 comHp++;
                                 comGauge=0; 
                                 System.out.println(comHp);
+                                otherskillcount++;
                             }
 
                         // 상황에 따른 컴퓨터 입력속도
@@ -524,7 +712,10 @@ public class SingleStartFrame extends JFrame  {
                             
                                 if(i>=comHp){
                                     otherKeyCount=0;
-                                    otherMoveX=-otherMoveX;
+                                    if(otherMoveX>0)
+                                        otherMoveX=-otherMoveX;
+                                    otherdeathcount++;
+
                                 } 
                                 if (gauge < 100 && gauge > 0)
                                         comGauge -= 6;
@@ -541,6 +732,9 @@ public class SingleStartFrame extends JFrame  {
                                 new CharAni(otherCharlbl, otherCharArr, otherMoveX).start();
                                 otherKeyCount++;//이동한다.
                                 comCombo++;
+                                if(othermaxcombocount<comCombo){
+                                    othermaxcombocount=comCombo;
+                                }
                                 if (comGauge < 100) {
                                     comGauge += ((gaugeUpNum + (comCombo * 0.05)) <= 5 ? (gaugeUpNum + (comCombo * 0.05)) :5);
                                 }
@@ -593,6 +787,44 @@ public class SingleStartFrame extends JFrame  {
 
     public void downSoundFunc() {
         sd.downSound();
+    }
+
+    public void endGame(boolean win){
+        sd.inGameSoundStop();
+        stop=1;
+        comStop=true;
+        gameRunning=false;
+
+        winLoseWhitelbl.setVisible(true);
+        if(win){
+            winlbl.setVisible(true);
+        }else{
+            loselbl.setVisible(true);
+        }
+        winloseMyChar.setVisible(true);
+        winloseOtherChar.setVisible(true);
+        nicklbl.setVisible(true);
+        steplbl.setVisible(true);
+        deathlbl.setVisible(true);
+        skillNumlbl.setVisible(true);
+        maxCombolbl.setVisible(true);
+        othernicklbl.setVisible(true);
+        othersteplbl.setVisible(true);
+        otherdeathlbl.setVisible(true);
+        otherskillNumlbl.setVisible(true);
+        othermaxCombolbl.setVisible(true);
+        restartBtn.setVisible(true);
+        steplbl.setText("step : "+keyCount);
+        othersteplbl.setText("step : "+otherKeyCount);
+        deathlbl.setText("사망횟수 : "+mydeathcount+"회");
+        otherdeathlbl.setText("사망횟수 : "+otherdeathcount+"회");
+        skillNumlbl.setText("스킬 사용 : "+myskillcount+"회");
+        otherskillNumlbl.setText("스킬 사용 : "+otherskillcount+"회");
+        maxCombolbl.setText("최대 콤보 : "+mymaxcombocount+"콤보");
+        othermaxCombolbl.setText("최대 콤보 : "+othermaxcombocount+"콤보");
+
+      
+        
     }
 
     // setting을 가져옴
@@ -655,6 +887,7 @@ public class SingleStartFrame extends JFrame  {
             totalBackMove=0;
             keyCount=0;
             moveX = -110;
+            mydeathcount++;
           
             new CharDown(charlbl, charDown, charArr,1).start();
 
@@ -688,7 +921,9 @@ public class SingleStartFrame extends JFrame  {
         combo++;
         stepsJL2.setText(keyCount + "");
         comboJL2.setText(combo + "");
-
+        if(combo>mymaxcombocount){
+            mymaxcombocount=combo;
+        }
         if (keyCount == 1) {
             sd.birdSound();
         }
@@ -758,6 +993,22 @@ public class SingleStartFrame extends JFrame  {
             // 935
             // 55
         }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // TODO Auto-generated method stub
+        if (e.getSource() == restartBtn) {
+            gameRunning=false;
+            this.removeAll();
+            new GameSelectFrame(true);
+            this.dispose();
+
+          
+            
+           
+        }
+        
     }
 
 }

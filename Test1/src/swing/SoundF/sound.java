@@ -22,6 +22,7 @@ public class sound {
     Clip clip;
     Clip moveClip;
     SoundThreadClass tc;
+    SoundThreadClass ingametc;
 
     public sound() {
 
@@ -58,7 +59,14 @@ public class sound {
     // 인게임 사운드 스타트
     public void inGameSoundStart() {
         try {
-            tc = new SoundThreadClass(clip, fileinGameSound, Clip.LOOP_CONTINUOUSLY);
+            ingametc = new SoundThreadClass(clip, fileinGameSound, Clip.LOOP_CONTINUOUSLY);
+        } catch (Exception e) {
+        }
+    }
+    // 인게임 사운드 스탑
+    public void inGameSoundStop() {
+        try {
+            ingametc.cut();
         } catch (Exception e) {
         }
     }

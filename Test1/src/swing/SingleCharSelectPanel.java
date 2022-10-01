@@ -106,7 +106,7 @@ public class SingleCharSelectPanel extends JPanel implements ActionListener {
         comlbl.setBounds(640, 220, 300, 60);
         comlbl.setFont(new Font("Gothic", Font.BOLD, comlbl.getFont().getSize() + 22));
         this.add(comlbl);
-        String [] lvlData={"50세이상","매우쉬움","쉬움","보통","어려움","매우어려움","헬"};
+        String [] lvlData={"60세이상","매우쉬움","쉬움","보통","어려움","매우어려움","헬"};
         lvlCombo = new JComboBox<>(lvlData);
         lvlCombo.setBounds(780, 230, 140,35);
         lvlCombo.setFont(new Font("Gothic", Font.BOLD, lvlCombo.getFont().getSize() + 9));

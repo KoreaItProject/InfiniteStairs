@@ -2,6 +2,7 @@ package swing.Sub;
 
 import swing.GameStartFrame;
 import swing.Setting;
+import swing.SingleStartFrame;
 
 public class TimerCount extends Thread {
     private int gameTime, timer = 0;
@@ -19,13 +20,11 @@ public class TimerCount extends Thread {
         try {
             while (gameTime + 1 > timer) { // 100>0
 
-                if (GameStartFrame.gameRunning == false)
-                    break;
 
                 Thread.sleep(1000);
                 timer++;
             }
-            GameStartFrame.gameRunning = false;
+
 
         } catch (InterruptedException e) {
             e.printStackTrace();

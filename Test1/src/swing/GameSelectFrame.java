@@ -28,6 +28,26 @@ public class GameSelectFrame extends JFrame {
         setVisible(true);
 
     } // 생성자
+    
+    public GameSelectFrame(Boolean isSingle) {
+
+   
+        if(isSingle){
+        setSize(FramW, FramH); // 프레임 크기 지정
+        setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
+        setLocationRelativeTo(null);
+
+        // 레이블을 넣기 위한 패널 생성
+
+        // 패널 생성
+        // JPanel gameCharSelectPanel = new GameCharSelectPanel(this);
+        panel = new SingleCharSelectPanel(this);
+        add(panel);
+        setVisible(true);
+        }
+    } // 생성자
 
     public void showCharSelectPan( String roomId,  String nick, int seed) {
 

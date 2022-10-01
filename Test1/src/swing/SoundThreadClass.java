@@ -43,4 +43,10 @@ public class SoundThreadClass extends Thread {
         }).start();
     }
 
-}
+    public void cut(){
+
+            clips.stop();
+            clips.close();
+        }
+    }
+
