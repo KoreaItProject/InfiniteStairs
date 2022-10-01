@@ -14,7 +14,7 @@ public class GaugeDown extends Thread{
 		// TODO Auto-generated method stub
 		while (true) {
 			try {
-				Thread.sleep(320);
+				Thread.sleep(200);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

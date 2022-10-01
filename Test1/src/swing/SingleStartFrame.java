@@ -808,8 +808,10 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
         winLoseWhitelbl.setVisible(true);
         if(win){
             winlbl.setVisible(true);
+            sd.winSound();
         }else{
             loselbl.setVisible(true);
+            sd.loseSound();
         }
         winloseMyChar.setVisible(true);
         winloseOtherChar.setVisible(true);
@@ -828,9 +830,9 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
         steplbl.setText(keyCount+"계단");
         othersteplbl.setText(otherKeyCount+"계단");
         deathlbl.setText("사망 : "+mydeathcount+"회");
-        otherdeathlbl.setText("사망 횟수 : "+otherdeathcount+"회");
+        otherdeathlbl.setText("사망 : "+otherdeathcount+"회");
         skillNumlbl.setText("스킬 : "+myskillcount+"회");
-        otherskillNumlbl.setText("스킬 사용 : "+otherskillcount+"회");
+        otherskillNumlbl.setText("스킬 : "+otherskillcount+"회");
         maxCombolbl.setText("최대 콤보 : "+mymaxcombocount+"콤보");
         othermaxCombolbl.setText("최대 콤보 : "+othermaxcombocount+"콤보");
 
@@ -1011,6 +1013,11 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
         // TODO Auto-generated method stub
         if (e.getSource() == restartBtn) {
             gameRunning=false;
+            gauge=0;comGauge=0;
+            if(moveX>0)
+                moveX=-moveX;
+            if(otherMoveX>0)
+                otherMoveX=-otherMoveX;
             this.removeAll();
             new GameSelectFrame(true,lvl);
             this.dispose();

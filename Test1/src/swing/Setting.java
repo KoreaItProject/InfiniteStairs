@@ -4,12 +4,12 @@ public class Setting {
     private String imgPath = "Test1/src/img/"; // img까지 경로
     private int blockCount = 250; // 생성할 블록 갯수
     private int hp[] = { 5, 5, 10 }; // hp
-    private int gameTime = 3;// 게임 진행시간
+    private int gameTime = 100;// 게임 진행시간
     private String host = "localhost";
 
-    private int comlvl[][]={{700,360,290,230,190,150,110},//쓰레드 속도
+    private int comlvl[][]={{700,360,290,230,190,160,130},//쓰레드 속도
                             {5  ,4  ,3  ,2  ,2  ,1  ,1  },//틀릴확률
-                            {300,240,180,160,140,120,110}//머뭇거림시간
+                            {300,240,180,160,140,130,110}//머뭇거림시간
                             };
 
   

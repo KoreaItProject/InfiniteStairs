@@ -18,6 +18,9 @@ public class sound {
     File countDownSound = new File("Test1/src/sound/countDown.wav"); // 카운트다운
     File birdSound = new File("Test1/src/sound/birdSound.wav"); // 새 사운드
     File skillSound = new File("Test1/src/sound/skillUsing.wav"); // 새 사운드
+    File winSound = new File("Test1/src/sound/win.wav"); // 이김
+    File loseSound = new File("Test1/src/sound/lose.wav"); // 짐
+
 
     Clip clip;
     Clip moveClip;
@@ -85,6 +88,24 @@ public class sound {
         try {
 
             tc = new SoundThreadClass(clip, downSoundf, 0);
+
+        } catch (Exception e) {
+        }
+    }
+     // 이겼을때 사운드
+     public void winSound() {
+        try {
+
+            tc = new SoundThreadClass(clip,winSound, 0);
+
+        } catch (Exception e) {
+        }
+    }
+     // 이겼을때 사운드
+     public void loseSound() {
+        try {
+
+            tc = new SoundThreadClass(clip,loseSound, 0);
 
         } catch (Exception e) {
         }
