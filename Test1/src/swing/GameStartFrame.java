@@ -18,7 +18,7 @@ import swing.Sub.GaugeDown;
 import swing.Sub.StartCount;
 import swing.Sub.TimerCount;
 
-public class GameStartFrame extends JFrame implements Runnable {
+public class GameStartFrame extends JFrame implements ActionListener ,Runnable {
 
   ImageIcon[] birdIcon;
   String nick;
@@ -42,6 +42,7 @@ public class GameStartFrame extends JFrame implements Runnable {
   public JLabel[] blockArr;
   public int charIdx;
   public int gaugeUpNum = 3;
+  public int mydeath = 0;
 
   // 상대
   String otherNick;
@@ -88,6 +89,8 @@ public class GameStartFrame extends JFrame implements Runnable {
   JLabel otherskillNumlbl;
   JLabel othermaxCombolbl;
 
+  JButton gameOutBtn;
+
   int myskillcount = 0;
   int mymaxcombocount = 0;
 
@@ -99,6 +102,8 @@ public class GameStartFrame extends JFrame implements Runnable {
   JLabel winLoselbl;
   // WinLose
 
+  int seed;
+
   public static int totalMoveX = 0, totalMoveY = 0, resetCount =
     0, totalBackMove = 0;
 
@@ -108,7 +113,8 @@ public class GameStartFrame extends JFrame implements Runnable {
     int charIdx,
     int otherCharIdx,
     int[] result,
-    String otherNick
+    String otherNick,
+    int seed
   ) {
     getSetting(charIdx, otherCharIdx);
 
@@ -133,6 +139,7 @@ public class GameStartFrame extends JFrame implements Runnable {
     this.otherCharIdx = otherCharIdx;
     this.result = result;
     this.otherNick = otherNick;
+    this.seed = seed;
 
     setSize(FramW, FramH); // 컨테이너 크기 지정
     setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -208,6 +215,15 @@ public class GameStartFrame extends JFrame implements Runnable {
     }
 
     // nick, step, death, skill, maxcombo
+
+    // 인게임 끝났을때 나가기
+    gameOutBtn = new JButton("닫기");
+    gameOutBtn.setBackground(new Color(100, 214, 245));
+    gameOutBtn.setBounds(460, 675,100,30);
+    gameOutBtn.addActionListener(this); // 이벤트 호출 메서드
+    gameOutBtn.setVisible(false);
+    backPanel.add(gameOutBtn);
+
     ///// 나
     nicklbl = new JLabel("닉네임 : " + nick);
     nicklbl.setBounds(320, 530, 200, 30);
@@ -632,6 +648,7 @@ public class GameStartFrame extends JFrame implements Runnable {
       Thread.sleep(2500);
       try {
         InfoDTO dto = new InfoDTO();
+        dto.setIngame(true);
         dto.setCommand(Info.SEND);
         dto.setRoomId(roomId);
         dto.setNickName(nick);
@@ -667,6 +684,7 @@ public class GameStartFrame extends JFrame implements Runnable {
               dto.setNickName(GameCharSelectPanel.nick);
               dto.setRoomId(GameCharSelectPanel.roomId);
               dto.setMessage("finish");
+              dto.setIngame(true);
               writer.writeObject(dto);
               writer.flush();
             } catch (IOException io) {
@@ -706,6 +724,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         try {
           InfoDTO dto = new InfoDTO();
           dto.setCommand(Info.EXIT);
+          dto.setIngame(true);
           writer.writeObject(dto); // 역슬러쉬가 필요가 없음
           writer.flush();
         } catch (IOException e1) {
@@ -797,6 +816,7 @@ public class GameStartFrame extends JFrame implements Runnable {
     comboJL2.setText(combo + "");
     boolean isStopping = false;
     if (hp <= 0) {
+        mydeath += 1;
       if (stop == 1) isStopping = true; else stop = 1;
       System.out.println(totalMoveX + "죽음" + totalMoveY);
       hp = hplbl.length;
@@ -826,6 +846,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         dto.setStep(keyCount);
         dto.setSkill(0);
         dto.setRoomId(roomId);
+        dto.setIngame(true);
         writer.writeObject(dto);
         writer.flush();
       } catch (IOException e) {
@@ -905,11 +926,14 @@ public class GameStartFrame extends JFrame implements Runnable {
         dto.setStep(keyCount); // 내 step 횟수
         dto.setSkillCount(myskillcount); // 내 스킬 횟수
         dto.setComboCount(mymaxcombocount); // 내 최대 콤보 횟수
+        dto.setMydeath(mydeath); // 내 죽음 횟수
+
         stop = 1;
         winLoseWhitelbl.setVisible(true);
         winlbl.setVisible(true);
         winloseMyChar.setVisible(true);
         winloseOtherChar.setVisible(true);
+        deathlbl.setText("죽은 횟수 : " + mydeath);
 
         nicklbl.setVisible(true);
         steplbl.setVisible(true);
@@ -933,6 +957,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         dto.setStep(keyCount); // 내 step 횟수
         dto.setSkillCount(myskillcount); // 내 스킬 횟수
         dto.setComboCount(mymaxcombocount); // 내 최대 콤보 횟수
+        deathlbl.setText("죽은 횟수 : " + mydeath);
       } else if (skillIdx == 20) {
         if (keyCount > otherKeyCount) {
           dto.setCommand(Info.STATE);
@@ -944,6 +969,7 @@ public class GameStartFrame extends JFrame implements Runnable {
           dto.setStep(keyCount); // 내 step 횟수
           dto.setSkillCount(myskillcount); // 내 스킬 횟수
           dto.setComboCount(mymaxcombocount); // 내 최대 콤보 횟수
+
           stop = 1;
           winLoseWhitelbl.setVisible(true);
           winlbl.setVisible(true);
@@ -955,6 +981,7 @@ public class GameStartFrame extends JFrame implements Runnable {
           deathlbl.setVisible(true);
           skillNumlbl.setVisible(true);
           maxCombolbl.setVisible(true);
+          deathlbl.setText("죽은 횟수 : " + mydeath);
 
           othernicklbl.setVisible(true);
           othersteplbl.setVisible(true);
@@ -980,7 +1007,7 @@ public class GameStartFrame extends JFrame implements Runnable {
         dto.setSkill(skillIdx);
         dto.setRoomId(roomId);
       }
-
+      dto.setIngame(true);
       writer.writeObject(dto);
       writer.flush();
     } catch (IOException io) {
@@ -996,6 +1023,8 @@ public class GameStartFrame extends JFrame implements Runnable {
     while (true) {
       try {
         dto = (InfoDTO) reader.readObject();
+
+        if(dto.isIngame()){
 
         if (dto.getRoomId() != null && dto.getRoomId().equals(roomId)) {
           System.out.println(dto.getRoomId());
@@ -1043,6 +1072,7 @@ public class GameStartFrame extends JFrame implements Runnable {
               loselbl.setVisible(true);
               winloseMyChar.setVisible(true);
               winloseOtherChar.setVisible(true);
+              deathlbl.setText("죽은 횟수 : " + mydeath);
 
               nicklbl.setVisible(true);
               steplbl.setVisible(true);
@@ -1068,6 +1098,7 @@ public class GameStartFrame extends JFrame implements Runnable {
             }
           }
         }
+    }
       } catch (IOException e) {
         e.printStackTrace();
       } catch (ClassNotFoundException e) {
@@ -1075,6 +1106,41 @@ public class GameStartFrame extends JFrame implements Runnable {
       }
     }
   }
+
+  @Override
+  public void actionPerformed(ActionEvent e){
+      if(e.getSource() == gameOutBtn){
+          try {
+              // InfoDTO dto = new InfoDTO(nickName,Info.EXIT);
+              
+
+              InfoDTO dto = new InfoDTO();
+              dto.setCommand(Info.EXIT);
+              dto.setIngame(true);
+              dto.setNickName(GameCharSelectPanel.nick);
+              dto.setRoomId(GameCharSelectPanel.roomId);
+              dto.setMessage("finish");
+              writer.writeObject(dto);
+              writer.flush();
+
+              System.out.println("seeeed ===> " + seed + keyCount + otherKeyCount);
+              new GameSelectFrame(roomId, nick, seed + keyCount + otherKeyCount);  
+              sockt2.stop();
+          
+              removeAll();
+              dispose();
+
+          } catch (IOException io) {
+              io.printStackTrace();
+          }
+          
+          System.out.println("나가기");
+      }
+
+      // new GameSelectFrame(roomId,nick)
+      
+  }
+
 
   public void otherMove() {
     otherCharlbl.setLocation(

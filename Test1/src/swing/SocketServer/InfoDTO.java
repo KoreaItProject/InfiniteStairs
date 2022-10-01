@@ -25,6 +25,24 @@ public class InfoDTO implements Serializable {
   private String winlose;
   private int skillCount;
   private int comboMaxCount;
+  private int mydeath;
+  private boolean ingame;
+
+	public boolean isIngame() {
+		return this.ingame;
+	}
+
+	public void setIngame(boolean ingame) {
+		this.ingame = ingame;
+	}
+
+	public int getMydeath() {
+		return this.mydeath;
+	}
+
+	public void setMydeath(int mydeath) {
+		this.mydeath = mydeath;
+	}
 
   public int getSkillCount() {
     return this.skillCount;

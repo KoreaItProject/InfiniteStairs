@@ -213,6 +213,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
             // 연결시 서버에 보내는 코드
 
             InfoDTO dto = new InfoDTO();
+            dto.setIngame(false);
             dto.setNickName(nick);
             dto.setRoomId(roomId);
             dto.setMessage(message);
@@ -235,6 +236,9 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
             try {
                 dto = (InfoDTO) Sock.reader.readObject();
                 System.out.println(dto.getRoomId());
+                if(dto.isIngame()!=true){
+
+                
                 if (dto.getRoomId() != null && dto.getRoomId().equals(roomId)) {
 
                     if (dto.getNickName() != null && !dto.getNickName().equals(nick)) {
@@ -250,6 +254,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
                                 dto.setRoomId(roomId);
                                 dto.setMessage("입장확인");
                                 dto.setCommand(Info.STATE);
+                                dto.setIngame(false);
                                 Sock.writer.writeObject(dto); // 역슬러쉬가 필요가 없음
                                 Sock.writer.flush();
                                 readyBtn.setEnabled(true);
@@ -296,6 +301,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
                     }
 
                 }
+            }
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -322,6 +328,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
             try {
                 InfoDTO dto = new InfoDTO();
                 dto.setCommand(Info.SEND);
+                dto.setIngame(false);
                 dto.setMessage("charIdx");
                 dto.setNickName(GameCharSelectPanel.nick);
                 dto.setCharIdx(GameCharSelectPanel.charIdx);
@@ -344,6 +351,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
             try {
                 InfoDTO dto = new InfoDTO();
                 dto.setCommand(Info.SEND);
+                dto.setIngame(false);
                 dto.setMessage("charIdx");
                 dto.setNickName(GameCharSelectPanel.nick);
                 dto.setCharIdx(GameCharSelectPanel.charIdx);
@@ -379,6 +387,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
             try {
             InfoDTO dto = new InfoDTO();
             dto.setCommand(Info.EXIT);
+            dto.setIngame(false);
             dto.setNickName(GameCharSelectPanel.nick);
             dto.setRoomId(GameCharSelectPanel.roomId);
             Sock.writer.writeObject(dto); // 역슬러쉬가 필요가 없음
@@ -434,6 +443,7 @@ class GameStart extends Thread {
                     InfoDTO dto = new InfoDTO();
 
                     dto.setCommand(Info.EXIT);
+                    dto.setIngame(false);
                     dto.setMessage("startGame");
                     dto.setNickName(GameCharSelectPanel.nick);
                     dto.setRoomId(GameCharSelectPanel.roomId);
@@ -452,7 +462,8 @@ class GameStart extends Thread {
                             GameCharSelectPanel.nick,
                             GameCharSelectPanel.charIdx, GameCharSelectPanel.otherCharIdx,
                             result,
-                            GameCharSelectPanel.otherNick);
+                            GameCharSelectPanel.otherNick,
+                            GameCharSelectPanel.seed);
 
 
 

@@ -1,9 +1,16 @@
 package swing;
 
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
 import javax.swing.JFrame;
 
 import javax.swing.JPanel;
+
+import swing.SocketServer.Sock;
 
 
 public class GameSelectFrame extends JFrame {
@@ -25,6 +32,36 @@ public class GameSelectFrame extends JFrame {
         // JPanel gameCharSelectPanel = new GameCharSelectPanel(this);
         panel = new GameRoomPan(this);
         add(panel);
+        setVisible(true);
+
+    } // 생성자
+
+    public GameSelectFrame(String roomId,  String nick, int seed) {
+       
+        setSize(FramW, FramH); // 프레임 크기 지정
+        setLayout(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
+        setLocationRelativeTo(null);
+
+        // 레이블을 넣기 위한 패널 생성
+
+        // 패널 생성
+        // JPanel gameCharSelectPanel = new GameCharSelectPanel(this);
+        try {
+            Sock.socket = new Socket(new Setting().getHost(), 9500);
+            Sock.reader = new ObjectInputStream(Sock.socket.getInputStream()); 
+            Sock.writer = new ObjectOutputStream(Sock.socket.getOutputStream());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+
+        panel = new GameCharSelectPanel(this, roomId, nick, seed);
+        add(panel);
+        revalidate();
+        repaint();
         setVisible(true);
 
     } // 생성자
