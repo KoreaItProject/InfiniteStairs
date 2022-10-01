@@ -425,14 +425,14 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
         backPanel.add(timelbl);
 
         // 스킬 아이스
-        ImageIcon iceBackIcon = imgMk("iceback.png", FramW, FramH);
+        ImageIcon iceBackIcon = imgMk("skill/iceback.png", FramW, FramH);
         iceBackbl = new JLabel(iceBackIcon);
         iceBackbl.setBounds(0, 0, FramW, FramH);
         backPanel.add(iceBackbl);
         iceBackbl.setVisible(false);
 
         // 스킬 블랙아이
-        ImageIcon blackEyeIcon = imgMk("blackEye3.png", FramW, FramH);
+        ImageIcon blackEyeIcon = imgMk("skill/blackEye.png", FramW, FramH);
 
         blackEyelbl = new JLabel(blackEyeIcon);
         blackEyelbl.setBounds(0, 0, FramW, FramH);
@@ -869,6 +869,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                 gameOutBtn.setVisible(true);
 
                 System.out.println("승리");
+                sd.inGameSoundStop();
             } else if (skillIdx == 10) { // 시간 지났을 시
                 dto.setCommand(Info.STATELOSE);
                 dto.setWinlose("패배");
@@ -879,7 +880,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                 dto.setSkillCount(myskillcount); // 내 스킬 횟수
                 dto.setComboCount(mymaxcombocount); // 내 최대 콤보 횟수
                 dto.setMydeath(mydeath); // 내 죽음 횟수
-                
+                sd.inGameSoundStop();
             } else if (skillIdx == 20) {
                 if (keyCount > otherKeyCount) {
                     dto.setCommand(Info.STATE);
@@ -922,6 +923,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                     dto.setSkillCount(myskillcount); // 내 스킬 횟수
                     dto.setComboCount(mymaxcombocount); // 내 최대 콤보 횟수
                 }
+                sd.inGameSoundStop();
             } else {
                 dto.setStep(keyCount);
                 dto.setCommand(Info.SEND);
@@ -1016,6 +1018,8 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                             othermaxCombolbl.setVisible(true);
 
                             gameOutBtn.setVisible(true);
+                            sd.winSound();
+                            sd.inGameSoundStop();
                         }
                     } else if (dto.getCommand() == Info.STATELOSE) {
                         if (dto.getNickName() != null && dto.getWinlose().equals("패배")
@@ -1025,7 +1029,8 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                             otherskillNumlbl.setText("스킬 사용 : " + dto.getSkillCount()); // 적 스킬사용 횟수
                             othermaxCombolbl.setText("최대 콤보 : " + dto.getComboCount()); // 적 죽음 횟수
                             otherdeathlbl.setText("죽음 횟수 : " + dto.getMydeath()); // 적 죽음 횟수
-
+                            sd.loseSound();
+                            sd.inGameSoundStop();
                             
                         }
                     }
@@ -1056,7 +1061,9 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                 dto.setMessage("finish");
                 writer.writeObject(dto);
                 writer.flush();
+    
 
+                
                 
                
 
