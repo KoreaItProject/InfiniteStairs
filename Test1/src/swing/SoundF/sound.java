@@ -5,21 +5,23 @@ import java.io.File;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
+import swing.Setting;
 import swing.SoundThreadClass;
 
 public class sound {
-    File fileselectSound = new File("Test1/src/sound/selectSound.wav"); // 대기 사운드
-    File fileinGameSound = new File("Test1/src/sound/ingameSound.wav"); // 인게임 사운드
-    File moveSound = new File("Test1/src/sound/moveSound.wav"); // 움직임 사운드
-    File downSoundf = new File("Test1/src/sound/downSound.wav"); // 틀렸을때 사운드
-    File miraSound = new File("Test1/src/sound/hp.wav"); // 미라 스킬사운드
-    File iceSound = new File("Test1/src/sound/iceSound.wav"); // 아이스 스킬사운드
-    File blackEyeSound = new File("Test1/src/sound/blackEyeSound.wav"); // 블랙아이 스킬사운드
-    File countDownSound = new File("Test1/src/sound/countDown.wav"); // 카운트다운
-    File birdSound = new File("Test1/src/sound/birdSound.wav"); // 새 사운드
-    File skillSound = new File("Test1/src/sound/skillUsing.wav"); // 새 사운드
-    File winSound = new File("Test1/src/sound/win.wav"); // 이김
-    File loseSound = new File("Test1/src/sound/lose.wav"); // 짐
+    Setting settings=new Setting();
+    File fileselectSound = new File(settings.getSoundPath()+"selectSound.wav"); // 대기 사운드
+    File fileinGameSound = new File(settings.getSoundPath()+"ingameSound.wav"); // 인게임 사운드
+    File moveSound = new File(settings.getSoundPath()+"moveSound.wav"); // 움직임 사운드
+    File downSoundf = new File(settings.getSoundPath()+"downSound.wav"); // 틀렸을때 사운드
+    File miraSound = new File(settings.getSoundPath()+"hp.wav"); // 미라 스킬사운드
+    File iceSound = new File(settings.getSoundPath()+"iceSound.wav"); // 아이스 스킬사운드
+    File blackEyeSound = new File(settings.getSoundPath()+"blackEyeSound.wav"); // 블랙아이 스킬사운드
+    File countDownSound = new File(settings.getSoundPath()+"countDown.wav"); // 카운트다운
+    File birdSound = new File(settings.getSoundPath()+"birdSound.wav"); // 새 사운드
+    File skillSound = new File(settings.getSoundPath()+"skillUsing.wav"); // 새 사운드
+    File winSound = new File(settings.getSoundPath()+"win.wav"); // 이김
+    File loseSound = new File(settings.getSoundPath()+"lose.wav"); // 짐
 
 
     Clip clip;

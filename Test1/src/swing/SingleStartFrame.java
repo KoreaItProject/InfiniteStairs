@@ -656,7 +656,7 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
                 while (gameRunning) {         
                     try {
                         if(!comStop){
-                            System.out.println("comGauge"+comGauge);
+  
                             if(comCharIdx==0&&comGauge>=100){
                                 new SkillIce(iceBackbl, 1).start();
                                 comGauge=0;

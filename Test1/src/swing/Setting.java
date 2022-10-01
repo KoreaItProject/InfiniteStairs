@@ -2,9 +2,11 @@ package swing;
 
 public class Setting {
     private String imgPath = "Test1/src/img/"; // img까지 경로
+    private String soundPath = "Test1/src/sound/"; // img까지 경로
     private int blockCount = 250; // 생성할 블록 갯수
     private int hp[] = { 5, 5, 10 }; // hp
     private int gameTime = 100;// 게임 진행시간
+  
     private String host = "localhost";
 
     private int comlvl[][]={{700,360,290,230,190,160,130},//쓰레드 속도
@@ -16,6 +18,14 @@ public class Setting {
     private String charName[] = { "snowChar", "ghostChar", "miraChar" };
     private int charW[] = { 180, 130, 100 }, charH[] = { 180, 130, 100 }, charX[] = { 410, 430, 460 },
             charY[] = { 330, 375, 410 };
+   
+    public String getSoundPath() {
+        return soundPath;
+    }
+
+    public void setSoundPath(String soundPath) {
+        this.soundPath = soundPath;
+    }
 
     public String getHost() {
         return this.host;
