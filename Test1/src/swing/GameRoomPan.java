@@ -262,9 +262,6 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
          
         
     }
-    public void startSingleGame(){
-
-    }
      // 서버 연결부
      public void service(Info info) {
        
@@ -300,7 +297,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
                 if(dto.getNickName()!=null&&dto.getNickName().equals(nicktxt.getText())){
 
                     if (dto.getCommand() == Info.MAKE) {
-                    if(dto.getMessage()!=null&&dto.getMessage().equals(nicktxt.getText()+"ERR")){
+                    if(dto.getMessage()!=null&&dto.getMessage().equals(nicktxt.getText()+"ERR")||dto.equals("")){
                         System.out.println("사용중인 닉네임");
                         nicklbl.setText("사용중인 닉네임");
                     }else{

@@ -95,7 +95,7 @@ class ServerHandler extends Thread // 처리해주는 곳(소켓에 대한 정�
 						ServerMain.member.add(dto.getNickName());
 						int leftLimit = 97; // letter 'a'
 						int rightLimit = 122; // letter 'z'
-						int targetStringLength = 12;
+						int targetStringLength = 7;
 						Random random = new Random();
 						String generatedString = random.ints(leftLimit, rightLimit + 1).limit(targetStringLength)
 								.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)

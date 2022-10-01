@@ -198,6 +198,28 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
         gameStart=new GameStart(this,result);
         gameStart.start();
 
+         // 창닫을 경우
+         frame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                // 
+                try {
+                    // InfoDTO dto = new InfoDTO(nickName,Info.EXIT);
+                    
+                    InfoDTO dto = new InfoDTO();
+                    dto.setCommand(Info.EXIT);
+                    dto.setNickName(GameCharSelectPanel.nick);
+                    dto.setRoomId(GameCharSelectPanel.roomId);
+                    Sock.writer.writeObject(dto); // 역슬러쉬가 필요가 없음
+                    Sock.writer.flush();
+                    if(GameCharSelectPanel.t1!=null)
+                         GameCharSelectPanel.t1.stop();
+
+                } catch (IOException io) {
+                    io.printStackTrace();
+                }
+            }
+        });
+
     } // 생성자
 
     public void getSetting() {
@@ -238,7 +260,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
                 System.out.println(dto.getRoomId());
                 if(dto.isIngame()!=true){
 
-                
+             
                 if (dto.getRoomId() != null && dto.getRoomId().equals(roomId)) {
 
                     if (dto.getNickName() != null && !dto.getNickName().equals(nick)) {
@@ -327,8 +349,8 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
             contentslbl.setText(charDetail[charIdx]);
             try {
                 InfoDTO dto = new InfoDTO();
-                dto.setCommand(Info.SEND);
                 dto.setIngame(false);
+                dto.setCommand(Info.SEND);
                 dto.setMessage("charIdx");
                 dto.setNickName(GameCharSelectPanel.nick);
                 dto.setCharIdx(GameCharSelectPanel.charIdx);
@@ -396,6 +418,8 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
             gameStart.stop();
             GameCharSelectPanel.t1.stop();
     
+            ready=0;
+            otherReady=0;
             ((GameSelectFrame)frame).showRoomPan();
             
             } catch (IOException e1) {
@@ -439,7 +463,8 @@ class GameStart extends Thread {
                 Thread.sleep(500);
                 if (GameCharSelectPanel.ready == 1 && GameCharSelectPanel.otherReady == 1) {
                     System.out.println("게임시작");
-                  
+                    GameCharSelectPanel.ready=0;
+                    GameCharSelectPanel.otherReady=0;
                     InfoDTO dto = new InfoDTO();
 
                     dto.setCommand(Info.EXIT);
