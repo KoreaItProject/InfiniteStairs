@@ -21,11 +21,11 @@ public class MoveBlockReset extends Thread {
     public void run() {
         try {
         
-                for (int k = 0; k < 10; k++) {
-                    Thread.sleep(5);
+                for (int k = 0; k < 5; k++) {
+                    Thread.sleep(10);
                     for (int i = 0; i < blockArr.length; i++) {
-                        blockArr[i].setLocation(blockArr[i].getLocation().x - totalMoveX / 10,
-                        blockArr[i].getLocation().y - totalMoveY / 10);
+                        blockArr[i].setLocation(blockArr[i].getLocation().x - totalMoveX / 5,
+                        blockArr[i].getLocation().y - totalMoveY / 5);
                         
                     }
                     
