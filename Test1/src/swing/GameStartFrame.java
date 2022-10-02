@@ -347,23 +347,24 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
             otherCharDown[i] = imgMk(otherCharName + "/" + otherCharName + (i + 24) + ".png", otherCharW, otherCharH);
         }
 
-        // hp아이콘
-        ImageIcon hpIcon = imgMk("hp.png", 50, 50);
-        hplbl = new JLabel[hp];
-        if (charIdx == 2) {
-            hp = 10;
-            for (int i = 0; i < hp; i++) {
-                hplbl[i] = new JLabel(hpIcon);
-                hplbl[i].setBounds(10 + 40 * i, 10, 50, 50);
-                backPanel.add(hplbl[i]);
-            }
-        } else {
-            for (int i = 0; i < hp; i++) {
-                hplbl[i] = new JLabel(hpIcon);
-                hplbl[i].setBounds(10 + 40 * i, 10, 50, 50);
-                backPanel.add(hplbl[i]);
-            }
-        }
+           // hp아이콘
+           ImageIcon hpIcon = imgMk("hp.png", 60, 60);
+           hplbl = new JLabel[hp];
+           if (charIdx == 2) {
+               hp = 10;
+               for (int i = 0; i < hp; i++) {
+                   hplbl[i] = new JLabel(hpIcon);
+                   hplbl[i].setBounds(10 + 47 * i, 10, 60, 60);
+                   backPanel.add(hplbl[i]);
+               }
+           } else {
+               for (int i = 0; i < hp; i++) {
+                   hplbl[i] = new JLabel(hpIcon);
+                   hplbl[i].setBounds(10 + 47 * i, 10, 60, 60);
+                   backPanel.add(hplbl[i]);
+               }
+           }
+
 
         // 상대가 위에 있아래 있는지 보여주는 화살표
         ImageIcon upCheckIcon = imgMk("sub/upCheck.png", 40, 30);
@@ -401,8 +402,8 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
         font = new Font("Gothic", Font.BOLD, size + 12);
         stepsJL.setFont(font);
         stepsJL2.setFont(font);
-        stepsJL.setBounds(30, -430, 1000, 1000);
-        stepsJL2.setBounds(100, -430, 1000, 1000);
+        stepsJL.setBounds(30, -410, 1000, 1000);
+        stepsJL2.setBounds(100, -410, 1000, 1000);
         backPanel.add(stepsJL);
         backPanel.add(stepsJL2);
 
@@ -413,8 +414,8 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
         comboJL2.setForeground(Color.BLUE);
         comboJL.setFont(font);
         comboJL2.setFont(font);
-        comboJL.setBounds(30, -390, 1000, 1000);
-        comboJL2.setBounds(130, -390, 1000, 1000);
+        comboJL.setBounds(30, -380, 1000, 1000);
+        comboJL2.setBounds(130, -380, 1000, 1000);
         backPanel.add(comboJL);
         backPanel.add(comboJL2);
 
@@ -534,7 +535,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                         case KeyEvent.VK_SPACE:
 
                             if (charIdx == 2 && gauge >= 100 && hp == 10) {
-                                System.out.println("하트가 10개 입니다.");
+
                             } else {
                                 if (gauge >= 100) {
                                     if (charIdx == 2) {
@@ -569,6 +570,9 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
             }
 
         });
+        
+        timerCount = new TimerCount();
+        timelbl.setText(timerCount.getTime());
 
         try {
             Thread.sleep(2500);
@@ -628,8 +632,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
         // 프레임 메인쓰레드
         try {
 
-            timerCount = new TimerCount();
-            timelbl.setText(timerCount.getTime());
+          
 
             Thread.sleep(3100);
             timerCount.start();
@@ -637,20 +640,48 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
             gDown.start();
             new BackAni(backlbl, backgroundIcon).start();
 
-            int count = 0;
-            while (gameRunning) {
 
-                if (count == 0 && timerCount.getTime2() == 0) {
-                    
-                    send(20, 0);
+            while (gameRunning) {
+                if (keyCount-otherKeyCount == 0 && timerCount.getTime2() == 0) {
+                    stop = 1;
                     timerCount.stop();
-                    count++;
+                    winLoseWhitelbl.setVisible(true);
+                    winlbl.setVisible(true);
+                    winlbl.setIcon(null);
+                    winlbl.setText("무승부");
+                    winlbl.setFont(new Font("Gothic", Font.BOLD, winlbl.getFont().getSize() + 35));
+                    winlbl.setForeground(Color.blue);
+                    winloseMyChar.setVisible(true);
+                    winloseOtherChar.setVisible(true);
+                    nicklbl.setVisible(true);
+                   
+                    othernicklbl.setVisible(true);
+                    gameOutBtn.setVisible(true);
+
+                    sd.winSound();
+                    sd.inGameSoundStop();
+
+                    break;
                 }
+
+                if (timerCount.getTime2() == 0) {
+                    if(keyCount>otherKeyCount){
+                        send(20, 0);
+                        timerCount.stop();
+
+                        break;
+                    }
+                  
+                    
+                }
+
+
+             
                 otherMove();
                 timelbl.setText(timerCount.getTime());
                 otherCheck(otherCharlbl, upChecklbl, downChecklbl, betweenlbl);
                 gaugeUp(gaugeBar, gauge);
-                Thread.sleep(30);
+                Thread.sleep(5);
 
             }
 
@@ -750,7 +781,6 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                 isStopping = true;
             else
                 stop = 1;
-            System.out.println(totalMoveX + "죽음" + totalMoveY);
             hp = hplbl.length;
             for (int i = 0; i < hplbl.length; i++) {
                 hplbl[i].setVisible(false);
@@ -834,7 +864,6 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
     public void send(int skillIdx, int key) {
 
         try {
-            System.out.println(1);
             // 서버로 보냄
             InfoDTO dto = new InfoDTO();
 
@@ -872,6 +901,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                 gameOutBtn.setVisible(true);
 
                 System.out.println("승리");
+                sd.winSound();
                 sd.inGameSoundStop();
             } else if (skillIdx == 10) { // 시간 지났을 시
                 dto.setCommand(Info.STATELOSE);
@@ -885,7 +915,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                 dto.setMydeath(mydeath); // 내 죽음 횟수
                 sd.inGameSoundStop();
             } else if (skillIdx == 20) {
-                if (keyCount > otherKeyCount) {
+                if (keyCount >otherKeyCount) {
                     dto.setCommand(Info.STATE);
                     dto.setWinlose("승리");
                     timerCount.stop();
@@ -916,16 +946,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                     othermaxCombolbl.setVisible(true);
 
                     gameOutBtn.setVisible(true);
-                } else if (keyCount < otherKeyCount) {
-                    dto.setCommand(Info.STATELOSE);
-                    dto.setWinlose("패배");
-                    timerCount.stop();
-                    dto.setRoomId(roomId);
-                    dto.setNickName(nick);
-                    dto.setStep(keyCount); // 내 step 횟수
-                    dto.setSkillCount(myskillcount); // 내 스킬 횟수
-                    dto.setComboCount(mymaxcombocount); // 내 최대 콤보 횟수
-                }
+                } 
                 sd.inGameSoundStop();
             } else {
                 dto.setStep(keyCount);
@@ -962,13 +983,11 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
 
                 
                 if (dto.getRoomId() != null && dto.getRoomId().equals(roomId)) {
-                    System.out.println(dto.getRoomId());
 
                     if (dto.getCommand() == Info.SEND) {
 
                         if (dto.getMessage() == null) {
                             if (dto.getNickName() != null && dto.getNickName().equals(otherNick)) {
-                                System.out.println(dto.getNickName());
                                 otherKeyCount = dto.getStep();
                                 otherMoveX = dto.getMoveX();
                                 new CharAni(otherCharlbl, otherCharArr, dto.getMoveX()).start();
@@ -983,13 +1002,12 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                         } else if (dto.getMessage() != null && dto.getMessage().equals("waitGame")) {
 
                             waitGame++;
-                            System.out.println(waitGame);
                         }
 
                     } else if (dto.getCommand() == Info.EXIT) {
                         
                         System.out.println("상대종료");
-
+                        
                     } else if (dto.getCommand() == Info.STATE) {
                         if (dto.getNickName() != null && dto.getWinlose().equals("승리")
                                 && dto.getNickName().equals(otherNick)) {
@@ -1021,18 +1039,19 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                             othermaxCombolbl.setVisible(true);
 
                             gameOutBtn.setVisible(true);
-                            sd.winSound();
+                            sd.loseSound();
                             sd.inGameSoundStop();
                         }
                     } else if (dto.getCommand() == Info.STATELOSE) {
                         if (dto.getNickName() != null && dto.getWinlose().equals("패배")
                                 && dto.getNickName().equals(otherNick)) {
+                            System.out.println("승리");
 
                             othersteplbl.setText("step : " + dto.getStep());
                             otherskillNumlbl.setText("스킬 사용 : " + dto.getSkillCount()); // 적 스킬사용 횟수
                             othermaxCombolbl.setText("최대 콤보 : " + dto.getComboCount()); // 적 죽음 횟수
                             otherdeathlbl.setText("죽음 횟수 : " + dto.getMydeath()); // 적 죽음 횟수
-                            sd.loseSound();
+                            sd.winSound();
                             sd.inGameSoundStop();
                             
                         }
@@ -1078,10 +1097,11 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                 totalMoveY=0;
                 totalBackMove=0;
                 gDown.stop();
-
-                System.out.println("seeeed ===> " + seed + keyCount + otherKeyCount);
-                new GameSelectFrame(roomId, nick, seed + keyCount + otherKeyCount);  
+                seed=seed + keyCount + otherKeyCount+timerCount.getTime2()+result[keyCount]+result[otherKeyCount];
+                new GameSelectFrame(roomId, nick, seed , charIdx, otherCharIdx);  
                 sockt2.stop();
+                timerCount.stop();
+                
             
                 removeAll();
                 dispose();

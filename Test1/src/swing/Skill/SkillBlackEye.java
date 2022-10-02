@@ -19,7 +19,7 @@ public class SkillBlackEye extends Thread {
 
         try {
             blackEyelbl.setVisible(true);    
-            Thread.sleep(4500);
+            Thread.sleep(4400);
             blackEyelbl.setVisible(false);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block

@@ -25,7 +25,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
     JFrame frame;
     String imgPath;
     JButton roomBtn1lbl,roomBtn2lbl,roomBtn3lbl,roomBtn4lbl,roomBtn5lbl;
-    JTextArea codeText,nicktxt;
+    JTextField codeText,nicktxt;
     JLabel  blacklbl,codelbl,blacklbl1;
     String host;
 
@@ -55,10 +55,10 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
         nicklbl.setForeground(Color.white);
         this.add(nicklbl);
         nicklbl.setBounds(330,160,500,30);
-        nicktxt= new JTextArea();
+        nicktxt= new JTextField();
         this.add(nicktxt);
-        nicktxt.setFont(new Font("Gothic", Font.BOLD, nicktxt.getFont().getSize()+10 ));
-        nicktxt.setBounds(370,210,260,30);
+        nicktxt.setFont(new Font("Gothic", Font.BOLD, nicktxt.getFont().getSize()+10));
+        nicktxt.setBounds(370,210,260,35);
             //닉네임 입력창
             ImageIcon black1 = imgMk("room/black.png",360, 130, Image.SCALE_SMOOTH);
             blacklbl1=new JLabel(black1);
@@ -85,7 +85,7 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
          roomBtn5lbl.addActionListener(this);
 
          //코드 입력
-         codeText =new JTextArea();
+         codeText =new JTextField();
          codeText.setBounds(455, 440, 170, 25);
          this.add(codeText);
          codeText.setVisible(false);
@@ -118,10 +118,10 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
      
 
          //조작법
-         JLabel contents=new JLabel("<html><body style='font-size:16px;'><p>&ensp 조작법 </p><p>&ensp오른쪽 방향키 : 보는 방향으로 이동</p><p>&ensp왼쪽 방향키 : 방향 전환 이동</p><p>&ensp스페이스바 : 게이지 100%시 스킬사용</p></body></html>");
-         JLabel whiteIbl3=new JLabel(imgMk("sub/white.png",910, 140, Image.SCALE_SMOOTH));//밑에 설명 div
-         whiteIbl3.setBounds(40, 680, 910, 140);
-         contents.setBounds(40, 680, 910, 140);
+         JLabel contents=new JLabel("<html><body style='font-size:22px;'><p>&ensp 조작법! </p><p>&ensp오른쪽 방향키 : 보는 방향으로 이동</p><p>&ensp왼쪽 방향키 : 방향 전환 이동</p><p>&ensp스페이스바 : 게이지 100%시 스킬사용</p></body></html>");
+         JLabel whiteIbl3=new JLabel(imgMk("sub/white.png",910, 190, Image.SCALE_SMOOTH));//밑에 설명 div
+         whiteIbl3.setBounds(40, 650, 910, 190);
+         contents.setBounds(55, 650, 910, 170);
          this.add(contents);
          this.add(whiteIbl3);
        
@@ -216,7 +216,12 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
     @Override
     public void actionPerformed(ActionEvent e) {
          if (e.getSource() == roomBtn1lbl) {//방만들기 바로 입장됨
-            service(Info.MAKE);
+            if(nicktxt.getText().equals("")){
+                nicklbl.setText("닉네임 입력!");
+            }else{
+                service(Info.MAKE);
+            }
+            
             
          }else if(e.getSource() == roomBtn2lbl) {//방입장하기 버튼
             roomBtn1lbl.setVisible(false);
@@ -235,9 +240,13 @@ public class GameRoomPan extends JPanel implements ActionListener , Runnable {
             roomBtn4lbl.setVisible(false);
          }
          else if(e.getSource() == roomBtn4lbl) {//확인 코드값 가지고 입장
-            service(Info.JOIN);
+            if(nicktxt.getText().equals("")){
+                nicklbl.setText("닉네임 입력!");
+            }else{
+                  service(Info.JOIN);
+            }
           
-           
+          
          }
          else if(e.getSource() == roomBtn5lbl) {//싱글플레이
             try {

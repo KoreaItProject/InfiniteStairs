@@ -60,10 +60,12 @@ public class SingleCharSelectPanel extends JPanel implements ActionListener {
     int lvl;
  
 
-    public SingleCharSelectPanel(JFrame frame,int lvl) {
+    public SingleCharSelectPanel(JFrame frame,int lvl,int charIdx,int comCharIdx) {
         getSetting();
         this.frame = frame;
         this.lvl=lvl;
+        this.charIdx=charIdx;
+        this.comCharIdx=comCharIdx;
 
         // result 배열 만들기
         Random rand = new Random();
@@ -131,11 +133,11 @@ public class SingleCharSelectPanel extends JPanel implements ActionListener {
 
         l = new JLabel("", JLabel.CENTER);
         l.setBounds(50, 50, charSizeW, charSizeH + 200);
-        l.setIcon(s[0]);
+        l.setIcon(s[charIdx]);
         this.add(l);
         ll = new JLabel("", JLabel.CENTER);
         ll.setBounds(640, 50, charSizeW, charSizeH + 200);
-        ll.setIcon(s[0]);
+        ll.setIcon(s[comCharIdx]);
         this.add(ll);
 
         // 레디 버튼

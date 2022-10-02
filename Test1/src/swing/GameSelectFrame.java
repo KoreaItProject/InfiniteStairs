@@ -36,7 +36,7 @@ public class GameSelectFrame extends JFrame {
 
     } // 생성자
 
-    public GameSelectFrame(String roomId,  String nick, int seed) {
+    public GameSelectFrame(String roomId,  String nick, int seed,int charIdx,int otherCharIdx) {
        
         setSize(FramW, FramH); // 프레임 크기 지정
         setLayout(null);
@@ -58,7 +58,7 @@ public class GameSelectFrame extends JFrame {
         }
 
 
-        panel = new GameCharSelectPanel(this, roomId, nick, seed);
+        panel = new GameCharSelectPanel(this, roomId, nick, seed,charIdx,otherCharIdx);
         add(panel);
         revalidate();
         repaint();
@@ -66,7 +66,7 @@ public class GameSelectFrame extends JFrame {
 
     } // 생성자
     
-    public GameSelectFrame(Boolean isSingle,int lvl) {
+    public GameSelectFrame(Boolean isSingle,int lvl,int charidx,int comCharIdx) {
 
    
         if(isSingle){
@@ -80,7 +80,7 @@ public class GameSelectFrame extends JFrame {
 
         // 패널 생성
         // JPanel gameCharSelectPanel = new GameCharSelectPanel(this);
-        panel = new SingleCharSelectPanel(this,lvl);
+        panel = new SingleCharSelectPanel(this,lvl,charidx,comCharIdx);
         add(panel);
         setVisible(true);
         }
@@ -91,7 +91,7 @@ public class GameSelectFrame extends JFrame {
         remove(panel);
         revalidate();
         repaint();
-        panel = new GameCharSelectPanel(this, roomId, nick, seed);
+        panel = new GameCharSelectPanel(this, roomId, nick, seed,0,0);
         add(panel);
         revalidate();
         repaint();
@@ -116,7 +116,7 @@ public class GameSelectFrame extends JFrame {
         remove(panel);
         revalidate();
         repaint();
-        panel = new SingleCharSelectPanel(this,3);
+        panel = new SingleCharSelectPanel(this,3,0,0);
         add(panel);
         revalidate();
         repaint();

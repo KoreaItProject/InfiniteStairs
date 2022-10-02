@@ -337,23 +337,23 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
     }
     backPanel.add(jlMyArrow);
 
-        // hp아이콘
-        ImageIcon hpIcon = imgMk("hp.png", 50, 50);
-        hplbl = new JLabel[hp];
-        if (charIdx == 2) {
-            hp = 10;
-            for (int i = 0; i < hp; i++) {
-                hplbl[i] = new JLabel(hpIcon);
-                hplbl[i].setBounds(10 + 40 * i, 10, 50, 50);
-                backPanel.add(hplbl[i]);
+            // hp아이콘
+            ImageIcon hpIcon = imgMk("hp.png", 60, 60);
+            hplbl = new JLabel[hp];
+            if (charIdx == 2) {
+                hp = 10;
+                for (int i = 0; i < hp; i++) {
+                    hplbl[i] = new JLabel(hpIcon);
+                    hplbl[i].setBounds(10 + 47 * i, 10, 60, 60);
+                    backPanel.add(hplbl[i]);
+                }
+            } else {
+                for (int i = 0; i < hp; i++) {
+                    hplbl[i] = new JLabel(hpIcon);
+                    hplbl[i].setBounds(10 + 47 * i, 10, 60, 60);
+                    backPanel.add(hplbl[i]);
+                }
             }
-        } else {
-            for (int i = 0; i < hp; i++) {
-                hplbl[i] = new JLabel(hpIcon);
-                hplbl[i].setBounds(10 + 40 * i, 10, 50, 50);
-                backPanel.add(hplbl[i]);
-            }
-        }
 
         // 상대가 위에 있아래 있는지 보여주는 화살표
         ImageIcon upCheckIcon = imgMk("sub/upCheck.png", 40, 30);
@@ -391,8 +391,8 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
         font = new Font("Gothic", Font.BOLD, size + 12);
         stepsJL.setFont(font);
         stepsJL2.setFont(font);
-        stepsJL.setBounds(30, -430, 1000, 1000);
-        stepsJL2.setBounds(100, -430, 1000, 1000);
+        stepsJL.setBounds(30, -410, 1000, 1000);
+        stepsJL2.setBounds(100, -410, 1000, 1000);
         backPanel.add(stepsJL);
         backPanel.add(stepsJL2);
 
@@ -403,8 +403,8 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
         comboJL2.setForeground(Color.BLUE);
         comboJL.setFont(font);
         comboJL2.setFont(font);
-        comboJL.setBounds(30, -390, 1000, 1000);
-        comboJL2.setBounds(130, -390, 1000, 1000);
+        comboJL.setBounds(30, -380, 1000, 1000);
+        comboJL2.setBounds(130, -380, 1000, 1000);
         backPanel.add(comboJL);
         backPanel.add(comboJL2);
 
@@ -533,7 +533,7 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
                                         gaugeUp(gaugeBar, gauge = 0);
                                         new Thread(new Runnable(){public void run() {
                                             try {System.out.println("얼음 스킬 발동");
-                                                comStop=true;Thread.sleep(1500); comStop=false;
+                                                comStop=true;Thread.sleep(1410); comStop=false;
                                             } catch (InterruptedException e) {
                                                 // TODO Auto-generated catch block
                                                 e.printStackTrace();
@@ -544,7 +544,7 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
                                         gaugeUp(gaugeBar, gauge = 0);
                                         new Thread(new Runnable(){public void run() {
                                             try {System.out.println("시야 방해 발동");
-                                                downPer=3;slowPer=30;Thread.sleep(4500); downPer=0;slowPer=0;
+                                                downPer=2;slowPer=30;Thread.sleep(4500); downPer=0;slowPer=0;
                                             } catch (InterruptedException e1) {
                                                 // TODO Auto-generated catch block
 
@@ -1025,7 +1025,7 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
             gaugeDown1.stop();
             gaugeDown2.stop();
             this.removeAll();
-            new GameSelectFrame(true,lvl);
+            new GameSelectFrame(true,lvl,charIdx,otherCharIdx);
             this.dispose();
 
           

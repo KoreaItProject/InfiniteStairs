@@ -34,7 +34,7 @@ public class SkillIce extends Thread {
 
         try {
             iceBackbl.setVisible(true);
-            Thread.sleep(1500);
+            Thread.sleep(1400);
             iceBackbl.setVisible(false);
 
        

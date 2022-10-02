@@ -68,12 +68,14 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
             "<html><body style='font-size:16px;'><p>&ensp고스트맨</p><p>&ensp스킬 : 일정 시간 동안 상대방의 시야를 방해한다 </p><p>&ensp대상은 시야가 축소된다</p></body></html>",
             "<html><body style='font-size:16px;'><p>&ensp미라맨</p><p>&ensp스킬 : 생명력을 회복한다</p><p>&ensp최대 생명력이 높습니다</p></body></html>" };
 
-    public GameCharSelectPanel(JFrame frame, String roomId, String nick, int seed) {
+    public GameCharSelectPanel(JFrame frame, String roomId, String nick, int seed,int charIdx,int otherCharIdx) {
         getSetting();
         this.frame = frame;
         this.roomId = roomId;
         this.nick = nick;
         this.seed = seed;
+        this.charIdx=charIdx;
+        this.otherCharIdx=otherCharIdx;
 
         // result 배열 만들기
         Random rand = new Random();
@@ -128,7 +130,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
 
         l = new JLabel("", JLabel.CENTER);
         l.setBounds(50, 50, charSizeW, charSizeH + 200);
-        l.setIcon(s[0]);
+        l.setIcon(s[charIdx]);
         this.add(l);
 
         // 레디 버튼
@@ -237,6 +239,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
             InfoDTO dto = new InfoDTO();
             dto.setIngame(false);
             dto.setNickName(nick);
+            dto.setCharIdx(charIdx);
             dto.setRoomId(roomId);
             dto.setMessage(message);
             dto.setCommand(Info.STATE);
@@ -292,12 +295,12 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
                                 GameCharSelectPanel.otherNick = dto.getNickName();
                                 readyBtn.setEnabled(true);
 
-                            } else if (dto.getMessage() != null && dto.getMessage().equals("레디1")) {// 내가 입장했고 상대가 내 입장을
-                                                                                                    // 확인했음
+                            } else if (dto.getMessage() != null && dto.getMessage().equals("레디1")) {
+                                otherCharIdx=dto.getCharIdx();                                                    
                                 otherReady = 1;
                                 readylbl2.setVisible(true);
-                            } else if (dto.getMessage() != null && dto.getMessage().equals("레디0")) {// 내가 입장했고 상대가 내 입장을
-                                                                                                    // 확인했음
+                            } else if (dto.getMessage() != null && dto.getMessage().equals("레디0")) {
+                                                                                                   
                                 otherReady = 0;
                                 readylbl2.setVisible(false);
                             }

@@ -4,7 +4,7 @@ public class Setting {
     private String imgPath = "Test1/src/img/"; // img까지 경로
     private String soundPath = "Test1/src/sound/"; // img까지 경로
     private int blockCount = 250; // 생성할 블록 갯수
-    private int hp[] = { 5, 5, 10 }; // hp
+    private int hp[] = { 5, 6, 10 }; // hp
     private int gameTime = 100;// 게임 진행시간
   
     private String host = "localhost";

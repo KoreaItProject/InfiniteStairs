@@ -45,6 +45,8 @@ class ServerHandler extends Thread // 처리해주는 곳(소켓에 대한 정�
 						writer.writeObject(dto);
 						broadcast(dto);
 					}
+					outMember(dto.getNickName());
+
 
 					// reader.close();
 					// writer.close();
@@ -167,5 +169,13 @@ class ServerHandler extends Thread // 처리해주는 곳(소켓에 대한 정�
 
 		}
 		return false;
+	}
+	public void outMember(String nick){
+		for (int i = 0; i < ServerMain.member.size(); i++) {
+			if (nick.equals(ServerMain.member.get(i))) {
+				ServerMain.member.remove(i);
+			}
+
+		}
 	}
 }
