@@ -255,6 +255,7 @@ public class SingleCharSelectPanel extends JPanel implements ActionListener {
         else if (e.getSource() == readyBtn) {
             selectSoundStopFunc();
 
+            
             frame.removeAll();
             frame.dispose();
             new SingleStartFrame(result, charIdx, comCharIdx, lvlCombo.getSelectedIndex());
@@ -263,6 +264,7 @@ public class SingleCharSelectPanel extends JPanel implements ActionListener {
             // charLabel
         }else if (e.getSource() == outbtn) {
         
+            selectSoundStopFunc();
             ((GameSelectFrame)frame).showRoomPan();
             
         }

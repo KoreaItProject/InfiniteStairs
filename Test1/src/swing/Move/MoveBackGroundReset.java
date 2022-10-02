@@ -19,7 +19,7 @@ public class MoveBackGroundReset extends Thread {
         try {
             for (int i = 0; i < 20; i++) {
                 backlbl.setLocation(0, backlbl.getLocation().y - totalBackMove/20);
-                Thread.sleep(25);
+                Thread.sleep(10);
             }
             backlbl.setLocation(0, backlbl.getLocation().y - totalBackMove%20);
         } catch (InterruptedException e) {

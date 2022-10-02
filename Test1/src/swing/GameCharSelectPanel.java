@@ -417,7 +417,7 @@ public class GameCharSelectPanel extends JPanel implements ActionListener, Runna
             
             gameStart.stop();
             GameCharSelectPanel.t1.stop();
-    
+            selectSoundStopFunc();
             ready=0;
             otherReady=0;
             ((GameSelectFrame)frame).showRoomPan();

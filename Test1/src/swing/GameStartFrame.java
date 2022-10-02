@@ -104,6 +104,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
     // WinLose
 
     int seed;
+    GaugeDown gDown;
 
     public static int totalMoveX = 0, totalMoveY = 0, resetCount = 0, totalBackMove = 0;
 
@@ -623,6 +624,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
         });
         // 카운트 스타트
 
+       
         // 프레임 메인쓰레드
         try {
 
@@ -631,7 +633,8 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
 
             Thread.sleep(3100);
             timerCount.start();
-            new GaugeDown(0).start();
+            gDown=new GaugeDown(0);
+            gDown.start();
             new BackAni(backlbl, backgroundIcon).start();
 
             int count = 0;
@@ -1071,6 +1074,10 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                     moveX=-moveX;
                 }
                 gauge=0;
+                totalMoveX=0;
+                totalMoveY=0;
+                totalBackMove=0;
+                gDown.stop();
 
                 System.out.println("seeeed ===> " + seed + keyCount + otherKeyCount);
                 new GameSelectFrame(roomId, nick, seed + keyCount + otherKeyCount);  

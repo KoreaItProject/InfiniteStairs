@@ -22,7 +22,7 @@ public class MoveBlockReset extends Thread {
         try {
         
                 for (int k = 0; k < 10; k++) {
-                    Thread.sleep(15);
+                    Thread.sleep(5);
                     for (int i = 0; i < blockArr.length; i++) {
                         blockArr[i].setLocation(blockArr[i].getLocation().x - totalMoveX / 10,
                         blockArr[i].getLocation().y - totalMoveY / 10);

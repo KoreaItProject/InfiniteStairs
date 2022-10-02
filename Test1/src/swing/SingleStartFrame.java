@@ -109,7 +109,8 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
   int lvl;
 
   // WinLose
-
+  GaugeDown gaugeDown1;
+  GaugeDown gaugeDown2;
 
     public SingleStartFrame(int[] result,int charIdx,int comCharIdx,int lvl) {
         gameRunning=true;
@@ -586,8 +587,8 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
             TimerCount timerCount = new TimerCount();
             timelbl.setText(timerCount.getTime());
             BackAni backAni= new BackAni(backlbl, backgroundIcon);
-            GaugeDown gaugeDown1 = new GaugeDown(1);
-            GaugeDown gaugeDown2 = new GaugeDown(2);
+            gaugeDown1 = new GaugeDown(1);
+            gaugeDown2 = new GaugeDown(2);
 
             Thread waitThread=new Thread(
                 new Runnable() {
@@ -1018,6 +1019,11 @@ public class SingleStartFrame extends JFrame  implements ActionListener{
                 moveX=-moveX;
             if(otherMoveX>0)
                 otherMoveX=-otherMoveX;
+            totalMoveX=0;
+            totalMoveY=0;
+            totalBackMove=0;
+            gaugeDown1.stop();
+            gaugeDown2.stop();
             this.removeAll();
             new GameSelectFrame(true,lvl);
             this.dispose();

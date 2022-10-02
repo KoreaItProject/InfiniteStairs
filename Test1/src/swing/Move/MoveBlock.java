@@ -28,7 +28,7 @@ public class MoveBlock extends Thread {
         try {
         
             for (int k = 0; k < 10; k++) {
-                Thread.sleep(7);
+                Thread.sleep(3);
                 for (int i = 0; i < blockArr.length; i++) {
                     blockArr[i].setLocation(blockArr[i].getLocation().x- moveX / 10,
                     blockArr[i].getLocation().y + moveY / 10);
