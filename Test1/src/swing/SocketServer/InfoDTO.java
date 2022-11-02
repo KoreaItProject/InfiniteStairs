@@ -11,6 +11,7 @@ public class InfoDTO implements Serializable {
     SEND,
     STATE,
     STATELOSE,
+    DontStopServer
   }
 
   private String nickName;
@@ -28,21 +29,21 @@ public class InfoDTO implements Serializable {
   private int mydeath;
   private boolean ingame;
 
-	public boolean isIngame() {
-		return this.ingame;
-	}
+  public boolean isIngame() {
+    return this.ingame;
+  }
 
-	public void setIngame(boolean ingame) {
-		this.ingame = ingame;
-	}
+  public void setIngame(boolean ingame) {
+    this.ingame = ingame;
+  }
 
-	public int getMydeath() {
-		return this.mydeath;
-	}
+  public int getMydeath() {
+    return this.mydeath;
+  }
 
-	public void setMydeath(int mydeath) {
-		this.mydeath = mydeath;
-	}
+  public void setMydeath(int mydeath) {
+    this.mydeath = mydeath;
+  }
 
   public int getSkillCount() {
     return this.skillCount;
