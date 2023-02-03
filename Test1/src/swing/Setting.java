@@ -7,7 +7,8 @@ public class Setting {
     private int hp[] = { 5, 6, 10 }; // hp
     private int gameTime = 100;// 게임 진행시간
 
-    private String host = "leetaehyeon.shop";
+    private String host = "ggit.me";
+
     // private String host = "localhost";
 
     private int comlvl[][] = { { 700, 360, 290, 230, 190, 160, 130 }, // 쓰레드 속도
