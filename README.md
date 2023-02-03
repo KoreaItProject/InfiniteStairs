@@ -22,3 +22,7 @@ Main.java를 실행하여 게임을 시작한다.
 -------------------
 
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/64009654/216496966-1fcf3306-a6d6-4a18-93e1-654099660b63.png">
+게임 시작 시 메인화면 입니다.
+
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/64009654/216498034-8da6cb32-9ab9-448e-8872-5133ce1daac3.png">
+"vs컴퓨터" 버튼을 눌러 싱글플레이를 할 수 있습니다.
