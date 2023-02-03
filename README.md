@@ -70,8 +70,12 @@ Main.java를 실행하여 게임을 시작한다.
 </br>
 </br>
 
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/64009654/216507210-68f0699f-c2f9-4168-b02c-52fd9bfbc1c2.png">
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/64009654/216505467-457007d5-6a26-4567-a873-3ee7c3a19772.png">
-
+방에 입장하는 방법은 상단에 있는 "방코드"를 메인화면에 있는 방 입장 버튼을 클릭하여 "방코드"를 입력하면 해당 방에 입장할 수 있습니다.
+</br>
+</br>
+</br>
 
 
 
