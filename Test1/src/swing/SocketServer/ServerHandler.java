@@ -36,8 +36,7 @@ class ServerHandler extends Thread // 처리해주는 곳(소켓에 대한 정�
 		try {
 			while (true) {
 				dto = (InfoDTO) reader.readObject();
-				System.out.println(dto.getRoomId());
-				System.out.println(dto.getNickName());
+
 				if (dto.getCommand() == Info.EXIT) {
 					System.out.println("종료");
 
@@ -143,14 +142,15 @@ class ServerHandler extends Thread // 처리해주는 곳(소켓에 대한 정�
 
 				} else if (dto.getCommand() == Info.DontStopServer) {
 
-					System.out.println(123);
+					Thread.sleep(500);
+					InfoDTO infoDTO = new InfoDTO();
+					infoDTO.setCommand(Info.DontStopServer);
+					broadcast(infoDTO);
 
 				}
 			} // while
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

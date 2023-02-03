@@ -35,7 +35,9 @@ class ServerMain {
 	}
 
 	public static void main(String[] args) {
+		new ServerOpen().start();
 		new ServerMain();
+
 	}
 
 }
