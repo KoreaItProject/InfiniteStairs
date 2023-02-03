@@ -19,6 +19,8 @@ Main.java를 실행하여 게임을 시작한다.
 
 스페이스바 : 스킬 게이지 100%시 스킬 사용
 
+인원 : <a src = 'https://github.com/leetaehyeon123'>이태현</a>  <a src = 'https://github.com/JIN-RYEOL'>김진렬</a>
+
 -------------------
 
 # 1. Single Play
