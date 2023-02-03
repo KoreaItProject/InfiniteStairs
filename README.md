@@ -20,3 +20,5 @@ Main.java를 실행하여 게임을 시작한다.
 스페이스바 : 스킬 게이지 100%시 스킬 사용
 
 -------------------
+
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/64009654/216496966-1fcf3306-a6d6-4a18-93e1-654099660b63.png">
