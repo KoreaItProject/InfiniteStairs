@@ -141,6 +141,10 @@ class ServerHandler extends Thread // 처리해주는 곳(소켓에 대한 정�
 
 					broadcast(dto);
 
+				} else if (dto.getCommand() == Info.DontStopServer) {
+
+					System.out.println(123);
+
 				}
 			} // while
 
