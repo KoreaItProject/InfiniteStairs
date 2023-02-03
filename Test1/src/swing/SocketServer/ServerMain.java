@@ -15,7 +15,7 @@ class ServerMain {
 
 	public ServerMain() {
 		try {
-			serverSocket = new ServerSocket(9500);
+			serverSocket = new ServerSocket(80);
 			System.out.println("서버 준비 완료");
 			list = new ArrayList<ServerHandler>();
 			member = new ArrayList<>();

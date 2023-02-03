@@ -119,9 +119,9 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
 
         getSetting(charIdx, otherCharIdx);
 
-        gameRunning=true;
+        gameRunning = true;
         try {
-            Sock.socket = new Socket(host, 9500);
+            Sock.socket = new Socket(host, 80);
             this.reader = new ObjectInputStream(Sock.socket.getInputStream());
             this.writer = new ObjectOutputStream(Sock.socket.getOutputStream());
 
@@ -261,7 +261,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
         // 인게임 끝났을때 나가기
         gameOutBtn = new JButton("닫기");
         gameOutBtn.setBackground(new Color(100, 214, 245));
-        gameOutBtn.setBounds(460, 675,100,30);
+        gameOutBtn.setBounds(460, 675, 100, 30);
         gameOutBtn.addActionListener(this); // 이벤트 호출 메서드
         gameOutBtn.setVisible(false);
         backPanel.add(gameOutBtn);
@@ -347,24 +347,23 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
             otherCharDown[i] = imgMk(otherCharName + "/" + otherCharName + (i + 24) + ".png", otherCharW, otherCharH);
         }
 
-           // hp아이콘
-           ImageIcon hpIcon = imgMk("hp.png", 60, 60);
-           hplbl = new JLabel[hp];
-           if (charIdx == 2) {
-               hp = 10;
-               for (int i = 0; i < hp; i++) {
-                   hplbl[i] = new JLabel(hpIcon);
-                   hplbl[i].setBounds(10 + 47 * i, 10, 60, 60);
-                   backPanel.add(hplbl[i]);
-               }
-           } else {
-               for (int i = 0; i < hp; i++) {
-                   hplbl[i] = new JLabel(hpIcon);
-                   hplbl[i].setBounds(10 + 47 * i, 10, 60, 60);
-                   backPanel.add(hplbl[i]);
-               }
-           }
-
+        // hp아이콘
+        ImageIcon hpIcon = imgMk("hp.png", 60, 60);
+        hplbl = new JLabel[hp];
+        if (charIdx == 2) {
+            hp = 10;
+            for (int i = 0; i < hp; i++) {
+                hplbl[i] = new JLabel(hpIcon);
+                hplbl[i].setBounds(10 + 47 * i, 10, 60, 60);
+                backPanel.add(hplbl[i]);
+            }
+        } else {
+            for (int i = 0; i < hp; i++) {
+                hplbl[i] = new JLabel(hpIcon);
+                hplbl[i].setBounds(10 + 47 * i, 10, 60, 60);
+                backPanel.add(hplbl[i]);
+            }
+        }
 
         // 상대가 위에 있아래 있는지 보여주는 화살표
         ImageIcon upCheckIcon = imgMk("sub/upCheck.png", 40, 30);
@@ -570,7 +569,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
             }
 
         });
-        
+
         timerCount = new TimerCount();
         timelbl.setText(timerCount.getTime());
 
@@ -578,13 +577,13 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
             Thread.sleep(2500);
             try {
                 InfoDTO dto = new InfoDTO();
-                 dto.setIngame(true);
+                dto.setIngame(true);
                 dto.setCommand(Info.SEND);
                 dto.setRoomId(roomId);
                 dto.setNickName(nick);
                 dto.setMessage("waitGame");
                 writer.writeObject(dto);
-               
+
                 writer.flush();
 
             } catch (IOException io) {
@@ -618,7 +617,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                     dto.setMessage("finish");
                     dto.setIngame(true);
                     writer.writeObject(dto);
-                    
+
                     writer.flush();
 
                 } catch (IOException io) {
@@ -628,21 +627,17 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
         });
         // 카운트 스타트
 
-       
         // 프레임 메인쓰레드
         try {
 
-          
-
             Thread.sleep(3100);
             timerCount.start();
-            gDown=new GaugeDown(0);
+            gDown = new GaugeDown(0);
             gDown.start();
             new BackAni(backlbl, backgroundIcon).start();
 
-
             while (gameRunning) {
-                if (keyCount-otherKeyCount == 0 && timerCount.getTime2() == 0) {
+                if (keyCount - otherKeyCount == 0 && timerCount.getTime2() == 0) {
                     stop = 1;
                     timerCount.stop();
                     winLoseWhitelbl.setVisible(true);
@@ -654,7 +649,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                     winloseMyChar.setVisible(true);
                     winloseOtherChar.setVisible(true);
                     nicklbl.setVisible(true);
-                   
+
                     othernicklbl.setVisible(true);
                     gameOutBtn.setVisible(true);
 
@@ -665,18 +660,15 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                 }
 
                 if (timerCount.getTime2() == 0) {
-                    if(keyCount>otherKeyCount){
+                    if (keyCount > otherKeyCount) {
                         send(20, 0);
                         timerCount.stop();
 
                         break;
                     }
-                  
-                    
+
                 }
 
-
-             
                 otherMove();
                 timelbl.setText(timerCount.getTime());
                 otherCheck(otherCharlbl, upChecklbl, downChecklbl, betweenlbl);
@@ -693,7 +685,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                     dto.setCommand(Info.EXIT);
                     dto.setIngame(true);
                     writer.writeObject(dto); // 역슬러쉬가 필요가 없음
-                    
+
                     writer.flush();
 
                 } catch (IOException e1) {
@@ -915,7 +907,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                 dto.setMydeath(mydeath); // 내 죽음 횟수
                 sd.inGameSoundStop();
             } else if (skillIdx == 20) {
-                if (keyCount >otherKeyCount) {
+                if (keyCount > otherKeyCount) {
                     dto.setCommand(Info.STATE);
                     dto.setWinlose("승리");
                     timerCount.stop();
@@ -925,7 +917,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                     dto.setStep(keyCount); // 내 step 횟수
                     dto.setSkillCount(myskillcount); // 내 스킬 횟수
                     dto.setComboCount(mymaxcombocount); // 내 최대 콤보 횟수
-                    
+
                     stop = 1;
                     winLoseWhitelbl.setVisible(true);
                     winlbl.setVisible(true);
@@ -946,7 +938,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                     othermaxCombolbl.setVisible(true);
 
                     gameOutBtn.setVisible(true);
-                } 
+                }
                 sd.inGameSoundStop();
             } else {
                 dto.setStep(keyCount);
@@ -979,85 +971,84 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
 
                 dto = (InfoDTO) reader.readObject();
 
-                if(dto.isIngame()){
+                if (dto.isIngame()) {
 
-                
-                if (dto.getRoomId() != null && dto.getRoomId().equals(roomId)) {
+                    if (dto.getRoomId() != null && dto.getRoomId().equals(roomId)) {
 
-                    if (dto.getCommand() == Info.SEND) {
+                        if (dto.getCommand() == Info.SEND) {
 
-                        if (dto.getMessage() == null) {
-                            if (dto.getNickName() != null && dto.getNickName().equals(otherNick)) {
-                                otherKeyCount = dto.getStep();
-                                otherMoveX = dto.getMoveX();
-                                new CharAni(otherCharlbl, otherCharArr, dto.getMoveX()).start();
-                                if (dto.getSkill() == 1) {
-                                    new SkillIce(iceBackbl, 0).start();
-                                    sd.iceSkillSound();
-                                } else if (dto.getSkill() == 2) {
-                                    new SkillBlackEye(blackEyelbl).start();
-                                    sd.blackEyeSkillSound();
+                            if (dto.getMessage() == null) {
+                                if (dto.getNickName() != null && dto.getNickName().equals(otherNick)) {
+                                    otherKeyCount = dto.getStep();
+                                    otherMoveX = dto.getMoveX();
+                                    new CharAni(otherCharlbl, otherCharArr, dto.getMoveX()).start();
+                                    if (dto.getSkill() == 1) {
+                                        new SkillIce(iceBackbl, 0).start();
+                                        sd.iceSkillSound();
+                                    } else if (dto.getSkill() == 2) {
+                                        new SkillBlackEye(blackEyelbl).start();
+                                        sd.blackEyeSkillSound();
+                                    }
                                 }
+                            } else if (dto.getMessage() != null && dto.getMessage().equals("waitGame")) {
+
+                                waitGame++;
                             }
-                        } else if (dto.getMessage() != null && dto.getMessage().equals("waitGame")) {
 
-                            waitGame++;
-                        }
+                        } else if (dto.getCommand() == Info.EXIT) {
 
-                    } else if (dto.getCommand() == Info.EXIT) {
-                        
-                        System.out.println("상대종료");
-                        
-                    } else if (dto.getCommand() == Info.STATE) {
-                        if (dto.getNickName() != null && dto.getWinlose().equals("승리")
-                                && dto.getNickName().equals(otherNick)) {
-                            System.out.println("패배");
+                            System.out.println("상대종료");
 
-                            send(10, 0);
+                        } else if (dto.getCommand() == Info.STATE) {
+                            if (dto.getNickName() != null && dto.getWinlose().equals("승리")
+                                    && dto.getNickName().equals(otherNick)) {
+                                System.out.println("패배");
 
-                            stop = 1;
-                            othersteplbl.setText("step : " + dto.getStep());
-                            otherskillNumlbl.setText("스킬 사용 : " + dto.getSkillCount()); // 적 스킬사용 횟수
-                            othermaxCombolbl.setText("최대 콤보 : " + dto.getComboCount());
-                            winLoseWhitelbl.setVisible(true);
-                            loselbl.setVisible(true);
-                            winloseMyChar.setVisible(true);
-                            winloseOtherChar.setVisible(true);
-                            deathlbl.setText("죽은 횟수 : " + mydeath);
+                                send(10, 0);
 
-                            nicklbl.setVisible(true);
-                            steplbl.setVisible(true);
-                            deathlbl.setVisible(true);
-                            skillNumlbl.setVisible(true);
-                            maxCombolbl.setVisible(true);
-                            
-                            otherdeathlbl.setText("죽은 횟수 : " + dto.getMydeath());
-                            othernicklbl.setVisible(true);
-                            othersteplbl.setVisible(true);
-                            otherdeathlbl.setVisible(true);
-                            otherskillNumlbl.setVisible(true);
-                            othermaxCombolbl.setVisible(true);
+                                stop = 1;
+                                othersteplbl.setText("step : " + dto.getStep());
+                                otherskillNumlbl.setText("스킬 사용 : " + dto.getSkillCount()); // 적 스킬사용 횟수
+                                othermaxCombolbl.setText("최대 콤보 : " + dto.getComboCount());
+                                winLoseWhitelbl.setVisible(true);
+                                loselbl.setVisible(true);
+                                winloseMyChar.setVisible(true);
+                                winloseOtherChar.setVisible(true);
+                                deathlbl.setText("죽은 횟수 : " + mydeath);
 
-                            gameOutBtn.setVisible(true);
-                            sd.loseSound();
-                            sd.inGameSoundStop();
-                        }
-                    } else if (dto.getCommand() == Info.STATELOSE) {
-                        if (dto.getNickName() != null && dto.getWinlose().equals("패배")
-                                && dto.getNickName().equals(otherNick)) {
-                            System.out.println("승리");
+                                nicklbl.setVisible(true);
+                                steplbl.setVisible(true);
+                                deathlbl.setVisible(true);
+                                skillNumlbl.setVisible(true);
+                                maxCombolbl.setVisible(true);
 
-                            othersteplbl.setText("step : " + dto.getStep());
-                            otherskillNumlbl.setText("스킬 사용 : " + dto.getSkillCount()); // 적 스킬사용 횟수
-                            othermaxCombolbl.setText("최대 콤보 : " + dto.getComboCount()); // 적 죽음 횟수
-                            otherdeathlbl.setText("죽음 횟수 : " + dto.getMydeath()); // 적 죽음 횟수
-                            sd.winSound();
-                            sd.inGameSoundStop();
-                            
+                                otherdeathlbl.setText("죽은 횟수 : " + dto.getMydeath());
+                                othernicklbl.setVisible(true);
+                                othersteplbl.setVisible(true);
+                                otherdeathlbl.setVisible(true);
+                                otherskillNumlbl.setVisible(true);
+                                othermaxCombolbl.setVisible(true);
+
+                                gameOutBtn.setVisible(true);
+                                sd.loseSound();
+                                sd.inGameSoundStop();
+                            }
+                        } else if (dto.getCommand() == Info.STATELOSE) {
+                            if (dto.getNickName() != null && dto.getWinlose().equals("패배")
+                                    && dto.getNickName().equals(otherNick)) {
+                                System.out.println("승리");
+
+                                othersteplbl.setText("step : " + dto.getStep());
+                                otherskillNumlbl.setText("스킬 사용 : " + dto.getSkillCount()); // 적 스킬사용 횟수
+                                othermaxCombolbl.setText("최대 콤보 : " + dto.getComboCount()); // 적 죽음 횟수
+                                otherdeathlbl.setText("죽음 횟수 : " + dto.getMydeath()); // 적 죽음 횟수
+                                sd.winSound();
+                                sd.inGameSoundStop();
+
+                            }
                         }
                     }
                 }
-            }
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -1069,11 +1060,10 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e){
-        if(e.getSource() == gameOutBtn){
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == gameOutBtn) {
             try {
                 // InfoDTO dto = new InfoDTO(nickName,Info.EXIT);
-                
 
                 InfoDTO dto = new InfoDTO();
                 dto.setCommand(Info.EXIT);
@@ -1083,42 +1073,33 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
                 dto.setMessage("finish");
                 writer.writeObject(dto);
                 writer.flush();
-    
 
-                
-                
-               
-
-                if(moveX>0){
-                    moveX=-moveX;
+                if (moveX > 0) {
+                    moveX = -moveX;
                 }
-                gauge=0;
-                totalMoveX=0;
-                totalMoveY=0;
-                totalBackMove=0;
+                gauge = 0;
+                totalMoveX = 0;
+                totalMoveY = 0;
+                totalBackMove = 0;
                 gDown.stop();
-                seed=seed + keyCount + otherKeyCount+timerCount.getTime2()+result[keyCount]+result[otherKeyCount];
-                new GameSelectFrame(roomId, nick, seed , charIdx, otherCharIdx);  
+                seed = seed + keyCount + otherKeyCount + timerCount.getTime2() + result[keyCount]
+                        + result[otherKeyCount];
+                new GameSelectFrame(roomId, nick, seed, charIdx, otherCharIdx);
                 sockt2.stop();
                 timerCount.stop();
-                
-            
+
                 removeAll();
                 dispose();
 
             } catch (IOException io) {
                 io.printStackTrace();
             }
-                
 
-                       
-
-            
             System.out.println("나가기");
         }
 
         // new GameSelectFrame(roomId,nick)
-        
+
     }
 
     public void otherMove() {
