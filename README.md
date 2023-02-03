@@ -86,11 +86,13 @@ Main.java를 실행하여 게임을 시작한다.
 # 캐릭터
 
 ## 스노우맨
-![char0](https://user-images.githubusercontent.com/61938906/216514516-a36a2332-0c02-421a-9b46-e7309841db84.gif)
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/61938906/216514516-a36a2332-0c02-421a-9b46-e7309841db84.gif">
+
 ## 고스트맨
-![char1](https://user-images.githubusercontent.com/61938906/216514524-fd1b94f9-ace1-4eeb-ba8a-39d1fab54ceb.gif)
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/61938906/216514524-fd1b94f9-ace1-4eeb-ba8a-39d1fab54ceb.gif">
+
 ## 미라맨
-![char2](https://user-images.githubusercontent.com/61938906/216514529-bfb70b2b-f52a-4d3b-994b-03922d81a325.gif)
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/61938906/216514529-bfb70b2b-f52a-4d3b-994b-03922d81a325.gif">
 
 
 
