@@ -24,6 +24,7 @@ Main.java를 실행하여 게임을 시작한다.
 
 -------------------
 
+
 # 1. Single Play
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/64009654/216496966-1fcf3306-a6d6-4a18-93e1-654099660b63.png">
 게임 시작 시 메인화면 입니다.
