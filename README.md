@@ -65,6 +65,7 @@ Main.java를 실행하여 게임을 시작한다.
 # 2. Multi Play
 
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/64009654/216504416-e3ed2cdc-72fc-423a-a5da-39613117ae3f.png">
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/64009654/216507567-4ea8a1b4-aeab-4639-8734-4605385dd3b6.png">
 닉네임을 입력한 후 "방만들기" 버튼을 누르면 멀티플레이를 할 수 있는 방이 하나 생성됩니다.
 </br>
 </br>
