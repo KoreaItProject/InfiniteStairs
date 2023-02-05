@@ -26,7 +26,7 @@ public class ServerOpen extends Thread {
             if (i == 0) {
                 Thread.sleep(3000);
                 infoDTO = new InfoDTO();
-                this.socket = new Socket(new Setting().getHost(), 80);
+                this.socket = new Socket(new Setting().getHost(), 9876);
                 this.writer = new ObjectOutputStream(this.socket.getOutputStream());
                 this.reader = new ObjectInputStream(this.socket.getInputStream());
 

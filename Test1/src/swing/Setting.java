@@ -7,9 +7,11 @@ public class Setting {
     private int hp[] = { 5, 6, 10 }; // hp
     private int gameTime = 100;// 게임 진행시간
 
-    private String host = "ggit.me";
+    // private String host = "0.0.0.0";
+    // private String host = "ggit.me";
+    // private String host = "192.168.55.179";
 
-    // private String host = "localhost";
+    private String host = "localhost";
 
     private int comlvl[][] = { { 700, 360, 290, 230, 190, 160, 130 }, // 쓰레드 속도
             { 5, 4, 3, 2, 2, 1, 1 }, // 틀릴확률

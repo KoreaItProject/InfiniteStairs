@@ -121,7 +121,7 @@ public class GameStartFrame extends JFrame implements ActionListener, Runnable {
 
         gameRunning = true;
         try {
-            Sock.socket = new Socket(host, 80);
+            Sock.socket = new Socket(host, 9876);
             this.reader = new ObjectInputStream(Sock.socket.getInputStream());
             this.writer = new ObjectOutputStream(Sock.socket.getOutputStream());
 

@@ -162,7 +162,7 @@ public class GameRoomPan extends JPanel implements ActionListener, Runnable {
         // 소켓연결부
         try {
 
-            Sock.socket = new Socket(host, 80);
+            Sock.socket = new Socket(host, 9876);
             Sock.reader = new ObjectInputStream(Sock.socket.getInputStream());
             Sock.writer = new ObjectOutputStream(Sock.socket.getOutputStream());
 

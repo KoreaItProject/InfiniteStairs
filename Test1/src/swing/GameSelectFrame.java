@@ -47,7 +47,7 @@ public class GameSelectFrame extends JFrame {
         // 패널 생성
         // JPanel gameCharSelectPanel = new GameCharSelectPanel(this);
         try {
-            Sock.socket = new Socket(new Setting().getHost(), 80);
+            Sock.socket = new Socket(new Setting().getHost(), 9876);
             Sock.reader = new ObjectInputStream(Sock.socket.getInputStream());
             Sock.writer = new ObjectOutputStream(Sock.socket.getOutputStream());
         } catch (IOException e) {
