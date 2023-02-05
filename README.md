@@ -1,7 +1,7 @@
 # 무한의 계단 대전 게임
  
--------------------
-<!--서버가 켜진 상태에서 게임을 실행해야한다.
+
+<!--서버가 켜진 상태에서 게임을 실행해야한다. 
 
 ServerMain.java로 서버를 킨다.
 
@@ -10,6 +10,7 @@ Main.java를 실행하여 게임을 시작한다.
 #Setting.java 설정파일-->
 
 -------------------
+
 
 조작법
 
@@ -22,6 +23,7 @@ Main.java를 실행하여 게임을 시작한다.
 인원 : <a href = 'https://github.com/leetaehyeon123'>이태현</a>  <a href = 'https://github.com/JIN-RYEOL'>김진렬</a>
 
 -------------------
+
 
 # 1. Single Play
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/64009654/216496966-1fcf3306-a6d6-4a18-93e1-654099660b63.png">
@@ -84,6 +86,7 @@ Main.java를 실행하여 게임을 시작한다.
 
 
 ----
+
 
 # 캐릭터
 
